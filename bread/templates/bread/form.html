@@ -1,0 +1,16 @@
+{% extends bread_template %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% block content %}
+<h3 class="title">{{message}}</h3>
+<form method="post" class="form input-lg" id="gif_entry">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary btn-lg">
+        ICON Submit
+        </button>
+    {% endbuttons %}
+</form>
+{% endblock %}
+

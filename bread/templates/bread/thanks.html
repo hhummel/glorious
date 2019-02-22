@@ -1,0 +1,9 @@
+{% extends bread_template %}
+{% load bootstrap4 %} 
+{% block content %}
+<h4>Thanks for your order! You'll be getting a confirmation email or text message shortly.</h4>
+<h4>Press the Order button to add more bread.  You can review your account status with the Account button.</h4>
+  <a class="btn btn-primary btn-lg" href="{% url 'products' %}">ICON Add To My Order</a> 
+  <a class="btn btn-primary btn-lg" href="{% url 'my_account' %}">ICON Order's Complete</a> 
+{% endblock %}
+

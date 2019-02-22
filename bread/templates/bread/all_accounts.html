@@ -1,0 +1,17 @@
+{% extends bread_template %}
+
+{% block content %}
+<h3>Outstanding Balance:</h3>
+<br>
+<div class="table-responsive">
+  <table class='table table-striped'>
+  {% for account in balance %}
+    <tr>
+      <td class='orders'><h4><a href=account_detail/{{account.user_id}}>{{account.user_id}}</a></h4></td>
+      <td class='orders'><h4><a href=account_detail/{{account.user_id}}>{{account.user__first_name}} {{account.user__last_name}}</a></h4></td>
+      <td class='orders'><h4>${{account.total_balance}}</h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}

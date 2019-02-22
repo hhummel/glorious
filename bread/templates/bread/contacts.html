@@ -1,0 +1,36 @@
+{% extends bread_template %}
+
+{% block content %}
+<br>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-2 col"></div>
+    <div class="col-xs-8 col">
+      <h3 class="title"><a class="btn btn-primary btn-block btn-lg text-center" href="{% url 'customers' %}">Show Customers</a></h3>
+    </div>
+    <div class="col-xs-2 col"></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-2 col"></div>
+    <div class="col-xs-8 col">
+      <h3 class="title"><a class="btn btn-primary btn-block btn-lg" href="{% url 'mail_list' %}">Make a Mailing List</a></h3>
+    </div>
+    <div class="col-xs-2 col"></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-2 col"></div>
+    <div class="col-xs-8 col">
+      <h3 class="title"><a class="btn btn-primary btn-block btn-lg" href="{% url 'mail_list_view' %}">View/Edit a Mailing List</a></h3>
+    </div>
+    <div class="col-xs-2 col"></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-2 col"></div>
+    <div class="col-xs-8 col">
+      <h3 class="title"><a class="btn btn-primary btn-block btn-lg" href="{% url 'campaign' %}">Launch a Campaign</a></h3>
+    </div>
+    <div class="col-xs-2 col"></div>
+  </div>
+</div>
+{% endblock %}
+

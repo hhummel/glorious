@@ -1,0 +1,64 @@
+{% extends bread_template %}
+{% block content %}
+{# Load the tag library #}
+{% load bootstrap4 %}
+{% load staticfiles %}
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+<link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment-with-locales.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+<h3>{{message}}</h3>
+  <form method="post" class="form input-lg" id="gif_entry">
+    {% csrf_token %}
+    <div class='form-group' style='position: relative; top: -40%; max-width: 300px;'>
+      <div class='input-group-date'>
+        {% bootstrap_form_errors form %}
+        {% bootstrap_field form.product  %}
+        {% bootstrap_field form.number %}
+        {% bootstrap_field form.delivery_date addon_after='<span class="glyphicon glyphicon-calendar"></span>' %}
+        {% bootstrap_field form.this_is_a_gift %}
+        {% bootstrap_field form.recipient_name %}
+        {% bootstrap_field form.recipient_address %}
+        {% bootstrap_field form.recipient_city %}
+        {% bootstrap_field form.recipient_state %}
+        {% bootstrap_field form.recipient_message %}
+      </div>
+    </div>
+    {% buttons %}
+        <button type="submit" class="btn btn-primary btn-lg">
+        ICON Next
+        </button>
+    {% endbuttons %}
+  </form>
+
+<script>
+  $(function () {
+    var d = "{{form.delivery_date.value|date:"Y-m-d"}}";
+    var m = moment(d, "YYYY-MM-DD");
+
+    //Add datetimepicker to delivery_date field
+    $('#datetimepicker4').datetimepicker({
+        useCurrent: false,
+        format: 'YYYY-MM-DD',
+        //format: "dddd MMM DD, YYYY",
+        //format: "MM/DD/YYYY",
+        defaultDate: m,
+        minDate: m,
+        disabledDates: [
+                        "11/22/2018 00:53",
+                        "11/23/2018 00:53"
+                    ],
+        daysOfWeekDisabled: {{excluded}}
+    });
+
+ });
+</script>
+
+<script src="{% static 'scripts/giftFields.js' %}"></script>
+
+{% endblock %}
+

@@ -1,0 +1,149 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-language" content="en-us" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Glorious Grain" />
+  <meta name="contact" content="gloriousgrain.com" />
+  <meta name="description" content="Handmade. Fresh. Real." />
+  <meta name="keywords" content="Glorious Grain, Artisan Edibles, Glorious Loaf, Challah, Sourdough, Sourdough Bread, Bread, Lower Merion" />
+  <title>Glorious Grain</title>
+
+  {% load bootstrap4 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery=1 %}
+  {% load staticfiles %}
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
+  {% block styling %}
+  {% endblock %}
+
+  <style>
+    .container-fluid, .container{
+      max-width: 900px;
+    }
+    .header{
+      background: url("{% static 'images/field_sunset.jpg' %}") no-repeat center center fixed;
+    }
+    .btn{
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .spacer{
+      display:inline-block;
+      width: 100px
+    }
+    .orders{
+      padding: 10px;
+    }
+    .date{
+      padding: 10px;
+    }
+    .spacing-sm{
+      margin: 20px 10px;
+    }
+    .spacing{
+      margin-top: 50px;
+    }
+    .modified{
+      border-bottom: 1px solid #ddd !important;
+    }
+    .boxed{
+      border: 2px solid white;
+      border-radius: 25px;
+      padding: 8px 8px 3px 8px;
+    }
+    .shade {
+      background-color: #e6f2ff;
+    }
+    .roller {
+      background: url("{% static "" %}{{roller_image}}") no-repeat center center fixed;
+      background-size: cover;
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 5px;
+      color: white;
+      text-align: left;
+      font-weight: bold;
+    }
+    .white, .white a {
+      color: #ffffff;
+    }    
+    .black, .black a {
+      color: black;
+    }    
+    .gif_hidden{
+      display: none;
+    }
+    .unhidden{
+      display: block;
+    }
+    .update{
+      display: block;
+    }
+ 
+  </style>
+</head>
+    
+<body class>
+    <div class= "container-fluid">
+      <div class="row header">
+        <div class="col-xs-2 col-sm-1">
+          {% if user.is_authenticated %}
+            <div class="white spacing-sm">Welcome {{ user.first_name }}!</div>
+          {% endif %}
+        </div>
+        <div class="col-xs-8 col-sm-10">
+          {% if logo_image %}
+            <a href="{% url 'index' %}"><img src="{% static logo_image %}" class="img-responsive center-block"  alt="Glorious Grain"></a>
+          {% endif %}
+        </div>
+        <div class="col-xs-2 col-sm-1">
+          {% if request.user.is_staff %}
+	  <h2 class="stack" data-toggle="tooltip" data-placement="left" title="Breadmeister"><a href="{% url 'orders' %}" class="white">COG</a></h2>
+          {% else %}
+            <h2 class="stack" data-toggle="tooltip" data-placement="left" title="Help"><a href="{% url 'help' %}" class="white boxed">WRENCH</a></h2>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class = "container-fluid shade">
+      <div class="row">
+        <div class="col-xs-4">
+          {% if user.is_authenticated %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'logout' %}">Log Out</a> 
+          {% else %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'login' %}">Log In</a>
+          {% endif %} 
+        </div>
+        <div class="col-xs-4">
+          {% if user.is_authenticated %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'products' %}">Order</a> 
+          {% else %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'register' %}">Register</a> 
+          {% endif %} 
+        </div>
+        <div class="col-xs-4">
+          {% if user.is_authenticated %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'my_account' %}"> My Account</a> 
+          {% else %}
+            <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'about' %}">About</a> 
+          {% endif %} 
+        </div>
+      </div>
+    </div>
+    <br>
+    <p class="gif_hidden"><img src="{% static 'images/ajax-loader.gif' %}" class="img-responsive center-block"></p>
+    <div class="container">
+      <div class="unhidden">
+        {% block content %}
+        {% endblock %}
+      </div>
+    </div>
+    <script src="{% static 'scripts/lyrics.js' %}"></script>
+</body>
+</html>

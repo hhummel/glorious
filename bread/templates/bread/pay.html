@@ -1,0 +1,45 @@
+{% extends bread_template %}
+{% load bootstrap4 %}
+ 
+{% block content %}
+<h2>Account for {{user_first}} {{user_last}}</h2>
+<h3>Current balance: ${{balance}}</h3>
+
+{% if balance > 0 %}
+  <h3>{{message}}</h3>
+  <hr>
+  <h3>Pay with Venmo</h3>
+  <h4>Convenient and free</h4>
+  <h4>Credit Venmo account "Laura-Hutner"</h4>
+  <a class="btn btn-primary btn-lg" href="https://venmo.com" target="_blank">Pay with Venmo</a> 
+  <hr>
+  <h3>Pay with Check</h3>
+  <h4>Mail checks to Laura Hutner</h4>
+  <h4>306 Llanfair Rd, Wynnewood PA 19096</h4> 
+  <a class="btn btn-primary btn-lg" href="{% url 'check_mail' %}">Pay with Check</a> 
+  <hr>
+  {% if enable_card %}
+  <h3>Pay with Card</h3>
+    <form action="stripe_charge" method="post">
+      {% csrf_token %}
+      <article>
+        <label>
+          <h4>Amount is ${{balance}}</h4>
+        </label>
+      </article>
+
+      <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="{{stripe_key}}"
+        data-description="{{card_message}}"
+        data-amount="{{pennies}}"
+        data-email="{{email}}"
+        data-billing-address=false
+        data-locale="auto"
+        data-zip-code="true"
+      ></script>
+    </form>
+  {% endif %}
+{% else %}
+  <h3>No payment is due</h3>
+{% endif %}
+{% endblock %}

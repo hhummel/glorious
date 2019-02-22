@@ -1,0 +1,20 @@
+{% extends bread_template %}
+
+{% block content %}
+<h3 class="title">Mail Lists:</h3>
+<br>
+<div class="table-responsive">
+  <table class='table table-striped'>
+  <tr>
+    <th class='orders shade'><h4>ID</h4></th>
+    <th class='orders shade'><h4>Label</h4></th>
+  </tr>
+  {% for list in lists %}
+    <tr>
+      <td class='orders'><h4><a href=mail_list_edit/{{list.index_key}}>{{list.index_key}}</a></h4></td>
+      <td class='orders'><h4>{{list.label}}</h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}

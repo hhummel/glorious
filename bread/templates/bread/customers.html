@@ -1,0 +1,26 @@
+{% extends bread_template %}
+
+{% block content %}
+<h3 class="title">Customer List:</h3>
+<br>
+<div class="table-responsive">
+  <table class='table table-striped'>
+  <tr>
+    <th class='orders shade'><h4>ID</h4></th>
+    <th class='orders shade'><h4>Name</h4></th>
+    <th class='orders shade'><h4>Address</h4></th>
+    <th class='orders shade'><h4>E-mail</h4></th>
+    <th class='orders shade'><h4>Mobile</h4></th>
+  </tr>
+  {% for customer in customers %}
+    <tr>
+      <td class='orders'><h4>{{customer.user_id}}</h4></td>
+      <td class='orders'><h4><a href=account_detail/{{customer.user_id}}>{{customer.first_name}} {{customer.last_name}}</a></h4></td>
+      <td class='orders'><h4>{{customer.address}}</h4></td>
+      <td class='orders'><h4>{{customer.email}}</h4></td>
+      <td class='orders'><h4>{{customer.mobile}}</h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}

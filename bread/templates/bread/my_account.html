@@ -1,0 +1,98 @@
+{% extends bread_template %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+
+{% block content %}
+<h2>Account for {{user_first}} {{user_last}}</h2>
+<h3>Current Balance: ${{balance}}&nbsp <span><a class='btn btn-primary btn-lg spacer' href='pay'>Pay</a></span></h3>
+{% if orders %}
+  <h3>Pending Orders:</h3>
+  <div class="table-responsive">
+    <table class='table'>
+    <tr class="shade">
+      <th><h4>#</h4></th>
+      <th><h4>Product<h4></th>
+      <th><h4>Price</h4></th>
+      <th><h4>Delivery Date</h4></th>
+      <th><h4>Gift</h4></th>
+    </tr>
+    {% for order in orders %}
+      <tr>
+        <td class='orders'><h4>{{order.number}}</h4></td>
+        <td class='orders'><h4>{{order.product.label}}</h4></td>
+        <td class='orders'><h4>${{order.product.price}}</h4></td>
+        <td class='orders'><h4>{{order.delivery_date}}</h4></td>
+        {% if order.this_is_a_gift %}
+          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Gift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/>ICON</h5></td>
+        {% else %}
+          <td></td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td class='orders' colspan=4><h5><a class='btn btn-primary btn-lg' href='cancel/{{order.index_key}}/'>Cancel</a></h5></td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
+{% endif %}
+
+{% if not orders %}
+<h3>No Pending Orders</h3>
+{% endif %}
+<h3>Order History</h3>
+<div class="table-responsive">
+  <table class='table table-striped'>
+    <tr class="shade">
+      <th><h4>#</h4></th>
+      <th><h4>Product<h4></th>
+      <th><h4>Price</h4></th>
+      <th><h4>Delivery Date</h4></th>
+    </tr>
+    {% for order in order_history %}
+      <tr>
+        <td class='orders'><h4>{{order.number}}</h4></td>
+        <td class='orders'><h4>{{order.product.label}}</h4></td>
+        <td class='orders'><h4>${{order.product.price}}</h4></td>
+        <td class='orders'><h4>{{order.delivery_date}}</h4></td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+<h3>Charges</h3>
+<div class="table-responsive">
+  <table class='table table-striped'>
+    <tr class="shade">
+      <th><h4>Charge<h4></th>
+      <th><h4>Date</h4></th>
+      <th><h4>Ref.</h4></th>
+    </tr>
+    {% for debit in debits %}
+      <tr>
+        <td class='orders'><h4>${{debit.quantity}}</h4></td>
+        <td class='orders'><h4>{{debit.date|date:"SHORT_DATE_FORMAT"}}</h4></td>
+        <td class='orders'><h4>{{debit.order_reference.index_key}}</h4></td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+<h3>Payments</h3>
+<div class="table-responsive">
+  <table class='table table-striped'>
+    <tr class="shade">
+      <th><h4>Payment<h4></th>
+      <th><h4>Date</h4></th>
+      <th><h4>Method</h4></th>
+      <th><h4>Ref.</h4></th>
+    </tr>
+    {% for credit in credits %}
+      <tr>
+        <td class='orders'><h4>${{credit.quantity}}</h4></td>
+        <td class='orders'><h4>{{credit.date|date:"SHORT_DATE_FORMAT"}}</h4></td>
+        <td class='orders'><h4>{{credit.payment_reference.payment_method}}</h4></td>
+        <td class='orders'><h4>{{credit.payment_reference.index_key}}</h4></td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
+

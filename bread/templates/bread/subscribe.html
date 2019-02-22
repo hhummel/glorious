@@ -1,0 +1,16 @@
+{% extends bread_template %}
+{% load bootstrap4 %}
+
+{% block content %}
+<h2>...Please tell us about you.</h2>
+<form method="post" class="form input-lg">
+    {%csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary btn-lg">
+        ICON Submit
+        </button>
+    {% endbuttons %}
+</form>
+{% endblock %}
+

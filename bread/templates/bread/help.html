@@ -1,0 +1,20 @@
+{% extends bread_template %}
+
+{% block content %}
+<h2>Help</h2>
+{% if user.is_authenticated %}
+  <h4><a href="{% url 'password_change' %}">Change your password</a></h4>
+{% else %}
+  <h4><a href="{% url 'password_reset' %}">Lost username or password</a></h4>
+{% endif %}
+<h4><a  href="mailto:laura@gloriousloaf.com?Subject=Order Help" target="_top">Help with your order</a></h4>
+<h4><a href="mailto:laura@gloriousloaf.com?Subject=Account Help" target="_top">Question about your account</a></h4>
+<h2>Contact</h2>
+<h4>Laura Hutner</h4>
+<h4>The Glorious Loaf</h4>
+<h4>306 Llanfair Road</h4>
+<h4>Wynnewood, PA</h4>
+<h4>19096</h4>
+<h2><a class="btni btn-primary input-lg" href="mailto:laura@gloriousgrain.com?Subject=Bread" target="_top">Send Email</a></h2>
+{% endblock %}
+

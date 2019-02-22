@@ -1,0 +1,89 @@
+{% extends bread_template %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+
+{% block content %}
+<h3 class="title">All Orders:</h3>
+<hr>
+<h3 class="title">Combined Pending Orders</h3>
+<br>
+
+<div class="table-responsive">
+  <table class='table'>
+    <tr>
+      <th class='orders shade'><h4>Date</h4></th>
+      <th class='orders shade'><h4>Count</h4></th>
+      <th class='orders shade'><h4>Product</h4></th>
+    </tr>
+  {% for order in orders_date_product %}
+    <tr>
+      <td class='date'><h4>{{order.delivery_date}}</h4></td>
+      <td class='orders'><h4>{{order.total}} </h4></td>
+      <td class='orders'><h4>{{order.product__label}} </h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-2 col"></div>
+    <div class="col-xs-8 col">
+      <h3 class="title"><a class="btn btn-primary btn-block btn-lg text-center" href="{% url 'order_meister' %}">New Customer Order</a></h3>
+    </div>
+    <div class="col-xs-2 col"></div>
+  </div>
+</div>
+
+<hr>
+
+<h3 class="title">Detailed Pending Orders</h3>
+<br>
+
+<div class="table-responsive">
+  <table class='table table-striped table-sm'>
+    <tr>
+      <th class='orders shade'><h4>Name</h4></th>
+      <th class='orders shade'><h4>Order</h4></th>
+      <th class='orders shade'><h4>Special</h4></th>
+      <th class='orders shade'><h4>Date</h4></th>
+      <th class='orders shade'><h4></h4></th>
+    </th>
+  {% for order in orders %}
+    <tr>
+      <td class='orders'><h4><a href=account_detail/{{order.user.id}}>{{order.user.first_name}} {{order.user.last_name}}</a></h4></td>
+      <td class='orders'><h4>{{order.number}} {{order.product}}</h4></td>
+      {% if order.this_is_a_gift or order.special_instructions %}
+          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Special instructions: {{order.special_instructions}}\nGift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/>ICON</h5></td>
+      {% else %}
+          <td></td>
+      {% endif %}
+      <td class='orders'><h4>{{order.delivery_date}}</h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+
+<h3 class="title">Order History</h3>
+<div class="table-responsive">
+  <table class='table table-striped table-sm'>
+    <tr>
+      <th class='orders shade'><h4>Name</h4></th>
+      <th class='orders shade'><h4>Order</h4></th>
+      <th class='orders shade'><h4>Gift</h4></th>
+      <th class='orders shade'><h4>Date</h4></th>
+    </th>
+  {% for order in order_history %}
+    <tr>
+      <td class='orders'><h4>{{order.user.first_name}} {{order.user.last_name}}</h4></td>
+      <td class='orders'><h4>{{order.number}} {{order.product.label}}</h4></td>
+      <td class='orders'><h4>{{order.this_is_a_gift}}</h4></td>
+      <td class='orders'><h4>{{order.delivery_date}}</h4></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+<script src="{% static 'scripts/formatOrders.js' %}"></script>
+{% endblock %}
+

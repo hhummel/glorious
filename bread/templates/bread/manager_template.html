@@ -1,0 +1,112 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="content-language" content="en-us" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Glorious Loaf" />
+  <meta name="contact" content="gloriousloaf.com" />
+  <meta name="description" content="Challah and Sourdough Bread" />
+  <meta name="keywords" content="Challah, Sourdough Bread, Bread, Subscription Bread, Lower Merion" />
+  <title>Glorious Grain</title>
+
+  {% load bootstrap4 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery=1 %}
+  {% load staticfiles %}
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
+  <style>
+    .container, .container-fluid{
+      max-width: 900px;
+    }
+    .header{
+      background: url("{% static 'images/images-of-money-contrast.jpg' %}") no-repeat center bottom fixed;
+    }
+    .btn{
+      margin: 5px 5px;
+    }
+    .orders{
+      padding: 0px;
+    }
+    .shade {
+      background-color: #e6f2ff
+    }
+    .title{
+      margin: 0px 0px 0px 5px;
+    }
+    .boxed{
+      border: 2px solid white;
+      border-radius: 25px;
+      padding: 8px 8px 3px 8px;
+    }
+    .spacing-sm{
+      margin: 20px 10px;
+    }
+    .white, .white a {
+      color: #ffffff;
+    }    
+    .gif_hidden{
+      display: none;
+    }
+    .unhidden{
+      display: block;
+    }
+ 
+  </style>
+</head>
+    
+<body>
+
+  <div class= "container-fluid">
+    <div class="row header">
+      <div class="col-xs-2 col-sm-1">
+        <div class="white spacing-sm">Welcome {{ user.first_name }}!</div>
+      </div>
+      <div class="col-xs-8 col-sm-10">
+        {% if logo_image %}
+          <a href="{% url 'index' %}"><img src="{% static logo_image %}" class="img-responsive center-block"  alt="Glorious Grain"></a>
+        {% endif %}
+      </div>
+      <div class="col-xs-2 col-sm-1">
+         <h2 class="stack" data-toggle="tooltip" data-placement="left" title="Help"><a href="{% url 'help' %}" class="white boxed">ICON</a></h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid shade">
+    <div class="row">
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'deliveries' %}">Deliveries</a> 
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'payment' %}">Payments</a> 
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'payment' %}">Expenses</a> 
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'orders' %}">Orders</a> 
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'all_accounts' %}">Accounting</a> 
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a class="btn btn-outline-primary btn-block" href="{% url 'contacts' %}">Marketing</a> 
+      </div>
+    </div>
+  </div>
+  <p class="gif_hidden"><img src="{% static 'images/ajax-loader.gif' %}" class="img-responsive center-block"></p>
+  <div class="container">
+    <div class="unhidden">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </div>
+  <script src="{% static 'scripts/lyrics.js' %}"></script>
+  <script src="{% static 'scripts/units.js' %}"></script>
+</body>
+</html>
+

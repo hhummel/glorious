@@ -1,0 +1,57 @@
+{% extends bread_template %}
+
+{% load staticfiles %}
+
+{% block styling %}
+<style>
+  .container {
+    position: relative;
+    text-align: center;
+  }
+
+  {% for category in categories %}
+    .label_{{category.index_key}} {
+      color: {{category.font_color}};
+    }
+  {% endfor %}
+  
+</style>
+
+<script>
+function showElement(prodVisible, prodHidden) {
+  document.getElementById(prodVisible).style.visibility='hidden';
+  document.getElementById(prodHidden).style.visibility = 'visible';
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  {% for category in categories %}
+    <div class="container">
+      <div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
+      <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
+      {% if category.category == "SUB" %}
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'subscription' %}">Subscribe</a></div>
+      {% else %}
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'new_order' category=category.index_key %}">Order {{category.label}}</a></div>
+      {% endif %}
+    </div>
+    <hr>
+  {% endfor %}
+{% else %}
+  {% for category in categories %}
+    <div class="container">
+      <div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
+      <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
+      <div class="label_{{category.index_key}}""><h4><i>{{category.blurb}}</i></h4></div>
+      {% if category.category == "SUB" %}
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'django.contrib.auth.views.login' %}">Subscribe</a></div>
+      {% else %}
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'django.contrib.auth.views.login' %}">Order {{category.label}}</a></div>
+      {% endif %}
+    </div>
+    <hr>
+  {% endfor %}
+{% endif %} 
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends bread_template %}
+
+{% block content %}
+<h3 class="title">Deliveries for {{delivery_date}}:</h3>
+<hr>
+<h3 class="title">Customer Deliveries:</h3>
+<div class="table-responsive">
+  <table class='table table-striped'>
+  {% for order in orders %}
+    <tr>
+      <td class='orders'><h4>{{order.user.contacts.address}}</h4></td>
+      <td class='orders'><h4>{{order.user.first_name}} {{order.user.last_name}}</h4></td>
+      <td class='orders'><h4>{{order.number}} {{order.product.label}}</h4></td>
+    </tr>
+    {% if not order.delivered %}
+      <tr>
+        <td colspan='3' class='orders'><h4><a class='btn btn-primary' href='delivered/{{order.index_key}}/'>Delivered</a></h4></td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+  </table>
+</div>
+<h3 class="title">Gift Deliveries:</h3>
+<div class="table-responsive">
+  <table class='table table-striped'>
+  {% for order in gift_orders %}
+    <tr>
+      <td class='orders'><h4>{{order.recipient_address}}</h4></td>
+      <td class='orders'><h4>{{order.recipient_name}}</h4></td>
+      <td class='orders'><h4>{{order.number}} {{order.product.label}}</h4></td>
+      <td class='orders'><h4>{{order.user.first_name}} {{order.user.last_name}}</h4></td>
+      <td class='orders'><h4>{{order.recipient_message}}</h4></td>
+    </tr>
+    {% if not order.delivered %}
+      <tr>
+        <td colspan='5' class='orders'><h4><a class='btn btn-primary' href='delivered/{{order.index_key}}/'>Delivered</a></h4></td>
+      </tr>
+    {% endif %}
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}
