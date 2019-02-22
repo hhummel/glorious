@@ -258,7 +258,7 @@ class Category(models.Model):
     category = models.CharField(max_length=17)
     label = models.CharField(max_length=100, null=False)
     blurb = models.CharField(max_length=500, null=True)
-    picture = models.ImageField(null=True)
+    picture = models.CharField(max_length=500, null=True)
     font_color = models.CharField(max_length=15, null=True)
 
 #Products
@@ -268,7 +268,7 @@ class Products(models.Model):
     product = models.CharField(max_length=17)
     label = models.CharField(max_length=100, null=False)
     price = models.IntegerField(null=False)
-    picture = models.ImageField(null=True)
+    picture = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return_string =  self.label + "  $" + str(self.price)
@@ -281,7 +281,7 @@ class MaterialCategory(models.Model):
     label = models.CharField(max_length=100, null=False)
     super_cat = models.CharField(max_length=6, choices=CAT_CHOICES, default='DRY', null=False)
     display_order = models.IntegerField(null=True)
-    picture = models.ImageField(null=True)
+    picture = models.CharField(max_length=500, null=True)
 
 #Materials
 class Materials(models.Model):
@@ -292,7 +292,7 @@ class Materials(models.Model):
     quantity = models.FloatField(null=False)
     measure = models.CharField(max_length=6, choices=MEASURE_CHOICES, null=False)
     units = models.CharField(max_length=6, null=True)
-    picture = models.ImageField(null=True)
+    picture = models.CharField(max_length=500, null=True)
 
     def __str__(self):
         return_string = self.label + " " + self.quantity + " "

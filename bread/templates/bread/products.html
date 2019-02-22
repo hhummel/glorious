@@ -29,7 +29,9 @@ function showElement(prodVisible, prodHidden) {
 {% if user.is_authenticated %}
   {% for category in categories %}
     <div class="container">
-      <div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
+      {% if category.picture %}
+	<div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
+      {% endif %}
       <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
       {% if category.category == "SUB" %}
         <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'subscription' %}">Subscribe</a></div>
@@ -46,9 +48,9 @@ function showElement(prodVisible, prodHidden) {
       <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
       <div class="label_{{category.index_key}}""><h4><i>{{category.blurb}}</i></h4></div>
       {% if category.category == "SUB" %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'django.contrib.auth.views.login' %}">Subscribe</a></div>
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'login' %}">Subscribe</a></div>
       {% else %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'django.contrib.auth.views.login' %}">Order {{category.label}}</a></div>
+        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'login' %}">Order {{category.label}}</a></div>
       {% endif %}
     </div>
     <hr>

@@ -8,14 +8,14 @@
 <p>For help with lost password, click <a href="{% url 'password_reset' %}">here.</a><p>
 {% endif %}
 
-<form method='post' action="{% url 'django.contrib.auth.views.login' %}", class='form input-lg'>
+<form method='post' action="{% url 'login' %}", class='form input-lg'>
 {% csrf_token %}
 {% bootstrap_form form %}
 {% buttons %}
   <button type='submit' class='btn btn-primary btn-lg'>GRAIN Please Login</button>
   <a class="btn btn-primary btn-lg" href="{% url 'register' %}">New Customer</a> 
 {% endbuttons %}
-<input type='hidden' name='next' value='products' />
+<input type='hidden' name='next' value='../products' />
 </form>
 
 {% endblock %}
