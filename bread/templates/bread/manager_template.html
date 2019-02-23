@@ -18,6 +18,7 @@
   {% load staticfiles %}
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
   <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <style>
     .container, .container-fluid{
       max-width: 900px;
@@ -62,38 +63,38 @@
 
   <div class= "container-fluid">
     <div class="row header">
-      <div class="col-xs-2 col-sm-1">
+      <div class="col-2 col-md-1">
         <div class="white spacing-sm">Welcome {{ user.first_name }}!</div>
       </div>
-      <div class="col-xs-8 col-sm-10">
+      <div class="col-8 col-md-10">
         {% if logo_image %}
-          <a href="{% url 'index' %}"><img src="{% static logo_image %}" class="img-responsive center-block"  alt="Glorious Grain"></a>
+          <a href="{% url 'index' %}"><img src="{% static logo_image %}" class="img-fluid mx-auto d-block" alt="Glorious Grain"></a>
         {% endif %}
       </div>
-      <div class="col-xs-2 col-sm-1">
-         <h2 class="stack" data-toggle="tooltip" data-placement="left" title="Help"><a href="{% url 'help' %}" class="white boxed">ICON</a></h2>
+      <div class="col-2 col-md-1">
+         <h2 class="mt-4 mr-2" data-toggle="tooltip" data-placement="left" title="Help"><a href="{% url 'help' %}" class="white boxed"><i class="fas fa-tools"></i></a></h2>
       </div>
     </div>
   </div>
 
   <div class="container-fluid shade">
     <div class="row">
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'deliveries' %}">Deliveries</a> 
       </div>
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'payment' %}">Payments</a> 
       </div>
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'payment' %}">Expenses</a> 
       </div>
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'orders' %}">Orders</a> 
       </div>
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'all_accounts' %}">Accounting</a> 
       </div>
-      <div class="col-xs-4 col-sm-2">
+      <div class="col-md-2 col-4">
         <a class="btn btn-outline-primary btn-block" href="{% url 'contacts' %}">Marketing</a> 
       </div>
     </div>
