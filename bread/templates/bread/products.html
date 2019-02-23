@@ -2,58 +2,29 @@
 
 {% load staticfiles %}
 
-{% block styling %}
-<style>
-  .container {
-    position: relative;
-    text-align: center;
-  }
-
-  {% for category in categories %}
-    .label_{{category.index_key}} {
-      color: {{category.font_color}};
-    }
-  {% endfor %}
-  
-</style>
-
-<script>
-function showElement(prodVisible, prodHidden) {
-  document.getElementById(prodVisible).style.visibility='hidden';
-  document.getElementById(prodHidden).style.visibility = 'visible';
-}
-</script>
-{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
   {% for category in categories %}
-    <div class="container">
-      {% if category.picture %}
-	<div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
-      {% endif %}
-      <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
-      {% if category.category == "SUB" %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'subscription' %}">Subscribe</a></div>
-      {% else %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'new_order' category=category.index_key %}">Order {{category.label}}</a></div>
-      {% endif %}
+    <div class="card">
+      <img src={% static category.picture %} class="card-img-top" alt={{category.label}}>
+      <div class="card-body">
+        <div class="card-title h2">{{ category.label }}</div>
+        <p class="card-text font-italic">{{category.blurb}}</p>
+        {% if category.category == "SUB" %}
+	  {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-lg btn-block" href="{% url 'subscribe' %}">Subscribe</a>
+	  {% else %}
+            <a class="btn btn-primary btn-lg btn-block" href="{% url 'login' %}">Subscribe</a>
+	  {% endif %}
+        {% else %}
+	  {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-lg btn-block" href="{% url 'new_order' category=category.index_key %}">Order {{category.label}}</a>
+	  {% else %}
+            <a class="btn btn-primary btn-lg btn-block" href="{% url 'login' %}">Order {{category.label}}</a>
+	  {% endif %}
+        {% endif %}
+      </div>
     </div>
     <hr>
   {% endfor %}
-{% else %}
-  {% for category in categories %}
-    <div class="container">
-      <div><img src={% static category.picture %} class="img-responsive center-block" alt={{category.label}}></div>
-      <div class="label_{{category.index_key}}"><h2>{{ category.label }}</h2></div>
-      <div class="label_{{category.index_key}}""><h4><i>{{category.blurb}}</i></h4></div>
-      {% if category.category == "SUB" %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'login' %}">Subscribe</a></div>
-      {% else %}
-        <div class="label_{{category.index_key}}"><a class="btn btn-primary btn-lg text-center" style="width: 70%;" href="{% url 'login' %}">Order {{category.label}}</a></div>
-      {% endif %}
-    </div>
-    <hr>
-  {% endfor %}
-{% endif %} 
 {% endblock %}
