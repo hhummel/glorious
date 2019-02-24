@@ -107,9 +107,9 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = [
-                'product',
-                'number',
-                'delivery_date',
+            'product',
+            'number',
+            'delivery_date',
             'this_is_a_gift',
             'recipient_name',
             'recipient_address',
@@ -141,7 +141,6 @@ class OrderMeisterForm(forms.ModelForm):
     user = UserChoiceField(queryset=User.objects.exclude(is_active=0).order_by('first_name'), widget=forms.Select, initial=0)
     product=forms.ModelChoiceField(queryset=Products.objects.all(), widget=forms.Select, initial=0)
     number=forms.IntegerField(min_value=1, max_value=100, initial=1) 
-    #date=forms.DateField(widget=DateTimePicker(options={"format": "YYY-MM-DD", "pickTime": False}))   
     delivery_date = forms.DateField(widget=forms.DateInput(attrs=DATEPICKER))
     special_instructions = forms.CharField(required=False)
     recipient_name = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -154,9 +153,9 @@ class OrderMeisterForm(forms.ModelForm):
         model = Order
         fields = [
             'user',
-                'product',
-                'number',
-                'delivery_date',
+            'product',
+            'number',
+            'delivery_date',
             'special_instructions',
             'this_is_a_gift'
         ]
