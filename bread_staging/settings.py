@@ -126,6 +126,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL="/products/"
+LOGIN_REDIRECT_URL="/bread/products"
 LOGOUT_REDIRECT_URL="/"
 
