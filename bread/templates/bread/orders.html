@@ -55,7 +55,7 @@
       <td class='orders'><h4><a href=account_detail/{{order.user.id}}>{{order.user.first_name}} {{order.user.last_name}}</a></h4></td>
       <td class='orders'><h4>{{order.number}} {{order.product}}</h4></td>
       {% if order.this_is_a_gift or order.special_instructions %}
-          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Special instructions: {{order.special_instructions}}\nGift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/>ICON</h5></td>
+          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Special instructions: {{order.special_instructions}}\nGift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/> <i class="fas fa-star"></i></h5></td>
       {% else %}
           <td></td>
       {% endif %}

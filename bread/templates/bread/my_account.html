@@ -23,7 +23,7 @@
         <td class='orders'><h4>${{order.product.price}}</h4></td>
         <td class='orders'><h4>{{order.delivery_date}}</h4></td>
         {% if order.this_is_a_gift %}
-          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Gift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/>ICON</h5></td>
+          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Gift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/><i class="fas fa-star"></i></h5></td>
         {% else %}
           <td></td>
         {% endif %}
