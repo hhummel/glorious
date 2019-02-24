@@ -1,6 +1,9 @@
 {% extends bread_template %}
 {% load bootstrap4 %}
 {% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
+
 {% load staticfiles %}
 {% block content %}
 <h3 class="title">{{message}}</h3>

@@ -1,6 +1,8 @@
 {% extends bread_template %}
 {% load bootstrap4 %}
 {% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{% bootstrap_messages %}
 
 {% block content %}
 <h2>Account for {{user_first}} {{user_last}}</h2>

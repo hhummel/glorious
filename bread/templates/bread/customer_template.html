@@ -14,8 +14,11 @@
 
   {% load bootstrap4 %}
   {% bootstrap_css %}
-  {% bootstrap_javascript jquery=1 %}
+  {% bootstrap_javascript jquery='full' %}
+  {% bootstrap_messages %}
+
   {% load staticfiles %}
+
   <style>
     .btn{
       margin-top: 14px;

@@ -13,8 +13,11 @@
   <title>Glorious Grain</title>
 
   {% load bootstrap4 %}
+  {% load bootstrap4 %}
   {% bootstrap_css %}
-  {% bootstrap_javascript jquery=1 %}
+  {% bootstrap_javascript jquery='full' %}
+  {% bootstrap_messages %}
+
   {% load staticfiles %}
   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
   <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon"/>
