@@ -19,7 +19,7 @@ from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, Unsubs
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category, Materials, MaterialCategory
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
-from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE
+from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE, HISTORY
 from .bread import make_msg
 
 import stripe
@@ -276,9 +276,10 @@ def cancel(request, order_id):
 def my_account(request):
     today = timezone.datetime.today().date()
     orders = Order.objects.filter(user=request.user).filter(delivery_date__gte=today).filter(confirmed=True).order_by('delivery_date')
-    order_history = Order.objects.filter(user=request.user).filter(confirmed=True).filter(delivery_date__lt=today).order_by('-delivery_date')
-    debits = Ledger.objects.filter(user=request.user).filter(credit=False).filter(cancelled=False).order_by('date')
-    credits = Ledger.objects.filter(user=request.user).filter(credit=True).filter(cancelled=False).order_by('date')
+    order_history = Order.objects.filter(user=request.user).filter(confirmed=True).filter(delivery_date__lt=today).order_by('-delivery_date')[:HISTORY]
+    debits = Ledger.objects.filter(user=request.user).filter(credit=False).filter(cancelled=False).order_by('-date')[:HISTORY]
+    credits = Ledger.objects.filter(user=request.user).filter(credit=True).filter(cancelled=False).order_by('-date')[:HISTORY]
+    credit_slice = credits[:10]
     credit_balance = Ledger.objects.filter(user=request.user).filter(credit=True).filter(cancelled=False).aggregate(Sum('quantity')).get('quantity__sum', 0.00)
     if credit_balance is None:
         credit_balance = Decimal(0.00).quantize(Decimal('.01'))
@@ -295,8 +296,8 @@ def my_account(request):
             'user_last': request.user.last_name,
             'orders': orders,
             'order_history': order_history,
-            'debits': debits,
-            'credits': credits,
+            'debits': debit_history,
+            'credits': credit_history,
             'debit_balance': debit_balance,
             'credit_balance': credit_balance,
             'balance': balance,

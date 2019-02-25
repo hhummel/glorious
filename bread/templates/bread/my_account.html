@@ -11,29 +11,33 @@
   <h3>Pending Orders:</h3>
   <div class="table-responsive">
     <table class='table'>
-    <tr class="shade">
-      <th><h4>#</h4></th>
-      <th><h4>Product<h4></th>
-      <th><h4>Price</h4></th>
-      <th><h4>Delivery Date</h4></th>
-      <th><h4>Gift</h4></th>
-    </tr>
-    {% for order in orders %}
-      <tr>
-        <td class='orders'><h4>{{order.number}}</h4></td>
-        <td class='orders'><h4>{{order.product.label}}</h4></td>
-        <td class='orders'><h4>${{order.product.price}}</h4></td>
-        <td class='orders'><h4>{{order.delivery_date}}</h4></td>
-        {% if order.this_is_a_gift %}
-          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Gift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/><i class="fas fa-star"></i></h5></td>
-        {% else %}
-          <td></td>
-        {% endif %}
-      </tr>
-      <tr>
-        <td class='orders' colspan=4><h5><a class='btn btn-primary btn-lg' href='cancel/{{order.index_key}}/'>Cancel</a></h5></td>
-      </tr>
-    {% endfor %}
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Delivery Date</th>
+          <th>Gift</th>
+        </tr>
+      </thead>
+      </tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{order.number}}</td>
+            <td>{{order.product.label}}</td>
+	    <td>${{order.product.price}}</td>
+            <td>{{order.delivery_date}}</td>
+            {% if order.this_is_a_gift %}
+              <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Gift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/><i class="fas fa-star"></i></h5></td>
+            {% else %}
+              <td></td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td class='orders' colspan=4><a class='btn btn-primary btn-lg' href='cancel/{{order.index_key}}/'>Cancel</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </div>
 {% endif %}
@@ -41,6 +45,7 @@
 {% if not orders %}
 <h3>No Pending Orders</h3>
 {% endif %}
+
 <h3>Order History</h3>
 <div class="table-responsive">
   <table class='table table-striped'>
