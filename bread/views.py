@@ -19,7 +19,7 @@ from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, Unsubs
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category, Materials, MaterialCategory
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
-from bread_staging.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE
+from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE
 from .bread import make_msg
 
 import stripe
