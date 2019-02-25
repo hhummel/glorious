@@ -126,6 +126,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+#Redirect information from login/logout is now in settings
 LOGIN_REDIRECT_URL="/bread/products"
 LOGOUT_REDIRECT_URL="/"
+
+#Set up email backend stackoverflow..com/questions/6367014/how-to-send-email-via-django
+EMAIL_USE_TLS = True
+EMAIL_HOST = EMAIL_SERVER
+EMAIL_PORT = EMAIL_PORT
+EMAIL_HOST_USER = EMAIL_USER
+EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
 

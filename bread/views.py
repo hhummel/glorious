@@ -261,7 +261,7 @@ def cancel(request, order_id):
             first, last = request.user.first_name, request.user.last_name
             address = request.user.email
             
-            confirmation_message = "Order #" + order_id + " for " + str(order.number) + " " + order.product.label + " has been cancelled."
+            confirmation_message = "Order #" + str(order_id) + " for " + str(order.number) + " " + order.product.label + " has been cancelled."
             try:
                 send_mail("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
             except Exception:

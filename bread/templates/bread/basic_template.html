@@ -122,7 +122,7 @@
         </div>
         <div class="col-4">
           {% if user.is_authenticated %}
-            <a class="btn btn-primary btn-block my-2" href="{% url 'products' %}">Order</a> 
+            <a class="btn btn-primary btn-block my-2" href="{% url 'products' %}">Products</a> 
           {% else %}
             <a class="btn btn-primary btn-block my-2" href="{% url 'register' %}">Register</a> 
           {% endif %} 
