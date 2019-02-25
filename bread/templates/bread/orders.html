@@ -13,18 +13,22 @@
 
 <div class="table-responsive">
   <table class='table'>
-    <tr>
-      <th class='orders shade'><h4>Date</h4></th>
-      <th class='orders shade'><h4>Count</h4></th>
-      <th class='orders shade'><h4>Product</h4></th>
-    </tr>
-  {% for order in orders_date_product %}
-    <tr>
-      <td class='date'><h4>{{order.delivery_date}}</h4></td>
-      <td class='orders'><h4>{{order.total}} </h4></td>
-      <td class='orders'><h4>{{order.product__label}} </h4></td>
-    </tr>
-  {% endfor %}
+    <thead>
+      <tr>
+        <th class='orders shade'>Date</th>
+        <th class='orders shade'>Count</th>
+        <th class='orders shade'>Product</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders_date_product %}
+        <tr>
+	  <td class='date'>{{order.delivery_date}}</td>
+          <td class='orders'>{{order.total}}</td>
+          <td class='orders'>{{order.product__label}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </div>
 
@@ -45,45 +49,51 @@
 
 <div class="table-responsive">
   <table class='table table-striped table-sm'>
-    <tr>
-      <th class='orders shade'><h4>Name</h4></th>
-      <th class='orders shade'><h4>Order</h4></th>
-      <th class='orders shade'><h4>Special</h4></th>
-      <th class='orders shade'><h4>Date</h4></th>
-      <th class='orders shade'><h4></h4></th>
-    </th>
-  {% for order in orders %}
-    <tr>
-      <td class='orders'><h4><a href=account_detail/{{order.user.id}}>{{order.user.first_name}} {{order.user.last_name}}</a></h4></td>
-      <td class='orders'><h4>{{order.number}} {{order.product}}</h4></td>
-      {% if order.this_is_a_gift or order.special_instructions %}
-          <td><h5><button class='btn btn-primary btn-lg text-center' onclick='alert("Special instructions: {{order.special_instructions}}\nGift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/> <i class="fas fa-star"></i></h5></td>
-      {% else %}
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Order</th>
+        <th>Special</th>
+        <th>Date</th>
+	<th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+      <tr>
+        <td><a href=account_detail/{{order.user.id}}>{{order.user.first_name}} {{order.user.last_name}}</a></td>
+        <td>{{order.number}} {{order.product}}</td>
+        {% if order.this_is_a_gift or order.special_instructions %}
+          <td><button class='btn btn-primary btn-lg text-center' onclick='alert("Special instructions: {{order.special_instructions}}\nGift recipient: {{order.recipient_name}}\nGift message: {{order.recipient_message}}");'/> <i class="fas fa-star"></i></td>
+        {% else %}
           <td></td>
-      {% endif %}
-      <td class='orders'><h4>{{order.delivery_date}}</h4></td>
-    </tr>
-  {% endfor %}
+        {% endif %}
+        <td class='orders'>{{order.delivery_date}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
   </table>
 </div>
 
 <h3 class="title">Order History</h3>
 <div class="table-responsive">
   <table class='table table-striped table-sm'>
-    <tr>
-      <th class='orders shade'><h4>Name</h4></th>
-      <th class='orders shade'><h4>Order</h4></th>
-      <th class='orders shade'><h4>Gift</h4></th>
-      <th class='orders shade'><h4>Date</h4></th>
-    </th>
-  {% for order in order_history %}
-    <tr>
-      <td class='orders'><h4>{{order.user.first_name}} {{order.user.last_name}}</h4></td>
-      <td class='orders'><h4>{{order.number}} {{order.product.label}}</h4></td>
-      <td class='orders'><h4>{{order.this_is_a_gift}}</h4></td>
-      <td class='orders'><h4>{{order.delivery_date}}</h4></td>
-    </tr>
-  {% endfor %}
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Order</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for order in order_history %}
+      <tr>
+        <td>{{order.user.first_name}} {{order.user.last_name}}</td>
+        <td>{{order.number}} {{order.product.label}}</td>
+        <td>{{order.delivery_date}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
   </table>
 </div>
 <script src="{% static 'scripts/formatOrders.js' %}"></script>
