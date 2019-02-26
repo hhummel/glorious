@@ -301,6 +301,7 @@ def my_account(request):
             'debit_balance': debit_balance,
             'credit_balance': credit_balance,
             'balance': balance,
+            'history': HISTORY,
         }
     return render(request, "bread/my_account.html", c )
 
