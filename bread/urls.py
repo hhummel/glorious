@@ -83,6 +83,9 @@ urlpatterns = [
     #Orders manager view
     path('orders', bread_views.orders, name='orders'),
 
+    #Order history manager view JSON
+    path('order_history', bread_views.order_history, name='order_history'),
+
     #Order meister entry view
     path('order_meister', bread_views.order_meister, name='order_meister'),
 
@@ -111,7 +114,7 @@ urlpatterns = [
     path('deliveries', bread_views.deliveries, name='deliveries'),
 
     #Delivered
-    re_path('delivered/<int:order_id>/', bread_views.delivered, name='delivered'),
+    path('delivered/<int:order_id>/', bread_views.delivered, name='delivered'),
 
     #Material manager view
     path('material', bread_views.material, name='material'),

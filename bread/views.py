@@ -1,7 +1,7 @@
 from decimal import Decimal
 import time
 from django.template import Context, loader, RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from django import forms
 from django.utils import timezone
@@ -9,6 +9,10 @@ from django.views.decorators import csrf
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.db.models import Sum
+
+#Used for ajax JSON
+from django.http import JsonResponse
+from django.core import serializers
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
@@ -636,6 +640,17 @@ def orders(request):
     return render(request, "bread/orders.html", c )
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
+def order_history(request):
+    today = timezone.datetime.today().date()
+    orders = Order.objects.order_by('-delivery_date')
+    users = User.objects.all()
+    data = {
+      'orders': serializers.serialize('json', orders),
+      'users': serializers.serialize('json', users)
+    }        
+    return JsonResponse(data, safe=False)
+
+@user_passes_test(lambda u:u.is_staff, login_url='index')
 def order_meister(request):
     if request.method == 'POST':
         form = OrderMeisterForm(request.POST)
@@ -982,9 +997,9 @@ def delivered(request, order_id):
             
         #Text of message depends on if it's a gift
         if order.this_is_a_gift:
-            confirmation_message = "Your Glorious Grain order #" + order_id + " has been delivered. Thanks for giving the gift of bread!"
+            confirmation_message = "Your Glorious Grain order #" + str(order_id) + " has been delivered. Thanks for giving the gift of bread!"
         else: 
-            confirmation_message = "Your Glorious Grain order #" + order_id + " has been delivered. We hope you enjoy it!"
+            confirmation_message = "Your Glorious Grain order #" + str(order_id) + " has been delivered. We hope you enjoy it!"
 
         try:
             send_mail("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
