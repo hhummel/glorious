@@ -38,6 +38,8 @@ small_logo = "images/small_loaf.png"
 roller_image = "images/wheat_sheaf_transparent.jpg"
 #Dough gif
 dough_gif = "images/dough.gif"
+#slices image
+slices_image = "images/slices.jpg"
 #Breadmeister data
 assistant_meister = EMAIL_ASSISTANT
 breadmeister_address = EMAIL_USER
@@ -62,7 +64,7 @@ def about(request):
         'bread_template': 'bread/basic_template.html',
         'logo_image' : logo_image,
         'small_logo' : small_logo,
-        'roller_image': dough_gif,
+        'roller_image': slices_image,
     }
     return render(request, "bread/new_about.html", c )
 

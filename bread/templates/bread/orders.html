@@ -96,5 +96,14 @@
   </table>
 </div>
 <script src="{% static 'scripts/formatOrders.js' %}"></script>
+<script>
+  $.ajax({
+    url: '/bread/order_history',
+    dataType: 'json',
+    success: function(data) {
+      console.log(data);
+    }
+  });
+</script>
 {% endblock %}
 
