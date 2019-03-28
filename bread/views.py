@@ -1,5 +1,5 @@
 from decimal import Decimal
-import time
+import time, os
 from django.template import Context, loader, RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
@@ -24,7 +24,7 @@ from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category, Materials, MaterialCategory
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE, HISTORY
-from .bread import make_msg
+from .bread import make_msg, write_log_message
 
 import stripe
 stripe.api_key = STRIPE_SECRET
@@ -867,10 +867,18 @@ def campaign(request):
     import smtplib, time
     import email.mime.text
     import email.utils
+    import datetime
 
     signature = SIGNATURE or ""
     footer = EMAIL_FOOTER or ""
     html_footer = HTML_FOOTER or ""
+
+    #Open output file
+    log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
+
+    f = open(log_file, "a")
+    time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print ("Campaign launch at: " + time_str, file = f)
 
     if request.method == 'POST':
         form = CampaignForm(request.POST)
@@ -895,16 +903,20 @@ def campaign(request):
                 server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT)
                 #Insert this for AWS
                 server.starttls()
-
+                write_log_message("connect_success", "0", f, EMAIL_SERVER, str(EMAIL_PORT)) 
             except (smtplib.socket.gaierror, smtplib.socket.error, smtplib.socket.herror):
                 c['message'] = "Failed to connect to email server"
+                write_log_message("connect_failure", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
                 return render(request, "bread/form.html", c )
 
             #Log in to connected server
             try:
                 server.login(EMAIL_USER, EMAIL_PASSWORD)
+                write_log_message("login_success", "0", f, EMAIL_USER, "email_password")
+
             except smtplib.SMTPAuthenticationError:
                 c['message'] = "Failed to login to email server"
+                write_log_message("login_failure", "0", f, EMAIL_USER, "email_password")
                 return render(request, "bread/form.html", c )
 
             #Fire emails to the mailing list with the appropriate subject and message
@@ -918,12 +930,16 @@ def campaign(request):
 
                 #Send it
                 try:
-                        server.sendmail(EMAIL_SENDER, recipient.email, msg.as_string())
+                    server.sendmail(EMAIL_SENDER, recipient.email, msg.as_string())
+                    write_log_message("success", "0", f, recipient.email, text_message)
+
                 except smtplib.SMTPServerDisconnected:
                     c['message'] = "Server disconnect at index: " + str(recipient.index_key) + "  Address: " + recipient.email
+                    write_log_message("disconnect_failure", "0", f, recipient.email, text_message)
                     return render(request, "bread/form.html", c )
                 except Exception:
                     c['message'] = "Rejected value at index: " + str(recipient.index_key) + "  Address: " + recipient.email
+                    write_log_message("failure", "0", f, recipient.email, text_message)
                     return render(request, "bread/form.html", c )
 
                 #Delay next message by one second to guarantee staying within terms of service
@@ -932,9 +948,12 @@ def campaign(request):
             #Close connection to mail server
             try:
                 server.quit()
+                write_log_message("quit_success", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
+
 
             except():
                 c['message'] = "Server failed while sending to user " + msg["To"]
+                write_log_message("quit_failure", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
                 return render(request, "bread/form.html", c )
 
         else:

@@ -32,3 +32,71 @@ def make_msg(send_address, receive_address, subject, text_message, signature, te
 
     return msg
 
+#Write logfile message
+def write_log_message(status, iteration, f, address, message):
+    if status=="attempt":
+        if f:
+            print ("Sending to " + address + " message: " + message, file=f)
+        else:
+            print ("Sending to " + address + " message: " + message)
+
+    elif status=="success":
+        if f:
+            print ("Success sending to " + address + " message: " + message, file=f)
+        else:
+            print ("Success sending to " + address + " message: " + message)
+
+    elif status=="connect_success":
+        if f:
+            print ("Success connecting to " + address + " message: " + message, file=f)
+        else:
+            print ("Success connecting to " + address + " message: " + message)
+
+    elif status=="login_success":
+        if f:
+            print ("Success logging in to " + address + " message: " + message, file=f)
+        else:
+            print ("Success logging in to " + address + " message: " + message)
+
+    elif status=="quit_success":
+        if f:
+            print ("Success quitting " + address + " message: " + message, file=f)
+        else:
+            print ("Success quitting " + address + " message: " + message)
+
+    elif status=="failure":
+        if f:
+            print ("Failed attempt sending to " + address + " message: " + message, file=f)
+        else:
+            print ("Failed attempt sending to " + address + " message: " + message)
+
+    elif status=="connect_failure":
+        if f:
+            print ("Failed attempt connecting to " + address + " message: " + message, file=f)
+        else:
+            print ("Failed attempt connecting to " + address + " message: " + message)
+
+    elif status=="disconnect_failure":
+        if f:
+            print ("Server disconnected sending to " + address + " message: " + message, file=f)
+        else:
+            print ("Server disconnected sending to " + address + " message: " + message)
+
+    elif status=="login_failure":
+        if f:
+            print ("Failed attempt logging into " + address + " message: " + message, file=f)
+        else:
+            print ("Failed attempt logging into " + address + " message: " + message)
+
+    elif status=="quit_failure":
+        if f:
+            print ("Failed quitting " + address + " message: " + message, file=f)
+        else:
+            print ("Failed quitting " + address + " message: " + message)
+
+    else:
+        if f:
+            print ("Error in write_log_message: Encountered illegal status: " + status, file=f)
+        else:
+            print ("Error in write_log_message: Encountered illegal status: " + status)
+
