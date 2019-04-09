@@ -217,7 +217,7 @@ def new_order(request, category):
             try:
                 send_mail("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
             except Exception:
-                print("Failed to send confirmation\n")
+                print("Failed to send confirmation\n", file=f)
            
             return HttpResponseRedirect(reverse('thanks'))
         else:
@@ -271,7 +271,7 @@ def cancel(request, order_id):
             try:
                 send_mail("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
             except Exception:
-                print("Failed to send cancellation\n")
+                print("Failed to send cancellation\n", file=f)
            
         else:
             raise Http404("Order has been delivered.")
@@ -423,7 +423,7 @@ def stripe_charge(request):
         try:
             send_mail("Glorious Grain Charge", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
         except Exception:
-            print("Failed to send acknowledgement\n")
+            print("Failed to send acknowledgement\n", file=f)
            
 
         #Acknowledge payment
@@ -439,7 +439,7 @@ def check_mail(request):
         try:
             send_mail("Check's in the Mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
         except Exception:
-            print("Failed to send acknowledgement\n")
+            print("Failed to send acknowledgement\n", file=f)
            
         #Acknowledge payment
         return HttpResponseRedirect(reverse('payment_thanks'))
@@ -462,7 +462,7 @@ def subscription(request):
             try:
                 send_mail("Glorious Grain subscription", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
             except Exception:
-                print("Failed to send acknowledgement\n")
+                print("Failed to send acknowledgement\n", file=f)
 
             return HttpResponseRedirect(reverse('thanks'))
         else:
@@ -529,7 +529,7 @@ def payment(request):
                 try:
                     send_mail("Glorious Grain payment", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
                 except Exception:
-                    print("Failed to send acknowledgement\n")
+                    print("Failed to send acknowledgement\n", file=f)
 
             return HttpResponseRedirect(reverse('confirm'))
         else:
@@ -697,7 +697,7 @@ def order_meister(request):
             try:
                 send_mail("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
             except Exception:
-                print("Failed to send confirmation\n")
+                print("Failed to send confirmation\n", file=f)
            
             return HttpResponseRedirect(reverse('thanks_meister'))
 
@@ -758,7 +758,7 @@ def cancel_meister(request, order_id):
         try:
             send_mail("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
         except Exception:
-            print("Failed to send cancellation\n")
+            print("Failed to send cancellation\n", file=f)
            
     else:
         raise Http404("Order has been delivered.")
@@ -878,7 +878,7 @@ def campaign(request):
 
     f = open(log_file, "a")
     time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print ("Campaign launch at: " + time_str, file = f)
+    print ("Campaign launch at: " + time_str, file=f)
 
     if request.method == 'POST':
         form = CampaignForm(request.POST)
@@ -1025,7 +1025,7 @@ def delivered(request, order_id):
         try:
             send_mail("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
         except Exception:
-            print("Failed to send order delivery message\n")
+            print("Failed to send order delivery message\n", file=f)
            
     return HttpResponseRedirect(reverse('deliveries'))
 
