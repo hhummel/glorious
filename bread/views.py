@@ -1,5 +1,5 @@
 from decimal import Decimal
-import time, os
+import time, os, datetime
 from django.template import Context, loader, RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
@@ -24,7 +24,10 @@ from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category, Materials, MaterialCategory
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE, HISTORY
-from .bread import make_msg, write_log_message
+from .bread import make_msg, write_log_message, mailer
+    
+#Path to  output file
+log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 
 import stripe
 stripe.api_key = STRIPE_SECRET
@@ -42,7 +45,7 @@ dough_gif = "images/dough.gif"
 slices_image = "images/slices.jpg"
 #Breadmeister data
 assistant_meister = EMAIL_ASSISTANT
-breadmeister_address = EMAIL_USER
+breadmeister_address = EMAIL_SENDER
 sender_address = "Glorious Grain <" + EMAIL_SENDER + ">"
 #Card payment message
 card_message = "Pay off current balance"
@@ -214,10 +217,7 @@ def new_order(request, category):
             header = "Thanks for your gift order! " if order.this_is_a_gift else "Thanks for your order! "
             
             confirmation_message = header + first + " " + last + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number: " + str(order.pk) + ". Total price: $" + price
-            try:
-                send_mail("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-            except Exception:
-                print("Failed to send confirmation\n", file=f)
+            mailer("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
             return HttpResponseRedirect(reverse('thanks'))
         else:
@@ -268,10 +268,7 @@ def cancel(request, order_id):
             address = request.user.email
             
             confirmation_message = "Order #" + str(order_id) + " for " + str(order.number) + " " + order.product.label + " has been cancelled."
-            try:
-                send_mail("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-            except Exception:
-                print("Failed to send cancellation\n", file=f)
+            mailer("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
         else:
             raise Http404("Order has been delivered.")
@@ -420,11 +417,7 @@ def stripe_charge(request):
         address = request.user.email
             
         confirmation_message = "Thanks for you payment! $" + str(balance) + " was successfully charged to your credit card."
-        try:
-            send_mail("Glorious Grain Charge", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-        except Exception:
-            print("Failed to send acknowledgement\n", file=f)
-           
+        mailer("Glorious Grain Charge", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
         #Acknowledge payment
         return HttpResponseRedirect(reverse('payment_thanks'))
@@ -436,10 +429,7 @@ def check_mail(request):
         address = request.user.email
             
         confirmation_message = "We'll keep an eye out for your check. Thanks!"
-        try:
-            send_mail("Check's in the Mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-        except Exception:
-            print("Failed to send acknowledgement\n", file=f)
+        mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
         #Acknowledge payment
         return HttpResponseRedirect(reverse('payment_thanks'))
@@ -459,10 +449,7 @@ def subscription(request):
             address = subscription.user.email
             
             confirmation_message = "We received your subscription. We'll be in touch to handle the details. Thanks!"
-            try:
-                send_mail("Glorious Grain subscription", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-            except Exception:
-                print("Failed to send acknowledgement\n", file=f)
+            mailer("Glorious Grain Subscription", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
             return HttpResponseRedirect(reverse('thanks'))
         else:
@@ -526,10 +513,7 @@ def payment(request):
                 address = entry.user.email
             
                 confirmation_message = "We received your payment and credited $" + str(payment.value) + " to your account. Thanks!"
-                try:
-                    send_mail("Glorious Grain payment", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-                except Exception:
-                    print("Failed to send acknowledgement\n", file=f)
+                mailer("Glorious Grain Payment", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
             return HttpResponseRedirect(reverse('confirm'))
         else:
@@ -694,10 +678,7 @@ def order_meister(request):
             
 
             confirmation_message = "Thanks for your order! " + first + " " + last + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number is #" + str(order.pk) + ". Total price is $" + price
-            try:
-                send_mail("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-            except Exception:
-                print("Failed to send confirmation\n", file=f)
+            mailer("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
             return HttpResponseRedirect(reverse('thanks_meister'))
 
@@ -755,10 +736,7 @@ def cancel_meister(request, order_id):
         address = order.user.email
             
         confirmation_message = "Order #" + order_id + " has been cancelled."
-        try:
-            send_mail("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-        except Exception:
-            print("Failed to send cancellation\n", file=f)
+        mailer("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
     else:
         raise Http404("Order has been delivered.")
@@ -876,9 +854,9 @@ def campaign(request):
     #Open output file
     log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 
-    f = open(log_file, "a")
     time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print ("Campaign launch at: " + time_str, file=f)
+    with open(log_file, 'a') as f:
+        print ("Campaign launch at: " + time_str, file=f)
 
     if request.method == 'POST':
         form = CampaignForm(request.POST)
@@ -903,20 +881,20 @@ def campaign(request):
                 server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT)
                 #Insert this for AWS
                 server.starttls()
-                write_log_message("connect_success", "0", f, EMAIL_SERVER, str(EMAIL_PORT)) 
+                write_log_message("connect_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT)) 
             except (smtplib.socket.gaierror, smtplib.socket.error, smtplib.socket.herror):
                 c['message'] = "Failed to connect to email server"
-                write_log_message("connect_failure", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("connect_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
                 return render(request, "bread/form.html", c )
 
             #Log in to connected server
             try:
                 server.login(EMAIL_USER, EMAIL_PASSWORD)
-                write_log_message("login_success", "0", f, EMAIL_USER, "email_password")
+                write_log_message("login_success", "0", log_file, EMAIL_USER, "email_password")
 
             except smtplib.SMTPAuthenticationError:
                 c['message'] = "Failed to login to email server"
-                write_log_message("login_failure", "0", f, EMAIL_USER, "email_password")
+                write_log_message("login_failure", "0", log_file, EMAIL_USER, "email_password")
                 return render(request, "bread/form.html", c )
 
             #Fire emails to the mailing list with the appropriate subject and message
@@ -931,15 +909,15 @@ def campaign(request):
                 #Send it
                 try:
                     server.sendmail(EMAIL_SENDER, recipient.email, msg.as_string())
-                    write_log_message("success", "0", f, recipient.email, text_message)
+                    write_log_message("success", "0", log_file, recipient.email, text_message)
 
                 except smtplib.SMTPServerDisconnected:
                     c['message'] = "Server disconnect at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("disconnect_failure", "0", f, recipient.email, text_message)
+                    write_log_message("disconnect_failure", "0", log_file, recipient.email, text_message)
                     return render(request, "bread/form.html", c )
                 except Exception:
                     c['message'] = "Rejected value at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("failure", "0", f, recipient.email, text_message)
+                    write_log_message("failure", "0", log_file, recipient.email, text_message)
                     return render(request, "bread/form.html", c )
 
                 #Delay next message by one second to guarantee staying within terms of service
@@ -948,12 +926,12 @@ def campaign(request):
             #Close connection to mail server
             try:
                 server.quit()
-                write_log_message("quit_success", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
 
 
             except():
                 c['message'] = "Server failed while sending to user " + msg["To"]
-                write_log_message("quit_failure", "0", f, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
                 return render(request, "bread/form.html", c )
 
         else:
@@ -1022,10 +1000,7 @@ def delivered(request, order_id):
         else: 
             confirmation_message = "Your Glorious Grain order #" + str(order_id) + " has been delivered. We hope you enjoy it!"
 
-        try:
-            send_mail("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], fail_silently=False)
-        except Exception:
-            print("Failed to send order delivery message\n", file=f)
+        mailer("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
     return HttpResponseRedirect(reverse('deliveries'))
 

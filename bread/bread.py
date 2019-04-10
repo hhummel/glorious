@@ -33,7 +33,8 @@ def make_msg(send_address, receive_address, subject, text_message, signature, te
     return msg
 
 #Write logfile message
-def write_log_message(status, iteration, f, address, message):
+def write_log_message(status, iteration, file_path, address, message):
+  with open(file_path, 'a') as f:
     if status=="attempt":
         if f:
             print ("Sending to " + address + " message: " + message, file=f)
@@ -99,4 +100,61 @@ def write_log_message(status, iteration, f, address, message):
             print ("Error in write_log_message: Encountered illegal status: " + status, file=f)
         else:
             print ("Error in write_log_message: Encountered illegal status: " + status)
+
+def mailer(subject, message, sender, recipients, log_file):
+    import smtplib, time
+    import email.mime.text
+    import email.utils
+    import datetime
+
+    from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT
+    
+    with open(log_file, 'a') as f:
+        #Connect to server
+            try:
+                server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT)
+                #Insert this for AWS
+                server.starttls()
+                write_log_message("connect_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+            except (smtplib.socket.gaierror, smtplib.socket.error, smtplib.socket.herror):
+                write_log_message("connect_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+
+            #Log in to connected server
+            try:
+                server.login(EMAIL_USER, EMAIL_PASSWORD)
+                write_log_message("login_success", "0", log_file, EMAIL_USER, datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S"))
+
+            except smtplib.SMTPAuthenticationError:
+                write_log_message("login_failure", "0", log_file, EMAIL_USER, datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S"))
+                return "failed"
+
+            #Fire emails to the mailing list with the appropriate subject and message
+            for recipient in recipients:
+                #Make the msg object
+                subject = subject
+                send_address = sender
+                receive_address = recipient
+                text_message = message
+                msg = make_msg(send_address, receive_address, subject, text_message, '', '', '')
+
+                #Send it
+                try:
+                    server.sendmail(send_address, recipient, msg.as_string())
+                    write_log_message("success", "0", log_file, recipient, subject)
+
+                except smtplib.SMTPServerDisconnected:
+                    write_log_message("disconnect_failure", "0", log_file, recipient, subject)
+                except Exception:
+                    write_log_message("failure", "0", log_file, recipient, subject)
+
+            #Close connection to mail server
+            try:
+                server.quit()
+                write_log_message("quit_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                return "success"
+
+            except():
+                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                return "failed"
+
 
