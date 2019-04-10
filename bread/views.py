@@ -909,15 +909,15 @@ def campaign(request):
                 #Send it
                 try:
                     server.sendmail(EMAIL_SENDER, recipient.email, msg.as_string())
-                    write_log_message("success", "0", log_file, recipient.email, text_message)
+                    write_log_message("success", "0", log_file, recipient.email, subject)
 
                 except smtplib.SMTPServerDisconnected:
                     c['message'] = "Server disconnect at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("disconnect_failure", "0", log_file, recipient.email, text_message)
+                    write_log_message("disconnect_failure", "0", log_file, recipient.email, subject)
                     return render(request, "bread/form.html", c )
                 except Exception:
                     c['message'] = "Rejected value at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("failure", "0", log_file, recipient.email, text_message)
+                    write_log_message("failure", "0", log_file, recipient.email, subject)
                     return render(request, "bread/form.html", c )
 
                 #Delay next message by one second to guarantee staying within terms of service
