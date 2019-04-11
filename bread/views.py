@@ -209,6 +209,7 @@ def new_order(request, category):
            
             #Send confirmation email
             first, last = request.user.first_name, request.user.last_name
+            name = first.lower().capitalize() + " " + last.lower().capitalize()
             product = order.product.label
             number = str(order.number)
             address = request.user.email
@@ -216,7 +217,7 @@ def new_order(request, category):
             price = str(order.product.price*order.number)
             header = "Thanks for your gift order! " if order.this_is_a_gift else "Thanks for your order! "
             
-            confirmation_message = header + first + " " + last + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number: " + str(order.pk) + ". Total price: $" + price
+            confirmation_message = header + name + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number: " + str(order.pk) + ". Total price: $" + price
             mailer("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
             return HttpResponseRedirect(reverse('thanks'))
@@ -265,9 +266,10 @@ def cancel(request, order_id):
 
             #Send cancellation email
             first, last = request.user.first_name, request.user.last_name
+            name = first.lower().capitalize() + " " + last.lower().capitalize()
             address = request.user.email
             
-            confirmation_message = "Order #" + str(order_id) + " for " + str(order.number) + " " + order.product.label + " has been cancelled."
+            confirmation_message = "Order #" + str(order_id) + " by " + name + " for " + str(order.number) + " " + order.product.label + " has been cancelled."
             mailer("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
         else:
@@ -414,9 +416,10 @@ def stripe_charge(request):
     else:
         #Send email confirmation
         first, last = request.user.first_name, request.user.last_name
+        name = first.lower().capitalize() + " " + last.lower().capitalize()
         address = request.user.email
             
-        confirmation_message = "Thanks for you payment! $" + str(balance) + " was successfully charged to your credit card."
+        confirmation_message = "Thanks for you payment! $" + str(balance) + " was successfully charged to the credit card of " + name
         mailer("Glorious Grain Charge", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
         #Acknowledge payment
@@ -426,9 +429,10 @@ def stripe_charge(request):
 def check_mail(request):
         #Send email confirmation
         first, last = request.user.first_name, request.user.last_name
+        name = first.lower().capitalize() + " " + last.lower().capitalize()
         address = request.user.email
             
-        confirmation_message = "We'll keep an eye out for your check. Thanks!"
+        confirmation_message = "We'll keep an eye out for your check. Thanks " + name + "!"
         mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
         #Acknowledge payment
@@ -446,9 +450,10 @@ def subscription(request):
              
             #Send email confirmation of subscription
             first, last = subscription.user.first_name, subscription.user.last_name
+            name = first.lower().capitalize() + " " + last.lower().capitalize()
             address = subscription.user.email
             
-            confirmation_message = "We received your subscription. We'll be in touch to handle the details. Thanks!"
+            confirmation_message = "We received your subscription. We'll be in touch to handle the details. Thanks " + name + "!"
             mailer("Glorious Grain Subscription", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
             return HttpResponseRedirect(reverse('thanks'))
@@ -510,9 +515,10 @@ def payment(request):
             #Send email confirmation for non-comped payments
             if payment.payment_method != 'CMP':
                 first, last = entry.user.first_name, entry.user.last_name
+                name = first.lower().capitalize() + " " + last.lower().capitalize()
                 address = entry.user.email
             
-                confirmation_message = "We received your payment and credited $" + str(payment.value) + " to your account. Thanks!"
+                confirmation_message = "We received your payment and credited $" + str(payment.value) + " to your account. Thanks " + name + "!"
                 mailer("Glorious Grain Payment", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
             return HttpResponseRedirect(reverse('confirm'))
@@ -670,6 +676,7 @@ def order_meister(request):
            
             #Send confirmation email
             first, last = order.user.first_name, order.user.last_name
+            name = first.lower().capitalize() + " " + last.lower().capitalize()
             product = order.product.label
             number = str(order.number)
             address = order.user.email
@@ -677,7 +684,7 @@ def order_meister(request):
             price = str(order.product.price*order.number)
             
 
-            confirmation_message = "Thanks for your order! " + first + " " + last + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number is #" + str(order.pk) + ". Total price is $" + price
+            confirmation_message = "Thanks for your order! " + name + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number is #" + str(order.pk) + ". Total price is $" + price
             mailer("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
             return HttpResponseRedirect(reverse('thanks_meister'))
@@ -733,9 +740,10 @@ def cancel_meister(request, order_id):
 
         #Send cancellation email
         first, last = order.user.first_name, order.user.last_name
+        name = first.lower().capitalize() + " " + last.lower().capitalize()
         address = order.user.email
             
-        confirmation_message = "Order #" + order_id + " has been cancelled."
+        confirmation_message = "Order #" + order_id + " for " + name + " has been cancelled."
         mailer("Order cancellation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
     else:
@@ -987,6 +995,8 @@ def delivered(request, order_id):
 
         #Send delivery email
         first, last = order.user.first_name, order.user.last_name
+
+        name = first.lower().capitalize() + " " + last.lower().capitalize()
             
         #Send to me instead of customers for debugging???
         #address = request.user.email
@@ -996,9 +1006,9 @@ def delivered(request, order_id):
             
         #Text of message depends on if it's a gift
         if order.this_is_a_gift:
-            confirmation_message = "Your Glorious Grain order #" + str(order_id) + " has been delivered. Thanks for giving the gift of bread!"
+            confirmation_message = "Glorious Grain order #" + str(order_id) + " from " + name + " has been delivered. Thanks for giving the gift of bread!"
         else: 
-            confirmation_message = "Your Glorious Grain order #" + str(order_id) + " has been delivered. We hope you enjoy it!"
+            confirmation_message = "Glorious Grain order #" + str(order_id) + " for " + name + " has been delivered. We hope you enjoy it!"
 
         mailer("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
