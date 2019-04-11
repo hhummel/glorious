@@ -150,11 +150,11 @@ def mailer(subject, message, sender, recipients, log_file):
             #Close connection to mail server
             try:
                 server.quit()
-                write_log_message("quit_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_success", "0", log_file, EMAIL_SERVER, datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S"))
                 return "success"
 
             except():
-                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER, datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S"))
                 return "failed"
 
 

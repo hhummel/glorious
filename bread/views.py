@@ -878,7 +878,7 @@ def campaign(request):
 
             #Connect to server
             try:
-                server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT)
+                server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT, timeout=300)
                 #Insert this for AWS
                 server.starttls()
                 write_log_message("connect_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT)) 
@@ -890,11 +890,11 @@ def campaign(request):
             #Log in to connected server
             try:
                 server.login(EMAIL_USER, EMAIL_PASSWORD)
-                write_log_message("login_success", "0", log_file, EMAIL_USER, "email_password")
+                write_log_message("login_success", "0", log_file, EMAIL_USER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
             except smtplib.SMTPAuthenticationError:
                 c['message'] = "Failed to login to email server"
-                write_log_message("login_failure", "0", log_file, EMAIL_USER, "email_password")
+                write_log_message("login_failure", "0", log_file, EMAIL_USER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 return render(request, "bread/form.html", c )
 
             #Fire emails to the mailing list with the appropriate subject and message
@@ -926,12 +926,12 @@ def campaign(request):
             #Close connection to mail server
             try:
                 server.quit()
-                write_log_message("quit_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_success", "0", log_file, EMAIL_SERVER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
             except():
                 c['message'] = "Server failed while sending to user " + msg["To"]
-                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
+                write_log_message("quit_failure", "0", log_file, EMAIL_SERVER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 return render(request, "bread/form.html", c )
 
         else:
