@@ -904,12 +904,10 @@ def campaign(request):
             subject = campaign_.subject
             send_address = sender_address
             text_message = campaign_.message
-            counter = 0
 
-            for recipient in recipient_list:
+            for counter, recipient in enumerate(recipient_list):
                 #Make the msg object
                 msg = make_msg(send_address, recipient, subject, text_message, signature, footer, html_footer)
-                counter += 1
 
                 #Send it
                 try:
