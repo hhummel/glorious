@@ -876,6 +876,9 @@ def campaign(request):
             #recipients = campaign_.mail_list.recipients.all().filter(index_key__gte=start).order_by('index_key')
             recipients = campaign_.mail_list.recipients.all().order_by('index_key')
 
+            #Make a list of email recipients from objects
+            recipient_list = [recipient.first_name + " " + recipient.last_name + " <" + recipient.email + ">" for recipient in recipients]
+
             #Connect to server
             try:
                 server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT, timeout=300)
@@ -898,30 +901,29 @@ def campaign(request):
                 return render(request, "bread/form.html", c )
 
             #Fire emails to the mailing list with the appropriate subject and message
-            for recipient in recipients:
+            subject = campaign_.subject
+            send_address = sender_address
+            text_message = campaign_.message
+            counter = 0
+
+            for recipient in recipient_list:
                 #Make the msg object
-                subject = campaign_.subject
-                send_address = sender_address
-                receive_address = recipient.first_name + " " + recipient.last_name + " <" + recipient.email + ">"
-                text_message = campaign_.message
-                msg = make_msg(send_address, receive_address, subject, text_message, signature, footer, html_footer)
+                msg = make_msg(send_address, recipient, subject, text_message, signature, footer, html_footer)
+                counter += 1
 
                 #Send it
                 try:
-                    server.sendmail(EMAIL_SENDER, recipient.email, msg.as_string())
-                    write_log_message("success", "0", log_file, recipient.email, subject)
+                    server.sendmail(EMAIL_SENDER, recipient, msg.as_string())
+                    write_log_message("success", "0", log_file, recipient, subject)
 
                 except smtplib.SMTPServerDisconnected:
-                    c['message'] = "Server disconnect at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("disconnect_failure", "0", log_file, recipient.email, subject)
+                    c['message'] = "Server disconnect at count: " + str(counter) + "  Address: " + recipient
+                    write_log_message("disconnect_failure", "0", log_file, recipient, subject)
                     return render(request, "bread/form.html", c )
                 except Exception:
-                    c['message'] = "Rejected value at index: " + str(recipient.index_key) + "  Address: " + recipient.email
-                    write_log_message("failure", "0", log_file, recipient.email, subject)
+                    c['message'] = "Rejected value at count: " + str(counter) + "  Address: " + recipient
+                    write_log_message("failure", "0", log_file, recipient, subject)
                     return render(request, "bread/form.html", c )
-
-                #Delay next message by one second to guarantee staying within terms of service
-                time.sleep(1)
 
             #Close connection to mail server
             try:
