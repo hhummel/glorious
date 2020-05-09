@@ -211,7 +211,7 @@ CAT_CHOICES = (
     ('PACK', 'Packaging'),
 )
 # Days of the week when bread is not available, Sunday = 0 to be consistent with datetimepicker. Using array so js interprets it as an array.
-EXCLUDED_DAYS = [0, 6]
+EXCLUDED_DAYS = [0, 1, 3, 4, 6]
 MEISTER_EXCLUDED_DAYS = []
     
 #Helper function to find the next allowed delivery date, given the excluded days of the week in EXCLUDED_DAYS

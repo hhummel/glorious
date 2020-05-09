@@ -2,6 +2,8 @@ from django.urls import path, re_path, include
 from django.views.generic.edit import CreateView
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import views as auth_views
+
 import bread.views as bread_views
 
 admin.autodiscover()
@@ -16,6 +18,10 @@ urlpatterns = [
 
     #Login, logout, reset, etc.
     path('', include('django.contrib.auth.urls')),
+
+    path('password_reset/', auth_views.PasswordResetView.as_view(
+        email_template_name='bread/templates/registration/password_reset_html_email.html'
+    )),
 
     #Subscribe to mail list
     path('subscribe', bread_views.subscribe, name='subscribe'),

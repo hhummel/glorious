@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from .passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_ASSISTANT, THE_SECRET, HOST_LIST, DEBUG_SETTING
+from .passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_ASSISTANT, DEFAULT_FROM_EMAIL, THE_SECRET, HOST_LIST, DEBUG_SETTING
 
 
 # Quick-start development settings - unsuitable for production
