@@ -2,7 +2,7 @@ from decimal import Decimal
 import time, os, datetime
 from django.template import Context, loader, RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
-from django.shortcuts import render, redirect, render_to_response, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 from django.utils import timezone
 from django.views.decorators import csrf 
