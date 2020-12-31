@@ -620,7 +620,7 @@ def orders(request):
         annotate(total=Sum('number')).          \
         order_by('delivery_date', 'product_id')          
     orders = Order.objects.filter(delivery_date__gte=today).filter(confirmed=True).order_by('delivery_date', 'user_id')
-    order_history = Order.objects.filter(confirmed=True).filter(delivery_date__lt=today).order_by('-delivery_date', 'user_id')
+    order_history = Order.objects.filter(delivery_date__year=today.year, delivery_date__lt=today).filter(confirmed=True).order_by('-delivery_date', 'user_id')
  
     c = {
             'bread_template': 'bread/manager_template.html',
