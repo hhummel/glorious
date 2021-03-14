@@ -1,4 +1,4 @@
-bread/migrations
+.idea
 glorious/passwords.py
 
 # Created by https://www.gitignore.io/api/django
