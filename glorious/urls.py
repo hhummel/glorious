@@ -22,14 +22,17 @@ from bread.views import index, success, root_index
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    #Handle bread urls in the bread app
+    # Handle bread urls in the bread app
     path('bread/', include('bread.urls')),
 
-    #Log in after password reset
+    # Log in after password reset
     path('accounts/login/', index, name='index'),
 
-    #Root page goes to bread app, as does login success
+    # Root page goes to bread app, as does login success
     path('', root_index, name='root_index'),
     path('success/', success, name='success'),
+
+    # Rest framework login and logout views
+    path('api-auth/', include('rest_framework.urls'))
 ]
 

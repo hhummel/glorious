@@ -210,24 +210,28 @@ CAT_CHOICES = (
     ('FRUITS', 'Fruits, nuts and seeds'),
     ('PACK', 'Packaging'),
 )
-# Days of the week when bread is not available, Sunday = 0 to be consistent with datetimepicker. Using array so js interprets it as an array.
+# Days of the week when bread is not available, Sunday = 0 to be consistent with datetimepicker. Using array
+# so js interprets it as an array.
 EXCLUDED_DAYS = [0, 1, 3, 4, 6]
 MEISTER_EXCLUDED_DAYS = []
-    
-#Helper function to find the next allowed delivery date, given the excluded days of the week in EXCLUDED_DAYS
+
+
+# Helper function to find the next allowed delivery date, given the excluded days of the week in EXCLUDED_DAYS
 def next_day():
     dow = timezone.datetime.today().weekday()
-    #datetimepicker uses days of the week with Sunday = 0, but django uses Monday = 0.  Use picker so EXCLUDED_DAYS works.
-    #Increment by 2 to adjust the day of week convention and because it starts tomorrow
+    # datetimepicker uses days of the week with Sunday = 0, but django uses Monday = 0.
+    # Use picker so EXCLUDED_DAYS works.
+    # Increment by 2 to adjust the day of week convention and because it starts tomorrow
     picker_dow = (dow + 2) % 7
-    #Start with tomorrow as candidate, and then go days until the candidate isn't excluded 
+    # Start with tomorrow as candidate, and then go days until the candidate isn't excluded
     days = 1
     while picker_dow in EXCLUDED_DAYS:
         days = days + 1
         picker_dow = (picker_dow + 1) % 7
     return days 
 
-#Contact information.  Note create is the creation time of the contact object in UTC
+
+# Contact information.  Note create is the creation time of the contact object in UTC
 class Contacts(models.Model):
     creation = models.DateTimeField(auto_now_add=True, blank=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
@@ -252,7 +256,8 @@ class Contacts(models.Model):
         return_string =  self.first_name + " " + self.last_name
         return return_string
 
-#Product categories
+
+# Product categories
 class Category(models.Model):
     index_key = models.AutoField(primary_key=True)
     category = models.CharField(max_length=17)
@@ -261,7 +266,8 @@ class Category(models.Model):
     picture = models.CharField(max_length=500, null=True)
     font_color = models.CharField(max_length=15, null=True)
 
-#Products
+
+# Products
 class Products(models.Model):
     index_key = models.AutoField(primary_key=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
@@ -274,7 +280,8 @@ class Products(models.Model):
         return_string =  self.label + "  $" + str(self.price)
         return return_string
 
-#Material categories
+
+# Material categories
 class MaterialCategory(models.Model):
     index_key = models.AutoField(primary_key=True)
     category = models.CharField(max_length=17)
@@ -283,7 +290,8 @@ class MaterialCategory(models.Model):
     display_order = models.IntegerField(null=True)
     picture = models.CharField(max_length=500, null=True)
 
-#Materials
+
+# Materials
 class Materials(models.Model):
     index_key = models.AutoField(primary_key=True)
     category = models.ForeignKey(MaterialCategory, on_delete=models.CASCADE, default=1)
@@ -305,7 +313,8 @@ class Materials(models.Model):
         if measure == "LEN":
             return return_string + self.length_units
 
-#Order information.
+
+# Order information.
 class Order(models.Model):
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -325,7 +334,8 @@ class Order(models.Model):
     recipient_state = models.CharField(max_length=100, null=True, blank=True) 
     recipient_message = models.TextField(max_length=150, null=True, blank=True) 
 
-#Expense information.
+
+# Expense information.
 class Expense(models.Model):
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -337,7 +347,8 @@ class Expense(models.Model):
     confirmed = models.BooleanField(default=False)
     special_instructions = models.TextField(max_length=150, null=True, blank=True) 
 
-#Subsription information.
+
+# Subscription information.
 class Subscription(models.Model):
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -355,7 +366,8 @@ class Subscription(models.Model):
     recipient_city = models.CharField(max_length=100, null=True, blank=True)
     recipient_state = models.CharField(max_length=2, choices=STATE_CHOICES, default='PA', null=True)
 
-#Gift recipient details
+
+# Gift recipient details
 class Gift(models.Model):
     index_key = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -369,7 +381,8 @@ class Gift(models.Model):
     municipality = models.CharField(max_length=25, choices=MUNICIPAL_CHOICES)
     message = models.TextField(max_length=500) 
 
-#Payment information.
+
+# Payment information
 class Payment(models.Model):
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -378,13 +391,15 @@ class Payment(models.Model):
     payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES)
     confirmed = models.BooleanField(default=False)
 
-#Stripe charge
+
+# Stripe charge
 class StripeCharge(models.Model):
     index_key = models.AutoField(primary_key=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
     charge_id = models.CharField(max_length=234)
 
-#Credit or debit
+
+# Credit or debit
 class Ledger(models.Model):
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -397,7 +412,8 @@ class Ledger(models.Model):
     expense_reference = models.ForeignKey(Expense, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(null=False)
 
-#Mailing list subscribers
+
+# Mailing list subscribers
 class Subscribers(models.Model):
     index_key = models.AutoField(primary_key=True)
     creation = models.DateTimeField(auto_now_add=True, blank=True)
@@ -407,18 +423,19 @@ class Subscribers(models.Model):
     email = models.EmailField(max_length=100)
     is_subscriber = models.BooleanField(default=True)
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    
-#Mail list
+
+
+# Mail list
 class MailList(models.Model):
     index_key = models.AutoField(primary_key=True)
     label = models.CharField(max_length=100, null=False)
     recipients = models.ManyToManyField(Subscribers)
 
-#Mail campaign
+
+# Mail campaign
 class Campaign(models.Model):
     index_key = models.AutoField(primary_key=True)
     mail_list = models.ForeignKey(MailList, on_delete=models.CASCADE)
     date = models.DateTimeField(null=False)
     subject = models.TextField(max_length=500) 
     message = models.TextField(max_length=2000) 
-
