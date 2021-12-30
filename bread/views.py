@@ -184,19 +184,18 @@ def unsubscribe(request):
     if request.method == 'POST':
         form = UnsubscribeForm(request.POST)
         if form.is_valid():
-            #try:
-                subscribers = Subscribers.objects.all().filter(email=form.cleaned_data['email'])
-                for subscriber in subscribers:
-                    subscriber.is_subscriber = False
-                    subscriber.save()
+            subscribers = Subscribers.objects.all().filter(email=form.cleaned_data['email'])
+            for subscriber in subscribers:
+                subscriber.is_subscriber = False
+                subscriber.save()
 
-                c = {
-                    'bread_template': 'bread/basic_template.html',
-                    'logo_image' : logo_image,
-                    'small_logo' : small_logo,
-                    'message': "Thanks, you're unsubscribed from marketing emails from Glorious Grain",
-                }
-                return render(request, 'bread/acknowledge.html', c)
+            c = {
+                'bread_template': 'bread/basic_template.html',
+                'logo_image' : logo_image,
+                'small_logo' : small_logo,
+                'message': "Thanks, you're unsubscribed from marketing emails from Glorious Grain",
+            }
+            return render(request, 'bread/acknowledge.html', c)
 
     form = UnsubscribeForm()
     c = {
@@ -536,16 +535,16 @@ def stripe_charge(request):
 
 @login_required(login_url='login')
 def check_mail(request):
-        # Send email confirmation
-        first, last = request.user.first_name, request.user.last_name
-        name = first.lower().capitalize() + " " + last.lower().capitalize()
-        address = request.user.email
-            
-        confirmation_message = "We'll keep an eye out for your check. Thanks " + name + "!"
-        mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
-           
-        # Acknowledge payment
-        return HttpResponseRedirect(reverse('payment_thanks'))
+    # Send email confirmation
+    first, last = request.user.first_name, request.user.last_name
+    name = first.lower().capitalize() + " " + last.lower().capitalize()
+    address = request.user.email
+        
+    confirmation_message = "We'll keep an eye out for your check. Thanks " + name + "!"
+    mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
+        
+    # Acknowledge payment
+    return HttpResponseRedirect(reverse('payment_thanks'))
 
 
 @login_required(login_url='login')
