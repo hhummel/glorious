@@ -1,57 +1,154 @@
 from decimal import Decimal
-import time, os, datetime
-from django.template import Context, loader, RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django import forms
-from django.utils import timezone
-from django.views.decorators import csrf 
-from django.urls import reverse
-from django.core.mail import send_mail
-from django.db.models import Sum
+import json
+import os
 
-#Used for ajax JSON
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
+from django.urls import reverse
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.core import serializers
-
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+import stripe
+
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
-from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category, Materials, MaterialCategory
+from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category
+from .models import Products, Subscription, Gift, Campaign
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE, HISTORY
 from .bread import make_msg, write_log_message, mailer
+from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, OrderSerializer
+from .serializers import SubscriptionSerializer, GiftSerializer, PaymentSerializer, LedgerSerializer
+from .serializers import SubscribersSerializer, MailListSerializer, CampaignSerializer, UserSerializer
+
+
+from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
     
-#Path to  output file
+# Path to  output file
 log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 
-import stripe
+# Stripe secret. TODO: Move this!
 stripe.api_key = STRIPE_SECRET
 
-#Logo images
-#logo_image = "images/glorious_grain_logo_transparent.png"
+# Logo images
 logo_image = "images/logo_baked_transparent.png"
-
 small_logo = "images/small_loaf.png"
-#Roller image
+
+# Roller image
 roller_image = "images/wheat_sheaf_transparent.jpg"
-#Dough gif
+
+# Dough gif
 dough_gif = "images/dough.gif"
-#slices image
+
+# slices image
 slices_image = "images/slices.jpg"
-#Breadmeister data
+
+# Breadmeister data
 assistant_meister = EMAIL_ASSISTANT
 breadmeister_address = EMAIL_SENDER
 sender_address = "Glorious Grain <" + EMAIL_SENDER + ">"
-#Card payment message
+
+# Card payment message
 card_message = "Pay off current balance"
 
-# Create your views here.
 
+# DRF views
+class ContactsViewSet(viewsets.ModelViewSet):
+    queryset = Contacts.objects.all()
+    serializer_class = ContactsSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly,]
+
+
+class ProductsViewSet(viewsets.ModelViewSet):
+    queryset = Products.objects.all()
+    serializer_class = ProductsSerializer
+    permission_classes = [IsAdminOrReadOnly,]
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class GiftViewSet(viewsets.ModelViewSet):
+    queryset = Gift.objects.all()
+    serializer_class = GiftSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class LedgerViewSet(viewsets.ModelViewSet):
+    queryset = Ledger.objects.all()
+    serializer_class = LedgerSerializer
+    permission_classes = [permissions.IsAdminUser,]
+
+
+class SubscribersViewSet(viewsets.ModelViewSet):
+    queryset = Subscribers.objects.all()
+    serializer_class = SubscribersSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+
+class MailListViewSet(viewsets.ModelViewSet):
+    queryset = MailList.objects.all()
+    serializer_class = MailListSerializer
+    permission_classes = [permissions.IsAdminUser,]
+
+
+class CampaignViewSet(viewsets.ModelViewSet):
+    queryset = Campaign.objects.all()
+    serializer_class = CampaignSerializer
+    permission_classes = [permissions.IsAdminUser,]
+
+
+# Views for session authentication with DRF
+@api_view(["POST"])
+def session_login(request):
+    json_body = json.loads(request.body)
+    username = json_body['username']
+    password = json_body['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK) 
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(["POST"])
+def session_logout(request):
+    logout(request)
+    return Response(status=status.HTTP_200_OK)
+
+
+# Django HTML views
 def products(request):
     categories = Category.objects.all()
     c = {
@@ -62,6 +159,7 @@ def products(request):
     }
     return render(request, "bread/products.html", c )
 
+
 def about(request):
     c = {
         'bread_template': 'bread/basic_template.html',
@@ -70,6 +168,7 @@ def about(request):
         'roller_image': slices_image,
     }
     return render(request, "bread/new_about.html", c )
+
 
 def help(request):
     c = {
@@ -80,23 +179,23 @@ def help(request):
 
     return render(request, "bread/help.html", c )
 
+
 def unsubscribe(request):
     if request.method == 'POST':
         form = UnsubscribeForm(request.POST)
         if form.is_valid():
-            #try:
-                subscribers = Subscribers.objects.all().filter(email=form.cleaned_data['email'])
-                for subscriber in subscribers:
-                    subscriber.is_subscriber = False
-                    subscriber.save()
+            subscribers = Subscribers.objects.all().filter(email=form.cleaned_data['email'])
+            for subscriber in subscribers:
+                subscriber.is_subscriber = False
+                subscriber.save()
 
-                c = {
-                    'bread_template': 'bread/basic_template.html',
-                    'logo_image' : logo_image,
-                    'small_logo' : small_logo,
-                    'message': "Thanks, you're unsubscribed from marketing emails from Glorious Grain",
-                }
-                return render(request, 'bread/acknowledge.html', c)
+            c = {
+                'bread_template': 'bread/basic_template.html',
+                'logo_image' : logo_image,
+                'small_logo' : small_logo,
+                'message': "Thanks, you're unsubscribed from marketing emails from Glorious Grain",
+            }
+            return render(request, 'bread/acknowledge.html', c)
 
     form = UnsubscribeForm()
     c = {
@@ -108,14 +207,17 @@ def unsubscribe(request):
     }
     return render(request, 'bread/form.html', c)
 
+
 def root_index(request):
     return HttpResponseRedirect ( "./bread/")
+
 
 @login_required(login_url='login')
 def success(request):
     return HttpResponseRedirect ( "../bread/products.html")
 
-#Create a new user
+
+# Create a new user
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -138,20 +240,21 @@ def register(request):
     }
     return render(request, 'bread/form.html', c)
 
+
 @login_required(login_url='login')
 def subscribe(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
-            #Add  first and last name and email from ContactFrom to the user object
+            # Add  first and last name and email from ContactFrom to the user object
             user = request.user
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.email = form.cleaned_data['email']
             user.save()
 
-            #Add customer to mailing list universe
+            # Add customer to mailing list universe
             subscriber = Subscribers.objects.create(
                 creation = timezone.datetime.now(),
                 first_name =  form.cleaned_data['first_name'],
@@ -184,6 +287,7 @@ def subscribe(request):
 
     return render(request, "bread/form.html", c )
 
+
 @login_required(login_url='login')
 def new_order(request, category):
     if request.method == 'POST':
@@ -196,7 +300,7 @@ def new_order(request, category):
             order.order_date = timezone.datetime.now()
             order.save()
 
-            #Create entry for ledger.  Entered as negative because it's a debit.
+            # Create entry for ledger.  Entered as negative because it's a debit.
             entry = Ledger()
             entry.user = request.user
             entry.quantity = order.product.price * order.number
@@ -207,7 +311,7 @@ def new_order(request, category):
             entry.date = order.order_date
             entry.save() 
            
-            #Send confirmation email
+            # Send confirmation email
             first, last = request.user.first_name, request.user.last_name
             name = first.lower().capitalize() + " " + last.lower().capitalize()
             product = order.product.label
@@ -249,6 +353,7 @@ def new_order(request, category):
 
     return render(request, "bread/order_form.html", c )
 
+
 @login_required(login_url='login')
 def cancel(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
@@ -259,12 +364,12 @@ def cancel(request, order_id):
             order.confirmed = False
             order.save()
 
-            #Cancel entry in ledger
+            # Cancel entry in ledger
             entry = get_object_or_404(Ledger, order_reference=order)
             entry.cancelled = True
             entry.save()
 
-            #Send cancellation email
+            # Send cancellation email
             first, last = request.user.first_name, request.user.last_name
             name = first.lower().capitalize() + " " + last.lower().capitalize()
             address = request.user.email
@@ -276,6 +381,7 @@ def cancel(request, order_id):
             raise Http404("Order has been delivered.")
 
     return HttpResponseRedirect(reverse('products'))
+
 
 @login_required(login_url='login')
 def my_account(request):
@@ -310,6 +416,7 @@ def my_account(request):
         }
     return render(request, "bread/my_account.html", c )
 
+
 @login_required(login_url='login')
 def pay(request):
     credit_balance = Ledger.objects.filter(user=request.user).filter(credit=True).filter(cancelled=False).aggregate(Sum('quantity')).get('quantity__sum', 0.00)
@@ -335,8 +442,6 @@ def pay(request):
     return render(request, "bread/pay.html", c )
 
 
-    #return render(request, "bread/my_account.html", c )
-
 @login_required(login_url='login')
 def thanks(request):
     c = {
@@ -347,6 +452,7 @@ def thanks(request):
     }
 
     return render (request, "bread/thanks.html", c )
+
 
 @login_required(login_url='login')
 def payment_thanks(request):
@@ -362,6 +468,7 @@ def payment_thanks(request):
 
 def index(request):
     return HttpResponseRedirect(reverse('products'))
+
 
 @login_required(login_url='login')
 def stripe_charge(request):
@@ -384,7 +491,7 @@ def stripe_charge(request):
             description = card_message
         )
 
-        #Charge successfully posted to Stripe.  First create a payment
+        # Charge successfully posted to Stripe.  First create a payment
         payment = Payment.objects.create(
             user = request.user,
             value = balance,
@@ -393,7 +500,7 @@ def stripe_charge(request):
             payment_method = 'CRD'
         )
             
-        #Create a Ledger entry
+        # Create a Ledger entry
         entry = Ledger.objects.create(
             user = payment.user,
             quantity = -payment.value,
@@ -404,7 +511,7 @@ def stripe_charge(request):
             date = payment.date
         ) 
 
-        #Create a StripeCharge
+        # Create a StripeCharge
         stripe_charge = StripeCharge.objects.create(
             payment_reference = payment,
             charge_id = charge.id
@@ -414,7 +521,7 @@ def stripe_charge(request):
         return False, ce
 
     else:
-        #Send email confirmation
+        # Send email confirmation
         first, last = request.user.first_name, request.user.last_name
         name = first.lower().capitalize() + " " + last.lower().capitalize()
         address = request.user.email
@@ -422,21 +529,23 @@ def stripe_charge(request):
         confirmation_message = "Thanks for you payment! $" + str(balance) + " was successfully charged to the credit card of " + name
         mailer("Glorious Grain Charge", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
 
-        #Acknowledge payment
+        # Acknowledge payment
         return HttpResponseRedirect(reverse('payment_thanks'))
+
 
 @login_required(login_url='login')
 def check_mail(request):
-        #Send email confirmation
-        first, last = request.user.first_name, request.user.last_name
-        name = first.lower().capitalize() + " " + last.lower().capitalize()
-        address = request.user.email
-            
-        confirmation_message = "We'll keep an eye out for your check. Thanks " + name + "!"
-        mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
-           
-        #Acknowledge payment
-        return HttpResponseRedirect(reverse('payment_thanks'))
+    # Send email confirmation
+    first, last = request.user.first_name, request.user.last_name
+    name = first.lower().capitalize() + " " + last.lower().capitalize()
+    address = request.user.email
+        
+    confirmation_message = "We'll keep an eye out for your check. Thanks " + name + "!"
+    mailer("Check's in the mail", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
+        
+    # Acknowledge payment
+    return HttpResponseRedirect(reverse('payment_thanks'))
+
 
 @login_required(login_url='login')
 def subscription(request):
@@ -448,7 +557,7 @@ def subscription(request):
             subscription.confirmed = True
             subscription.save()
              
-            #Send email confirmation of subscription
+            # Send email confirmation of subscription
             first, last = subscription.user.first_name, subscription.user.last_name
             name = first.lower().capitalize() + " " + last.lower().capitalize()
             address = subscription.user.email
@@ -476,6 +585,7 @@ def subscription(request):
 
     return render(request, "bread/script_form.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def confirm(request):
     c = {
@@ -486,7 +596,8 @@ def confirm(request):
 
     return render(request, "bread/payment_confirmation.html", c )
 
-#Manager views here
+# Manager views here
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def payment(request):
@@ -498,7 +609,7 @@ def payment(request):
             payment.date = timezone.datetime.now()
             payment.save()
              
-            #Create entry for ledger. Entered as negative because it's a credit.
+            # Create entry for ledger. Entered as negative because it's a credit.
             entry = Ledger()
             entry.user = payment.user
             entry.quantity = -payment.value
@@ -512,7 +623,7 @@ def payment(request):
             entry.date = payment.date
             entry.save() 
             
-            #Send email confirmation for non-comped payments
+            # Send email confirmation for non-comped payments
             if payment.payment_method != 'CMP':
                 first, last = entry.user.first_name, entry.user.last_name
                 name = first.lower().capitalize() + " " + last.lower().capitalize()
@@ -541,6 +652,7 @@ def payment(request):
 
     return render(request, "bread/form.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def confirm(request):
     c = {
@@ -550,6 +662,7 @@ def confirm(request):
     }
 
     return render(request, "bread/payment_confirmation.html", c )
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def all_accounts(request):
@@ -608,7 +721,6 @@ def account_detail(request, user_id):
     return render(request, "bread/my_account.html", c )
 
 
-
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def orders(request):
     today = timezone.datetime.today().date()
@@ -631,6 +743,7 @@ def orders(request):
     }
     return render(request, "bread/orders.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def order_history(request):
     today = timezone.datetime.today().date()
@@ -641,6 +754,7 @@ def order_history(request):
       'users': serializers.serialize('json', users)
     }        
     return JsonResponse(data, safe=False)
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def order_meister(request):
@@ -663,7 +777,7 @@ def order_meister(request):
                 order.recipient_message = form.cleaned_data['recipient_message']
             order.save()
 
-            #Create entry for ledger.  Entered as negative because it's a debit.
+            # Create entry for ledger.  Entered as negative because it's a debit.
             entry = Ledger()
             entry.user = order.user
             entry.quantity = order.product.price * order.number
@@ -674,7 +788,7 @@ def order_meister(request):
             entry.date = order.order_date
             entry.save() 
            
-            #Send confirmation email
+            # Send confirmation email
             first, last = order.user.first_name, order.user.last_name
             name = first.lower().capitalize() + " " + last.lower().capitalize()
             product = order.product.label
@@ -682,7 +796,6 @@ def order_meister(request):
             address = order.user.email
             date = str(order.delivery_date)
             price = str(order.product.price*order.number)
-            
 
             confirmation_message = "Thanks for your order! " + name + " ordered " + number + " " + product + " for delivery on " + date + ". Reference number is #" + str(order.pk) + ". Total price is $" + price
             mailer("Order confirmation", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
@@ -715,6 +828,7 @@ def order_meister(request):
 
     return render(request, "bread/meister_order_form.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def thanks_meister(request):
     c = {
@@ -726,6 +840,7 @@ def thanks_meister(request):
 
     return render (request, "bread/thanks_meister.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def cancel_meister(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
@@ -733,12 +848,12 @@ def cancel_meister(request, order_id):
         order.confirmed = False
         order.save()
 
-        #Cancel entry in ledger
+        # Cancel entry in ledger
         entry = get_object_or_404(Ledger, order_reference=order)
         entry.cancelled = True
         entry.save()
 
-        #Send cancellation email
+        # Send cancellation email
         first, last = order.user.first_name, order.user.last_name
         name = first.lower().capitalize() + " " + last.lower().capitalize()
         address = order.user.email
@@ -750,6 +865,7 @@ def cancel_meister(request, order_id):
         raise Http404("Order has been delivered.")
 
     return HttpResponseRedirect(reverse('orders'))
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def contacts(request):
@@ -772,6 +888,7 @@ def customers(request):
     }
 
     return render(request, "bread/customers.html", c )
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def mail_list(request):
@@ -803,6 +920,7 @@ def mail_list(request):
 
     return render(request, "bread/form.html", c )
 
+
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def mail_list_view(request):
     lists = MailList.objects.all()
@@ -814,6 +932,7 @@ def mail_list_view(request):
     }
 
     return render(request, "bread/mail_lists.html", c )
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def mail_list_edit(request, list_id):
@@ -836,7 +955,7 @@ def mail_list_edit(request, list_id):
             }
 
     else:
-        #model = MailList.objects.get(pk=list_id)
+        # model = MailList.objects.get(pk=list_id)
         form = MailListForm(instance=model)
         c = {
             'bread_template': 'bread/manager_template.html',
@@ -859,7 +978,7 @@ def campaign(request):
     footer = EMAIL_FOOTER or ""
     html_footer = HTML_FOOTER or ""
 
-    #Open output file
+    # Open output file
     log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 
     time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -878,19 +997,18 @@ def campaign(request):
                 'message': "Success! Warning: Do not resubmit to the same mail list!"
             }
 
-            #Fetch recipients on mailing list
+            # Fetch recipients on mailing list
             start = form['start_index']
-            #Working on this part
-            #recipients = campaign_.mail_list.recipients.all().filter(index_key__gte=start).order_by('index_key')
+            # Working on this part
             recipients = campaign_.mail_list.recipients.all().order_by('index_key')
 
-            #Make a list of email recipients from objects
+            # Make a list of email recipients from objects
             recipient_list = [recipient.first_name + " " + recipient.last_name + " <" + recipient.email + ">" for recipient in recipients]
 
-            #Connect to server
+            # Connect to server
             try:
                 server=smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT, timeout=300)
-                #Insert this for AWS
+                # Insert this for AWS
                 server.starttls()
                 write_log_message("connect_success", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT)) 
             except (smtplib.socket.gaierror, smtplib.socket.error, smtplib.socket.herror):
@@ -898,7 +1016,7 @@ def campaign(request):
                 write_log_message("connect_failure", "0", log_file, EMAIL_SERVER, str(EMAIL_PORT))
                 return render(request, "bread/form.html", c )
 
-            #Log in to connected server
+            # Log in to connected server
             try:
                 server.login(EMAIL_USER, EMAIL_PASSWORD)
                 write_log_message("login_success", "0", log_file, EMAIL_USER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -908,16 +1026,16 @@ def campaign(request):
                 write_log_message("login_failure", "0", log_file, EMAIL_USER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 return render(request, "bread/form.html", c )
 
-            #Fire emails to the mailing list with the appropriate subject and message
+            # Fire emails to the mailing list with the appropriate subject and message
             subject = campaign_.subject
             send_address = sender_address
             text_message = campaign_.message
 
             for counter, recipient in enumerate(recipient_list):
-                #Make the msg object
+                # Make the msg object
                 msg = make_msg(send_address, recipient, subject, text_message, signature, footer, html_footer)
 
-                #Send it
+                # Send it
                 try:
                     server.sendmail(EMAIL_SENDER, recipient, msg.as_string())
                     write_log_message("success", "0", log_file, recipient, subject)
@@ -931,19 +1049,19 @@ def campaign(request):
                     write_log_message("failure", "0", log_file, recipient, subject)
                     return render(request, "bread/form.html", c )
 
-            #Close connection to mail server
+            # Close connection to mail server
             try:
                 server.quit()
                 write_log_message("quit_success", "0", log_file, EMAIL_SERVER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
-            except():
-                c['message'] = "Server failed while sending to user " + msg["To"]
+            except(Exception):
+                c = {'message': "Server failed while sending to user " + msg["To"]}
                 write_log_message("quit_failure", "0", log_file, EMAIL_SERVER,  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 return render(request, "bread/form.html", c )
 
         else:
-            c['message'] = "Oops. Problems."
+            c = {'message': "Oops. Problems."}
 
         return render(request, "bread/form.html", c )
 
@@ -957,6 +1075,7 @@ def campaign(request):
     }
 
     return render(request, "bread/form.html", c )
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def deliveries(request):
@@ -993,18 +1112,17 @@ def delivered(request, order_id):
         order.delivered = True
         order.save()
 
-        #Send delivery email
+        # Send delivery email
         first, last = order.user.first_name, order.user.last_name
 
         name = first.lower().capitalize() + " " + last.lower().capitalize()
             
-        #Send to me instead of customers for debugging???
-        #address = request.user.email
+        # Send to me instead of customers for debugging???
 
-        #Send email out to customer
+        # Send email out to customer
         address = order.user.email
             
-        #Text of message depends on if it's a gift
+        # Text of message depends on if it's a gift
         if order.this_is_a_gift:
             confirmation_message = "Glorious Grain order #" + str(order_id) + " from " + name + " has been delivered. Thanks for giving the gift of bread!"
         else: 
@@ -1013,6 +1131,7 @@ def delivered(request, order_id):
         mailer("Order delivery", confirmation_message, breadmeister_address, [address, breadmeister_address, assistant_meister], log_file)
            
     return HttpResponseRedirect(reverse('deliveries'))
+
 
 @user_passes_test(lambda u:u.is_staff, login_url='index')
 def material(request):
@@ -1024,7 +1143,7 @@ def material(request):
             return HttpResponseRedirect(reverse('orders'))
 
         else:
-            c['message'] = "Oops. Problems."
+            c = {'message': "Oops. Problems."}
 
         return render(request, "bread/form.html", c )
     else:

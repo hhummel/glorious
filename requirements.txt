@@ -1,2 +1,9 @@
 Django
 djangorestframework
+pytest
+markdown
+django-filter
+django-bootstrap4
+mysqlclient
+stripe
+django-cors-headers
