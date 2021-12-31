@@ -29,10 +29,8 @@ from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, OrderSerializer
 from .serializers import SubscriptionSerializer, GiftSerializer, PaymentSerializer, LedgerSerializer
 from .serializers import SubscribersSerializer, MailListSerializer, CampaignSerializer, UserSerializer
-
-
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
-    
+
 # Path to  output file
 log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 
@@ -131,9 +129,8 @@ class CampaignViewSet(viewsets.ModelViewSet):
 # Views for session authentication with DRF
 @api_view(["POST"])
 def session_login(request):
-    json_body = json.loads(request.body)
-    username = json_body['username']
-    password = json_body['password']
+    username = request.data['username']
+    password = request.data['password']
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)

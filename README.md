@@ -31,7 +31,7 @@ Glorious Roadmap for Admin Experience Epic:
 
 - The admin should be able to see and edit Customer information, e.g. correct address and email.
 
-Glorious Roadmap for Delivery:
+Glorious Roadmap for Delivery Epic:
 
 - The local delivery person should be able to see the town.
 

@@ -21,22 +21,23 @@ const client = axios.create({
  *
  *  @param {string} username - Username as entered
  *  @param {string} password - Password as entered
- *  @return {string}
+ *  @return {status:string, data: User || undefined}
  */
 export async function authenticate(username: String, password: String) {
   try {
     const res = await client.post("http://localhost:8000/bread/auth/login/", { username, password });
-    
-    console.log(`Result: ${res.status}`);
-    if (res.data) {
-        console.log(res.data);
-    }
-    return res.data.key;
+    return ({"status": res.status, "data": res?.data});
   } catch (e) {
       if(axios.isAxiosError(e)){
-        return e.response;
+        return ({"status": e.response, "data": undefined});
       }
-    console.log("Login error of unknown type: ${e}"); 
+    return ({"status": "500", "data": undefined});
   }
 }
 
+/**
+ * API helper to log a user out
+ */
+export async function logout() {
+  const res = await client.post("http://localhost:8000/bread/auth/logout/");
+}

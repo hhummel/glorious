@@ -1,9 +1,9 @@
-# Confidential stuff
+
+#Confidential stuff
 glorious/passwords.py
 
-# IDE stuff
+#IDEstuff
 .idea
-
 # Created by https://www.gitignore.io/api/django
 # Edit at https://www.gitignore.io/?templates=django
 
@@ -114,11 +114,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-Pipfile
-Pipfile.lock
-
-#ide stuff
-.idea
 
 # Spyder project settings
 .spyderproject
@@ -139,5 +134,3 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/django
-
-node_modules
