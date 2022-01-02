@@ -1,3 +1,4 @@
+import { useGridApiMethod } from '@mui/x-data-grid';
 import axios from 'axios';
 
 const LOGIN_ENDPOINT = '/bread/auth/login/';
@@ -6,6 +7,8 @@ const LOGOUT_ENDPOINT = '/bread/alogout/';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
+
+import { Order } from '../../types';
 
 
 const client = axios.create({
@@ -40,4 +43,16 @@ export async function authenticate(username: String, password: String) {
  */
 export async function logout() {
   const res = await client.post("http://localhost:8000/bread/auth/logout/");
+}
+
+/**
+ * API helper to return orders from a specified user
+ * 
+ * @param userId 
+ * @returns {status:string, data: User || undefined}
+ */
+
+export async function userOrders(userId: string) {
+  const {data} = await client.get(`http://localhost:8000/bread/order/?user=${userId}`);
+  return data;
 }

@@ -6,6 +6,7 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/material": "latest",
+    "@mui/x-data-grid": "^5.2.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/react-router-dom": "^5.3.2",

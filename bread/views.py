@@ -17,6 +17,9 @@ from django.contrib.auth.forms import UserCreationForm
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import filters
+import django_filters.rest_framework
+
 import stripe
 
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
@@ -82,6 +85,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsOwnerOrAdmin,]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['user'] 
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
