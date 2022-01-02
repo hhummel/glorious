@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Login from './Login';
 import Logout from './Logout';
+import Orders from './Orders';
 import { User } from '../../types';
 
 type Props = {
@@ -24,6 +25,7 @@ export default function MainContainer({ title, children }: Props) {
         <Typography variant="h2" component="h1" gutterBottom>
           Glorious Grain
         </Typography>
+        <Orders userId={user?.id}/>
         {children}
       </Container>
     </React.Fragment>
