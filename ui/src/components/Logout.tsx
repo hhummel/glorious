@@ -15,7 +15,7 @@ export default function Logout({setUser}: Props) {
 
   return (
     <div>
-      <Button  onClick={handleClick}>
+      <Button color="primary" variant="contained" onClick={handleClick}>
         Logout
       </Button>
     </div>

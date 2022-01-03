@@ -2,10 +2,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
-
-
-# Create your models here.
-from django.db import models
 from django.forms import ModelForm
 
 #Choices
@@ -302,16 +298,6 @@ class Materials(models.Model):
     units = models.CharField(max_length=6, null=True)
     picture = models.CharField(max_length=500, null=True)
 
-    def __str__(self):
-        return_string = self.label + " " + self.quantity + " "
-        if measure == "WT":
-            return return_string + self.weight_units
-        if measure == "VOL":
-            return return_string + self.volume_units
-        if measure == "CT":
-            return return_string + self.count_units
-        if measure == "LEN":
-            return return_string + self.length_units
 
 
 # Order information.
