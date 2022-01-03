@@ -11,9 +11,7 @@ ReactDOM.render(
   <ThemeProvider theme={theme}>
     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
     <CssBaseline />
-    <MainContainer title='Glorious Grain'>
-      <App />
-    </MainContainer>
+    <MainContainer title='Glorious Grain' />
   </ThemeProvider>,
   document.querySelector('#root'),
 );
