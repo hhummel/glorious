@@ -5,28 +5,28 @@ import Typography from '@mui/material/Typography';
 import Login from './Login';
 import Logout from './Logout';
 import Orders from './Orders';
+import Products from './Products';
+import NavBar from './NavBar';
 import { User } from '../../types';
 
 type Props = {
     title: string;
-    children?: React.ReactNode;
   };
 
-export default function MainContainer({ title, children }: Props) {
+export default function MainContainer({ title }: Props) {
   const [user, setUser] = useState<User>();
+  const [visible, setVisible] = useState(1);
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth='sm'>
-        {user ? <Logout setUser={setUser} /> : <Login setUser={setUser} /> } 
-        <div>
-          { user?.first_name || 'no user' }
-        </div>
         <Typography variant="h2" component="h1" gutterBottom>
-          Glorious Grain
+          {title}
         </Typography>
-        <Orders userId={user?.id}/>
-        {children}
+        <NavBar setVisible={setVisible} setUser={setUser}/>
+        {(visible === 1) && <Products userId={user?.id}/> }
+        {(visible === 2) && <Orders userId={user?.id}/>}
+        {user ? <Logout setUser={setUser} /> : <Login setUser={setUser} /> } 
       </Container>
     </React.Fragment>
   );

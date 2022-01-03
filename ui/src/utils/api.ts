@@ -49,10 +49,22 @@ export async function logout() {
  * API helper to return orders from a specified user
  * 
  * @param userId 
- * @returns {status:string, data: User || undefined}
+ * @returns Array<Order>
  */
 
 export async function userOrders(userId: string) {
   const {data} = await client.get(`http://localhost:8000/bread/order/?user=${userId}`);
+  return data;
+}
+
+/**
+ * API helper to return a list of products
+ * 
+ * @returns Array<Products>
+ */
+
+ export async function products() {
+  const {data} = await client.get(`http://localhost:8000/bread/products/`);
+  console.log(`Data: ${data}`)
   return data;
 }
