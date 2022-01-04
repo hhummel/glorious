@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { authenticate } from '../utils/api';
@@ -71,30 +72,32 @@ export default function Login({setUser}: Props) {
       >
         <Box sx={style}>
         <form onSubmit={formik.handleSubmit}>
-          <TextField
-            fullWidth
-            id="email"
-            name="email"
-            label="Email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-          <TextField
-            fullWidth
-            id="password"
-            name="password"
-            label="Password"
-            type="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
-          />
-          <Button color="primary" variant="contained" type="submit">
-            Login
-          </Button>
+          <Stack spacing={1}>
+            <TextField
+              fullWidth
+              id="email"
+              name="email"
+              label="Email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              fullWidth
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
+            <Button color="primary" variant="contained" type="submit">
+              Login
+            </Button>
+          </Stack>
         </form>
         </Box>
       </Modal>

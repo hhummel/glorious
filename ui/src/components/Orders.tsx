@@ -31,7 +31,7 @@ const columns: GridColDef[] = [
 
 
 type Props = {
-    userId: string | undefined;
+    userId: number | undefined;
 }
 
 export default function Orders({userId}: Props) {
@@ -45,7 +45,7 @@ export default function Orders({userId}: Props) {
           setRows(rowData)
         }).catch(e => console.log(e));
       }
-  }, [userId]);
+  }, []);
 
   return (    
     <Container maxWidth="sm">

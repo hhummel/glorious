@@ -1,12 +1,12 @@
 export type User = {
-  id: string,
+  id: number,
   username: string,
   first_name: string,
   last_name: string,
   email:string, 
   is_superuser: boolean,
   is_staff: boolean,
-  is_active: boolean,
+  is_active: boolean
 }
 
 export type Order = {
@@ -26,7 +26,7 @@ export type Order = {
   special_instructions: string | undefined,
   standing: boolean,
   this_is_a_gift: boolean,
-  user: number,
+  user: number
 }
 
 export type Product = {
@@ -35,5 +35,22 @@ export type Product = {
   product: string,
   label: string,
   price: number,
-  picture: string,
+  picture: string
+}
+
+export type Contact = {
+  creation: string,
+  user_id: number,
+  first_name: string,
+  middle_name: string | undefined,
+  last_name: string,
+  address: string,
+  city: string,
+  state: string,
+  zip: string,
+  municipality: string | undefined
+  email: string,
+  mobile: string,
+  carrier: string | undefined,
+  active: boolean
 }

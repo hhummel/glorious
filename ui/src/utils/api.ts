@@ -1,5 +1,6 @@
 import { useGridApiMethod } from '@mui/x-data-grid';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { ExitStatus, NumberLiteralType } from 'typescript';
 
 const LOGIN_ENDPOINT = '/bread/auth/login/';
 const LOGOUT_ENDPOINT = '/bread/alogout/';
@@ -8,7 +9,7 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
 
-import { Order } from '../../types';
+import { Order, Contact } from '../../types';
 
 
 const client = axios.create({
@@ -52,7 +53,7 @@ export async function logout() {
  * @returns Array<Order>
  */
 
-export async function userOrders(userId: string) {
+export async function userOrders(userId: number) {
   const {data} = await client.get(`http://localhost:8000/bread/order/?user=${userId}`);
   return data;
 }
@@ -67,4 +68,38 @@ export async function userOrders(userId: string) {
   const {data} = await client.get(`http://localhost:8000/bread/products/`);
   console.log(`Data: ${data}`)
   return data;
+}
+
+/**
+* API helper to return contact information for a specified user
+* 
+* @param userId 
+* @returns Contact
+*/
+
+export async function getContact(userId: number): Promise<Contact> {
+ const {data} = await client.get(`http://localhost:8000/bread/contacts/${userId}/`);
+ return data;
+}
+
+/**
+* API helper to update contact information for a specified user
+* 
+* @param userId
+* @param contact
+* @returns Promise<status, Contact>
+*/
+
+type ContactResponse = {
+  status: number,
+  data: Contact | undefined
+}
+
+export async function updateContact(userId: number, contact: Contact): Promise<ContactResponse> {
+  try {
+    const res = await client.patch(`http://localhost:8000/bread/contacts/${userId}/`, { ...contact});
+    return ({"status": res.status, "data": res?.data});
+  } catch (e) {
+    return ({"status": 400, "data": undefined});
+  }
 }

@@ -30,7 +30,7 @@ const columns: GridColDef[] = [
   ];
 
 type Props = {
-    userId: string | undefined;
+    userId: number | undefined;
 }
 
 export default function Products({userId}: Props) {

@@ -229,11 +229,7 @@ def next_day():
 
 # Contact information.  Note create is the creation time of the contact object in UTC
 class Contacts(models.Model):
-    creation = models.DateTimeField(auto_now_add=True, blank=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-    first_name = models.CharField(max_length=35)
-    middle_name = models.CharField(max_length=35, null=True)
-    last_name = models.CharField(max_length=35)
     creation = models.DateTimeField(auto_now_add=True, blank=True)
     first_name = models.CharField(max_length=35)
     middle_name = models.CharField(max_length=35, null=True)
