@@ -6,7 +6,7 @@ export type User = {
   email:string, 
   is_superuser: boolean,
   is_staff: boolean,
-  is_active: boolean,
+  is_active: boolean
 }
 
 export type Order = {
@@ -26,7 +26,7 @@ export type Order = {
   special_instructions: string | undefined,
   standing: boolean,
   this_is_a_gift: boolean,
-  user: number,
+  user: number
 }
 
 export type Product = {
@@ -35,5 +35,5 @@ export type Product = {
   product: string,
   label: string,
   price: number,
-  picture: string,
+  picture: string
 }

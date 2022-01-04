@@ -9,11 +9,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+
+import { logout } from '../utils/api';
 import {User} from '../../types'
+import { isNonNullExpression } from 'typescript';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -40,6 +42,22 @@ export default function NavBar({setUser, setVisible}: Props) {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleProductsClick = () => {
+
+  };
+
+  const handleAccountClick = () => {
+    setVisible(2);
+    setAnchorElNav(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setUser(undefined);
+    setVisible(1);
+    setAnchorElNav(null);
   };
 
   const handleShoppingCart = () => {
@@ -88,11 +106,15 @@ export default function NavBar({setUser, setVisible}: Props) {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key={'Products'} onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">Products</Typography>
+              </MenuItem>
+              <MenuItem key={'Pricing'} onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">Pricing</Typography>
+              </MenuItem>
+              <MenuItem key={'Blog'} onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">Blog</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <Typography
@@ -145,11 +167,18 @@ export default function NavBar({setUser, setVisible}: Props) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={'Profile'} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
-              ))}
+                <MenuItem key={'Account'} onClick={handleAccountClick}>
+                  <Typography textAlign="center">Account</Typography>
+                </MenuItem>
+                <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">Subscription</Typography>
+                </MenuItem>
+                <MenuItem key={'Logout'} onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>                
             </Menu>
           </Box>
         </Toolbar>

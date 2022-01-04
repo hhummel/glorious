@@ -45,7 +45,7 @@ export default function Orders({userId}: Props) {
           setRows(rowData)
         }).catch(e => console.log(e));
       }
-  }, [userId]);
+  }, []);
 
   return (    
     <Container maxWidth="sm">

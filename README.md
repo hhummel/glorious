@@ -9,7 +9,7 @@ Glorious Roadmap for Customer Experience Epic:
 
   - Order form should determine the number of items and should offer the choice of making the order a gift. Gift packaging should be shown. The user should be able to see past gift receipts and offered the choice of reusing the same address without re-entring the details. Delivery options should be shown: local delivery, regional delivery using a 3rd party like Doordash, and shipping. Orders for the same product but different delivery details should be separate. For local delivery, the Customer should be able to enter special instructions.
 
-  - Shopping cart should show all the items desired, and allow deletion and edits. If editted, go back to the associated order form. The shooping cart should persist between visits, and there should be an option to clear it.
+  - Shopping cart should show all the items desired, and allow deletion and edits. If editted, go back to the associated order form. The shopping cart should persist between visits, and there should be an option to clear it.
 
   - Checkout should include payment. Payment options should include Stripe, CoD (if we have to), and invoice at the end of the month. There should be a single payment transaction for all items in the shopping cart. The shopping cart should be cleared after checkout.
 
