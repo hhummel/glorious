@@ -37,3 +37,14 @@ export type Product = {
   price: number,
   picture: string
 }
+
+export type Contact = {
+  first_name: string,
+  last_name: string,
+  address: string,
+  city: string,
+  state: string,
+  zip: string,
+  email: string,
+  mobile: string,
+}

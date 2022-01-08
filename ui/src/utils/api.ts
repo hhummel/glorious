@@ -8,7 +8,7 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
 
-import { Order } from '../../types';
+import { Order, Contact } from '../../types';
 
 
 const client = axios.create({
@@ -67,4 +67,16 @@ export async function userOrders(userId: string) {
   const {data} = await client.get(`http://localhost:8000/bread/products/`);
   console.log(`Data: ${data}`)
   return data;
+}
+
+/**
+* API helper to return contact information for a specified user
+* 
+* @param userId 
+* @returns Array<Order>
+*/
+
+export async function contact(userId: string): Promise<Contact> {
+ const {data} = await client.get(`http://localhost:8000/bread/contacts/${userId}/`);
+ return data;
 }

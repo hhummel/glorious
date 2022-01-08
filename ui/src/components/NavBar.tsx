@@ -45,23 +45,30 @@ export default function NavBar({setUser, setVisible}: Props) {
   };
 
   const handleProductsClick = () => {
-
+    setVisible(1);
+    handleCloseNavMenu();
   };
 
   const handleAccountClick = () => {
     setVisible(2);
-    setAnchorElNav(null);
+    setAnchorElUser(null);
+  };
+
+  const handleShoppingCartClick = () => {
+    setVisible(3);
+    handleCloseNavMenu();
+  };
+
+  const handleProfileClick = () => {
+    setVisible(4);
+    setAnchorElUser(null);
   };
 
   const handleLogout = () => {
     logout();
     setUser(undefined);
     setVisible(1);
-    setAnchorElNav(null);
-  };
-
-  const handleShoppingCart = () => {
-    console.log("Shopping cart click")
+    setAnchorElUser(null);
   };
 
   return (
@@ -106,7 +113,7 @@ export default function NavBar({setUser, setVisible}: Props) {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              <MenuItem key={'Products'} onClick={handleCloseNavMenu}>
+              <MenuItem key={'Products'} onClick={handleProductsClick}>
                 <Typography textAlign="center">Products</Typography>
               </MenuItem>
               <MenuItem key={'Pricing'} onClick={handleCloseNavMenu}>
@@ -126,20 +133,32 @@ export default function NavBar({setUser, setVisible}: Props) {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
               <Button
-                key={page}
+                key={'Product'}
+                onClick={handleProductsClick}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Product
+              </Button>
+              <Button
+                key={'Pricing'}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+              Pricing
               </Button>
-            ))}
+              <Button
+                key={'Blog'}
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+              Blog
+              </Button>              
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Shopping cart">
-              <IconButton onClick={handleShoppingCart} sx={{ p: 0 }}>
+              <IconButton onClick={handleShoppingCartClick} sx={{ p: 0 }}>
                 <ShoppingCartIcon />
               </IconButton>
             </Tooltip>
@@ -167,7 +186,7 @@ export default function NavBar({setUser, setVisible}: Props) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-                <MenuItem key={'Profile'} onClick={handleCloseNavMenu}>
+                <MenuItem key={'Profile'} onClick={handleProfileClick}>
                   <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
                 <MenuItem key={'Account'} onClick={handleAccountClick}>
