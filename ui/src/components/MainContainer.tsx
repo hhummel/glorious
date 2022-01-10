@@ -9,7 +9,7 @@ import Products from './Products';
 import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
 import Profile from './Profile';
-import { User } from '../../types';
+import { User, Order } from '../../types';
 
 type Props = {
     title: string;
@@ -18,6 +18,7 @@ type Props = {
 export default function MainContainer({ title }: Props) {
   const [user, setUser] = useState<User>();
   const [visible, setVisible] = useState(1);
+  const [cart, setCart] = useState<Array<Order>>([])
   return (
     <React.Fragment>
       <CssBaseline />
@@ -25,12 +26,11 @@ export default function MainContainer({ title }: Props) {
         <Typography variant="h2" component="h1" gutterBottom>
           {title}
         </Typography>
-        <NavBar setUser={setUser} setVisible={setVisible} />
-        {(visible === 1) && <Products userId={user?.id}/> }
+        <NavBar user={user} setUser={setUser} setVisible={setVisible} />
+        {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/> }
         {(visible === 2) && <Orders userId={user?.id}/>}
-        {(visible === 3) && <ShoppingCart userId={user?.id}/>}
+        {(visible === 3) && <ShoppingCart userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/>}
         {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}       
-        {user ? <Logout setUser={setUser} /> : <Login setUser={setUser} /> } 
       </Container>
     </React.Fragment>
   );

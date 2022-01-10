@@ -5,19 +5,21 @@ import { User } from '../../types';
 
 type Props = {
     setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+    setVisible: React.Dispatch<React.SetStateAction<number>>;
   };
 
-export default function Logout({setUser}: Props) {
+export default function Logout({setUser, setVisible}: Props) {
   const handleClick = () => {
       logout();
       setUser(undefined);
+      setVisible(1);
   }
 
   return (
-    <div>
-      <Button color="primary" variant="contained" onClick={handleClick}>
+    <>
+      <Button color="inherit" onClick={handleClick}>
         Logout
       </Button>
-    </div>
+    </>
   );
 };

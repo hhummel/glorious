@@ -61,8 +61,8 @@ export default function Login({setUser}: Props) {
   });
 
   return (
-    <div>
-       <Button color="primary" variant="contained" onClick={handleOpen}>Login</Button>
+    <>
+       <Button color="inherit" onClick={handleOpen}>Login</Button>
 
        <Modal
         open={open}
@@ -101,7 +101,7 @@ export default function Login({setUser}: Props) {
         </form>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 };
 
