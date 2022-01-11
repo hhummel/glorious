@@ -1,7 +1,7 @@
 ## Glorious ##
 
 
-An e-commerce platform tailored for simple, home-based businesses. The initial user is [title](https://GloriousGrain.com), 
+An e-commerce platform tailored for simple, home-based businesses. The initial user is [GloriousGrain.com](https://GloriousGrain.com), 
 but we would like to make the platform available to other entrepreurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
 
 
