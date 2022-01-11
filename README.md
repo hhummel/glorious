@@ -2,7 +2,7 @@
 
 
 An e-commerce platform tailored for simple, home-based businesses. The initial user is [GloriousGrain.com](https://GloriousGrain.com), 
-but we would like to make the platform available to other entrepreurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
+but we would like to make the platform available to other entrepreneurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
 
 
 The exisiting platform provides a basic web site, delivery app, mail campaigns and simple accounting like customer balances.
