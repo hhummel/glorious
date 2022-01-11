@@ -1,6 +1,6 @@
 ## Glorious ##
 
-<img src="https://gloriousgrain.s3.amazonaws.com/PXL_20220107_144009933.MP.jpg"" alt="bread" width="200"/>
+<img src="https://gloriousgrain.s3.amazonaws.com/PXL_20220107_144009933.MP.jpg" alt="bread" width="200"/>
 
 An e-commerce platform tailored for simple, home-based businesses. The initial user is [title](https://GloriousGrain.com), 
 but we would like to make the platform available to other entrepreurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
