@@ -5,6 +5,7 @@
 An e-commerce platform tailored for simple, home-based businesses. The initial user is [title](https://GloriousGrain.com), 
 but we would like to make the platform available to other entrepreurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
 
+
 The exisiting platform provides a basic web site, delivery app, mail campaigns and simple accounting like customer balances.
 The implementation is template-based django. In this project we will implement DRF, build a react front-end, and improve the
 functionality. The first steps are to improve the customer experience, payments and the shipping process.
