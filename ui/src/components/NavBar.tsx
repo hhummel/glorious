@@ -13,6 +13,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 
+import Login from './Login'
+import Logout from './Logout'
 import { logout } from '../utils/api';
 import {User} from '../../types'
 import { isNonNullExpression } from 'typescript';
@@ -21,11 +23,12 @@ const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 type Props = {
+    user: User | undefined;
     setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
   };
 
-export default function NavBar({setUser, setVisible}: Props) {
+export default function NavBar({user, setUser, setVisible}: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -134,28 +137,21 @@ export default function NavBar({setUser, setVisible}: Props) {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button
-                key={'Product'}
+                key={'Products'}
                 onClick={handleProductsClick}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                Product
+                Products
               </Button>
               <Button
                 key={'Pricing'}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-              Pricing
-              </Button>
-              <Button
-                key={'Blog'}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
               Blog
-              </Button>              
+              </Button>
+              {user ? <Logout setUser={setUser} setVisible={setVisible} /> : <Login setUser={setUser} />} 
           </Box>
-
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Shopping cart">
               <IconButton onClick={handleShoppingCartClick} sx={{ p: 0 }}>
