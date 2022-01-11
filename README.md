@@ -1,3 +1,15 @@
+## Glorious ##
+
+<img src="https://gloriousgrain.s3.amazonaws.com/PXL_20220107_144009933.MP.jpg"" alt="bread" width="200"/>
+
+An e-commerce platform tailored for simple, home-based businesses. The initial user is [title](https://GloriousGrain.com), 
+but we would like to make the platform available to other entrepreurs. The goal is to make it simple enough and cheap enough that it would be useful for bakers working out of their home kitchen, for example.
+
+The exisiting platform provides a basic web site, delivery app, mail campaigns and simple accounting like customer balances.
+The implementation is template-based django. In this project we will implement DRF, build a react front-end, and improve the
+functionality. The first steps are to improve the customer experience, payments and the shipping process.
+
+### Roadmap ###
 
 Glorious Roadmap for Customer Experience Epic:
 
@@ -23,30 +35,30 @@ Glorious Roadmap for Customer Experience Epic:
 
 Glorious Roadmap for Admin Experience Epic:
 
-- Admin should be able to see, edit and update information on Products, Customer Accounts, Marketing Campaigns, Deliveries, etc.
+- [ ] Admin should be able to see, edit and update information on Products, Customer Accounts, Marketing Campaigns, Deliveries, etc.
 
-- The current Django template implementation will be retained until the Customer Experience Epic is completed, but the administrator interface should also be reimplemented using REST and React.
+- [ ] The current Django template implementation will be retained until the Customer Experience Epic is completed, but the administrator interface should also be reimplemented using REST and React.
 
-- People can and do create duplicate accounts. Switch to using email address for username, and make a tool the admin can use to merge and unmerge accounts. Unmerge is in case of a mistake.
+- [ ] People can and do create duplicate accounts. Switch to using email address for username, and make a tool the admin can use to merge and unmerge accounts. Unmerge is in case of a mistake.
 
-- The admin should be able to see and edit Customer information, e.g. correct address and email.
+- [ ] The admin should be able to see and edit Customer information, e.g. correct address and email.
 
 Glorious Roadmap for Delivery Epic:
 
-- The local delivery person should be able to see the town.
+- [ ] The local delivery person should be able to see the town.
 
-- There should be an automated route planner for the local delivery person.
+- [ ] There should be an automated route planner for the local delivery person.
 
-- The local delivery person should not have full admin permissions.
+- [ ] The local delivery person should not have full admin permissions.
 
-- There should be an implementation of regional delivery, e.g. Doordash, and for shipping. There should be a way to charge for these services.
+- [ ] There should be an implementation of regional delivery, e.g. Doordash, and for shipping. There should be a way to charge for these services.
 
 Glorious Roadmap for Devops Epic:
 
-- Currently the website is implemented directly on an EC2 instance, with dev and staging on the same instance but with routing dependent on nginx. This should be changed to use Docker containers implemented in Fargate.
+- [ ] Currently the website is implemented directly on an EC2 instance, with dev and staging on the same instance but with routing dependent on nginx. This should be changed to use Docker containers implemented in Fargate.
 
-- There is no CI/CD pipeline yet. This should be implemented using a serverless platform, e.g. CircleCI.
+- [ ] There is no CI/CD pipeline yet. This should be implemented using a serverless platform, e.g. CircleCI.
 
-- There are no tests, no local test db, but there should be. Currently there is a prod and staging instance on RDS for UAT.
+- [ ] There are no tests, no local test db, but there should be. Currently there is a prod and staging instance on RDS for UAT.
 
-- Secrets are held in a file excluded from github. They should be stored in SSM.
+- [ ] Secrets are held in a file excluded from github. They should be stored in SSM.
