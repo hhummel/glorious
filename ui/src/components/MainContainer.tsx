@@ -2,8 +2,6 @@ import React, {useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Login from './Login';
-import Logout from './Logout';
 import Orders from './Orders';
 import Products from './Products';
 import NavBar from './NavBar';

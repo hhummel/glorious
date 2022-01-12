@@ -5,13 +5,23 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
 import { Contact} from '../../types';
 import { getContact, updateContact } from '../utils/api'
-import { AnalyticsRounded, AnalyticsTwoTone } from '@mui/icons-material';
+
+const validationSchema = yup.object({
+  first_name: yup.string().required().max(35),
+  last_name: yup.string().required().max(35),
+  email: yup.string().email().required(),
+  address: yup.string().required().max(100),
+  city: yup.string().required().max(100),
+  state:yup.string().required().max(100),
+  zip: yup.string().required().max(5),
+  mobile: yup.string().required().max(10),
+});
 
 type Props = {
     userId: number | undefined;
@@ -36,6 +46,7 @@ export default function Profile({userId, setVisible}: Props) {
         'carrier': undefined,
         'active': false
       },
+      validationSchema: validationSchema,
       onSubmit: values => {
         userId && updateContact(userId, values).then(result => {
           const {status, data} = result;

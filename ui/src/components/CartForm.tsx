@@ -5,12 +5,23 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
 import { Order, Product} from '../../types';
 
+const validationSchema = yup.object({
+    number: yup.number().required().positive().integer(),
+    delivery_date: yup.date().required(),
+    this_is_a_gift: yup.boolean().required(),
+    recipient_name: yup.string().max(100),
+    recipient_address: yup.string().max(100),
+    recipient_city: yup.string().max(100),
+    recipient_state: yup.string().max(100),
+    recipient_message: yup.string().max(150),
+    special_instructions: yup.string().max(150),
+  });
 
 type Props = {
     userId: number;
@@ -22,6 +33,7 @@ type Props = {
 export default function CartForm({userId, order, cart, setCart}: Props) {
     const formik = useFormik({
       initialValues: order,
+      validationSchema: validationSchema,
       onSubmit: values => {
         const order: Array<Order> = Array(values);
         setCart(cart.concat(order))

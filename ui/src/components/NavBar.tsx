@@ -17,7 +17,6 @@ import Login from './Login'
 import Logout from './Logout'
 import { logout } from '../utils/api';
 import {User} from '../../types'
-import { isNonNullExpression } from 'typescript';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];

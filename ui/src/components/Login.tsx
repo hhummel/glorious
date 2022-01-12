@@ -11,18 +11,6 @@ import TextField from '@mui/material/TextField';
 import { authenticate } from '../utils/api';
 import { User } from '../../types';
 
-const validationSchema = yup.object({
-  email: yup
-    .string()
-    .min(4, 'Username should be of minimum 4 characters length')
-    //.email('Enter a valid email')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .min(8, 'Password should be of minimum 8 characters length')
-    .required('Password is required'),
-});
-
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -34,6 +22,18 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+
+const validationSchema = yup.object({
+  email: yup
+    .string()
+    .min(4, 'Username should be of minimum 4 characters length')
+    //.email('Enter a valid email')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .min(8, 'Password should be of minimum 8 characters length')
+    .required('Password is required'),
+});
 
 type Props = {
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;

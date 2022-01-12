@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
@@ -23,6 +23,18 @@ const style = {
   p: 4,
 };
 
+const validationSchema = yup.object({
+    number: yup.number().required().positive().integer(),
+    delivery_date: yup.date().required(),
+    this_is_a_gift: yup.boolean().required(),
+    recipient_name: yup.string().max(100),
+    recipient_address: yup.string().max(100),
+    recipient_city: yup.string().max(100),
+    recipient_state: yup.string().max(100),
+    recipient_message: yup.string().max(150),
+    special_instructions: yup.string().max(150),
+  });
+  
 type Props = {
     userId: number;
     product: Product;
@@ -54,6 +66,7 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
         this_is_a_gift: false,
         user: userId  
       },
+      validationSchema: validationSchema,
       onSubmit: values => {
         const order: Array<Order> = Array(values);
         setCart(cart.concat(order))
@@ -69,77 +82,87 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
             <form onSubmit={formik.handleSubmit}>
               <Stack spacing={1}>
                 <TextField
-                  fullWidth
-                  id="number"
-                  name="number"
-                  label="Number of items"
-                  value={formik.values.number}
-                  onChange={formik.handleChange}
-                  error={formik.touched.number && Boolean(formik.errors.number)}
-                  helperText={formik.touched.number && formik.errors.number}
+                    fullWidth
+                    id="number"
+                    name="number"
+                    label="Number of items"
+                    value={formik.values.number}
+                    onChange={formik.handleChange}
+                    error={formik.touched.number && Boolean(formik.errors.number)}
+                    helperText={formik.touched.number && formik.errors.number}
                 />
                 <TextField
-                  fullWidth
-                  id="delivery_date"
-                  name="delivery_date"
-                  label="Delivery Date"
-                  value={formik.values.delivery_date}
-                  onChange={formik.handleChange}
-                  error={formik.touched.delivery_date && Boolean(formik.errors.delivery_date)}
-                  helperText={formik.touched.delivery_date && formik.errors.delivery_date}
+                    fullWidth
+                    id="delivery_date"
+                    name="delivery_date"
+                    label="Delivery Date"
+                    value={formik.values.delivery_date}
+                    onChange={formik.handleChange}
+                    error={formik.touched.delivery_date && Boolean(formik.errors.delivery_date)}
+                    helperText={formik.touched.delivery_date && formik.errors.delivery_date}
                 />
                 <TextField
-                  fullWidth
-                  id="this_is_a_gift"
-                  name="this_is_a_gift"
-                  label="Is this a gift?"
-                  value={formik.values.this_is_a_gift}
-                  onChange={formik.handleChange}
-                  error={formik.touched.this_is_a_gift && Boolean(formik.errors.this_is_a_gift)}
-                  helperText={formik.touched.this_is_a_gift && formik.errors.this_is_a_gift}
+                    fullWidth
+                    id="this_is_a_gift"
+                    name="this_is_a_gift"
+                    label="Is this a gift?"
+                    value={formik.values.this_is_a_gift}
+                    onChange={formik.handleChange}
+                    error={formik.touched.this_is_a_gift && Boolean(formik.errors.this_is_a_gift)}
+                    helperText={formik.touched.this_is_a_gift && formik.errors.this_is_a_gift}
                 />
                 {
                   formik.values.this_is_a_gift &&
                   <>
                     <TextField
-                    fullWidth
-                    id="recipient_name"
-                    name="recipeint_name"
-                    label="Recipient Name"
-                    value={formik.values.recipient_name}
-                    onChange={formik.handleChange}
-                    error={formik.touched.recipient_name && Boolean(formik.errors.recipient_name)}
-                    helperText={formik.touched.recipient_name && formik.errors.recipient_name}
+                        fullWidth
+                        id="recipient_name"
+                        name="recipient_name"
+                        label="Recipient Name"
+                        value={formik.values.recipient_name}
+                        onChange={formik.handleChange}
+                        error={formik.touched.recipient_name && Boolean(formik.errors.recipient_name)}
+                        helperText={formik.touched.recipient_name && formik.errors.recipient_name}
                     />                  
                     <TextField
-                    fullWidth
-                    id="recipient_address"
-                    name="recipient_address"
-                    label="Recipient Address"
-                    value={formik.values.recipient_address}
-                    onChange={formik.handleChange}
-                    error={formik.touched.recipient_address && Boolean(formik.errors.recipient_address)}
-                    helperText={formik.touched.recipient_address && formik.errors.recipient_address}
+                        fullWidth
+                        id="recipient_address"
+                        name="recipient_address"
+                        label="Recipient Address"
+                        value={formik.values.recipient_address}
+                        onChange={formik.handleChange}
+                        error={formik.touched.recipient_address && Boolean(formik.errors.recipient_address)}
+                        helperText={formik.touched.recipient_address && formik.errors.recipient_address}
                     />
                     <TextField
-                    fullWidth
-                    id="recipient_city"
-                    name="recipient_city"
-                    label="Recipient City"
-                    value={formik.values.recipient_city}
-                    onChange={formik.handleChange}
-                    error={formik.touched.recipient_city && Boolean(formik.errors.recipient_city)}
-                    helperText={formik.touched.recipient_city && formik.errors.recipient_city}
+                        fullWidth
+                        id="recipient_city"
+                        name="recipient_city"
+                        label="Recipient City"
+                        value={formik.values.recipient_city}
+                        onChange={formik.handleChange}
+                        error={formik.touched.recipient_city && Boolean(formik.errors.recipient_city)}
+                        helperText={formik.touched.recipient_city && formik.errors.recipient_city}
                     />
                     <TextField
-                    fullWidth
-                    id="recipient_state"
-                    name="recipient_state"
-                    label="Recipient State"
-                    value={formik.values.recipient_state}
-                    onChange={formik.handleChange}
-                    error={formik.touched.recipient_state && Boolean(formik.errors.recipient_state)}
-                    helperText={formik.touched.recipient_state && formik.errors.recipient_state}
+                        fullWidth
+                        id="recipient_state"
+                        name="recipient_state"
+                        label="Recipient State"
+                        value={formik.values.recipient_state}
+                        onChange={formik.handleChange}
+                        error={formik.touched.recipient_state && Boolean(formik.errors.recipient_state)}
+                        helperText={formik.touched.recipient_state && formik.errors.recipient_state}
+                    />
+                    <TextField
+                        fullWidth
+                        id="recipient_message"
+                        name="recipient_message"
+                        label="Recipient Message"
+                        value={formik.values.recipient_message}
+                        onChange={formik.handleChange}
+                        error={formik.touched.recipient_message && Boolean(formik.errors.recipient_message)}
+                        helperText={formik.touched.recipient_message && formik.errors.recipient_message}
                     />
                    </> 
                 }
