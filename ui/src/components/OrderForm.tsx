@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -10,6 +10,9 @@ import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
 import { Order, Product} from '../../types';
+import DatePicker from './DatePicker'
+import NumberPicker from './NumberPicker';
+import SwitchLabeled from './SwitchLabeled';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -51,7 +54,7 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
         index_key: undefined,
         confirmed: false,
         delivered: false,
-        delivery_date: '',
+        delivery_date: new Date(),
         meister: false,
         number: 1,
         order_date: '',
@@ -73,6 +76,10 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
         handleClose();
       },
     });
+
+    const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
+    const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
+    const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
   
     return (
       <Container maxWidth="sm">
@@ -81,35 +88,22 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
             Order {product.label}
             <form onSubmit={formik.handleSubmit}>
               <Stack spacing={1}>
+                <NumberPicker number={formik.values.number} maxNumber={5} handleNumberChange={handleNumberChange}/>
+                <DatePicker date={formik.values.delivery_date} handleDateChange={handleDateChange}/>
                 <TextField
-                    fullWidth
-                    id="number"
-                    name="number"
-                    label="Number of items"
-                    value={formik.values.number}
+                fullWidth
+                    id="special_instructions"
+                    name="special_instructions"
+                    label="Special Instructions"
+                    value={formik.values.special_instructions}
                     onChange={formik.handleChange}
-                    error={formik.touched.number && Boolean(formik.errors.number)}
-                    helperText={formik.touched.number && formik.errors.number}
+                    error={formik.touched.special_instructions && Boolean(formik.errors.special_instructions)}
+                    helperText={formik.touched.special_instructions && formik.errors.special_instructions}
                 />
-                <TextField
-                    fullWidth
-                    id="delivery_date"
-                    name="delivery_date"
-                    label="Delivery Date"
-                    value={formik.values.delivery_date}
-                    onChange={formik.handleChange}
-                    error={formik.touched.delivery_date && Boolean(formik.errors.delivery_date)}
-                    helperText={formik.touched.delivery_date && formik.errors.delivery_date}
-                />
-                <TextField
-                    fullWidth
-                    id="this_is_a_gift"
-                    name="this_is_a_gift"
-                    label="Is this a gift?"
-                    value={formik.values.this_is_a_gift}
-                    onChange={formik.handleChange}
-                    error={formik.touched.this_is_a_gift && Boolean(formik.errors.this_is_a_gift)}
-                    helperText={formik.touched.this_is_a_gift && formik.errors.this_is_a_gift}
+                <SwitchLabeled 
+                    label='Is this a gift?' 
+                    isChecked={formik.values.this_is_a_gift} 
+                    handleCheck={handleCheck}
                 />
                 {
                   formik.values.this_is_a_gift &&
@@ -166,16 +160,7 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
                     />
                    </> 
                 }
-                <TextField
-                fullWidth
-                id="special_instructions"
-                name="special_instructions"
-                label="Special Instructions"
-                value={formik.values.special_instructions}
-                onChange={formik.handleChange}
-                error={formik.touched.special_instructions && Boolean(formik.errors.special_instructions)}
-                helperText={formik.touched.special_instructions && formik.errors.special_instructions}
-                />
+
                 <Stack direction="row" spacing={5}>
                   <Button color="primary" variant="contained" type="submit">
                     Add to Cart
