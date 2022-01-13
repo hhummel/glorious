@@ -9,7 +9,7 @@ import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
 
 import CartForm from './CartForm';
-import { User, Order, Product } from '../../types'
+import { Order } from '../../types'
 
 type Props = {
     userId: number | undefined;

@@ -29,7 +29,6 @@ const columns: GridColDef[] = [
     { field: 'delivery', headerName: 'Delivery date', width: 150 },
   ];
 
-
 type Props = {
     userId: number | undefined;
 }

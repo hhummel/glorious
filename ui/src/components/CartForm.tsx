@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
-import { Order, Product} from '../../types';
+import { Order} from '../../types';
 
 const validationSchema = yup.object({
     number: yup.number().required().positive().integer(),

@@ -18,8 +18,6 @@ import Logout from './Logout'
 import { logout } from '../utils/api';
 import {User} from '../../types'
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 type Props = {
     user: User | undefined;

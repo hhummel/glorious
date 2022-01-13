@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { authenticate } from '../utils/api';
 import { User } from '../../types';
