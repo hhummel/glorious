@@ -43,8 +43,8 @@ export default function Login({setUser}: Props) {
   const handleClose = () => setOpen(false);
   const formik = useFormik({
     initialValues: {
-      email: 'foobar@example.com',
-      password: 'foobar',
+      email: '',
+      password: '',
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {

@@ -54,3 +54,16 @@ export type Contact = {
   carrier: string | undefined,
   active: boolean
 }
+
+export type DateObj = {
+  year: number;
+  month: number;
+  date: number;
+}
+
+export type DateConstraints = {
+enabledDates: Array<DateObj>;
+disabledDates: Array<DateObj>;
+disabledDays: Array<number>;
+disablePast: boolean;
+}

@@ -9,11 +9,12 @@ import { FormikErrors } from 'formik';
 type Props = {
     handleDateChange: (date: Date) => Promise<void> | Promise<FormikErrors<any>>;
     date: Date;
+    shouldDisableDate?: (date: Date) => boolean;
 }
 
 const defaultDate = new Date()
 
-export default function DatePicker({date, handleDateChange}: Props) {
+export default function DatePicker({date, handleDateChange, shouldDisableDate}: Props) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -23,6 +24,7 @@ export default function DatePicker({date, handleDateChange}: Props) {
             value={date}
             onChange={date => handleDateChange(date || defaultDate)}
             renderInput={(params) => <TextField {...params} />}
+            shouldDisableDate={shouldDisableDate}
         />
     </LocalizationProvider>
   );

@@ -9,10 +9,12 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
-import { Order, Product} from '../../types';
+import { Order, Product, DateConstraints } from '../../types';
 import DatePicker from './DatePicker'
 import NumberPicker from './NumberPicker';
 import SwitchLabeled from './SwitchLabeled';
+import isDisabledDate from '../utils/DateConstraints';
+
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -49,33 +51,68 @@ type Props = {
 }
 
 export default function OrderForm({userId, product, setVisible, cart, setCart, handleClose}: Props) {
-    const formik = useFormik({
-      initialValues: {
-        index_key: undefined,
-        confirmed: false,
-        delivered: false,
-        delivery_date: new Date(),
-        meister: false,
-        number: 1,
-        order_date: '',
-        product: product,
-        recipient_address: undefined,
-        recipient_city: undefined,
-        recipient_message: undefined,
-        recipient_name: undefined,
-        recipient_state: undefined,
-        special_instructions: undefined,
-        standing: false,
-        this_is_a_gift: false,
-        user: userId  
-      },
-      validationSchema: validationSchema,
-      onSubmit: values => {
-        const order: Array<Order> = Array(values);
-        setCart(cart.concat(order))
-        handleClose();
-      },
-    });
+
+  /**
+   * TODO: Hard-coded values, the same from all Products. These could differ for each Product
+   * or dependending on availability or delivery distance
+   */
+
+  const constraints: DateConstraints = {
+    enabledDates: [{"year": 2022, "month": 0, "date": 26}],
+    disabledDates: [{"year": 2022, "month": 0, "date": 28}],
+    disabledDays: [0, 1, 3, 4, 6],
+    disablePast: true
+  }
+
+  /**
+   * Disabled dates for this set of DateConstraints
+   */
+     const isDisabled = isDisabledDate(constraints);
+  
+     /**
+      * 
+      * @param startDate - Starting date
+      * @returns nextDate - The first enabled date in the year 365 days. || returns startDate
+      */
+       const nextEnabledDate = (startDate: Date): Date => {
+         let nextDate = new Date(startDate);
+         for (let i=0; i<365; i++) {
+             nextDate.setDate(nextDate.getDate()+i);
+             if (!isDisabled(nextDate)) {
+                 return nextDate
+             }
+         }
+         return startDate;
+       }
+    
+  const formik = useFormik({
+    initialValues: {
+      index_key: undefined,
+      confirmed: false,
+      delivered: false,
+      delivery_date: nextEnabledDate(new Date()),
+      meister: false,
+      number: 1,
+      order_date: '',
+      product: product,
+      recipient_address: undefined,
+      recipient_city: undefined,
+      recipient_message: undefined,
+      recipient_name: undefined,
+      recipient_state: undefined,
+      special_instructions: undefined,
+      standing: false,
+      this_is_a_gift: false,
+      user: userId  
+    },
+    validationSchema: validationSchema,
+    onSubmit: values => {
+      const order: Array<Order> = Array(values);
+      setCart(cart.concat(order))
+      handleClose();
+    },
+  });
+
 
     const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
     const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
@@ -89,7 +126,10 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
             <form onSubmit={formik.handleSubmit}>
               <Stack spacing={1}>
                 <NumberPicker number={formik.values.number} maxNumber={5} handleNumberChange={handleNumberChange}/>
-                <DatePicker date={formik.values.delivery_date} handleDateChange={handleDateChange}/>
+                <DatePicker 
+                  date={formik.values.delivery_date} 
+                  handleDateChange={handleDateChange} 
+                  shouldDisableDate={isDisabled}/>
                 <TextField
                 fullWidth
                     id="special_instructions"
