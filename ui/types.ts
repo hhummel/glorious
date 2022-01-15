@@ -12,7 +12,7 @@ export type User = {
 export type Order = {
   confirmed: boolean,
   delivered: boolean,
-  delivery_date: string,
+  delivery_date: Date,
   index_key: number | undefined,
   meister: boolean,
   number: number,

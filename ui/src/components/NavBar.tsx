@@ -13,6 +13,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 
+import { grey } from '@mui/material/colors';
+
 import Login from './Login'
 import Logout from './Logout'
 import { logout } from '../utils/api';
@@ -152,7 +154,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Shopping cart">
               <IconButton onClick={handleShoppingCartClick} sx={{ p: 0 }}>
-                <ShoppingCartIcon />
+                <ShoppingCartIcon style={{fill: grey[200]}} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -160,7 +162,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <SettingsIcon />
+                <SettingsIcon style={{fill: grey[200]}} />
               </IconButton>
             </Tooltip>
             <Menu
