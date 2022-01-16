@@ -17,11 +17,17 @@ Glorious Roadmap for Customer Experience Epic:
 
 - [ ] A cooler looking React frontend for the customer experience should consume the REST API. Use a flow based on Amazon: A list of products, an order form, a shopping cart and a checkout form. Use Material UI for the styling. Begin with more-or-less MUI default styling.
 
-  - [ ] Products list should be responsive and be a single column on a phone. Make a way to capture and display reviews. Each product variant should have it's own card in the list.
+  - [x] Products list should be responsive and be a single column on a phone. Each product variant should have it's own card in the list.
 
-  - [ ] Order form should determine the number of items and should offer the choice of making the order a gift. Gift packaging should be shown. The user should be able to see past gift receipts and offered the choice of reusing the same address without re-entring the details. Delivery options should be shown: local delivery, regional delivery using a 3rd party like Doordash, and shipping. Orders for the same product but different delivery details should be separate. For local delivery, the Customer should be able to enter special instructions.
+  - [ ] Make a way to capture and display reviews. 
 
-  - [ ] Shopping cart should show all the items desired, and allow deletion and edits. If editted, go back to the associated order form. The shopping cart should persist between visits, and there should be an option to clear it.
+  - [x] Order form should determine the number of items and should offer the choice of making the order a gift. Orders for the same product but different delivery details should be separate. For local delivery, the Customer should be able to enter special instructions.
+
+  - [ ] Gift packaging should be shown. The user should be able to see past gift receipts and offered the choice of reusing the same address without re-entring the details. 
+  
+  - [ ] Delivery options should be shown: local delivery, regional delivery using a 3rd party like Doordash, and shipping.
+
+  - [ ] Shopping cart should show all the items desired, and allow deletion and edits. There should be an option to clear it.
 
   - [ ] Checkout should include payment. Payment options should include Stripe, CoD (if we have to), and invoice at the end of the month. There should be a single payment transaction for all items in the shopping cart. The shopping cart should be cleared after checkout.
 

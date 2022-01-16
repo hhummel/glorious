@@ -24,19 +24,24 @@ const validationSchema = yup.object({
   });
 
 type Props = {
+    index: number;
     userId: number;
     order: Order;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
-export default function CartForm({userId, order, cart, setCart}: Props) {
+export default function CartForm({index, userId, order, cart, setCart}: Props) {
+    /**
+     * Update formik form with edited order input
+     */
     const formik = useFormik({
       initialValues: order,
       validationSchema: validationSchema,
       onSubmit: values => {
-        const order: Array<Order> = Array(values);
-        setCart(cart.concat(order))
+        const newCart = [...cart];
+        newCart[index] = values;
+        setCart(newCart);
       },
     });
   
@@ -134,7 +139,7 @@ export default function CartForm({userId, order, cart, setCart}: Props) {
                 />
                 <Stack direction="row" spacing={5}>
                   <Button color="primary" variant="contained" type="submit">
-                    Add to Cart
+                    Edit
                   </Button>
                 </Stack>
               </Stack>

@@ -77,7 +77,7 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
        const nextEnabledDate = (startDate: Date): Date => {
          let nextDate = new Date(startDate);
          for (let i=0; i<365; i++) {
-             nextDate.setDate(nextDate.getDate()+i);
+             nextDate.setDate(nextDate.getDate() + 1);
              if (!isDisabled(nextDate)) {
                  return nextDate
              }
