@@ -44,9 +44,10 @@ export default function OrderModal({userId, product, setVisible, cart, setCart}:
         aria-describedby="modal-modal-description"
       >
         <OrderForm 
+          index={undefined}
           userId={userId} 
-          product={product} 
-          setVisible={setVisible} 
+          product={product}
+          order={undefined} 
           cart={cart} setCart={setCart} 
           handleClose={handleClose} 
         />

@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import type {} from '@mui/x-data-grid/themeAugmentation';
 import { createTheme } from '@mui/material/styles';
 
-import CartForm from './CartForm';
+import OrderForm from './OrderForm';
 import { Order } from '../../types'
 
 type Props = {
@@ -41,7 +41,7 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
                   Empty cart
                 </Button>
               </Stack>
-        {userId && cart.map((order, index) => <CartForm index={index} userId={userId} order={order} cart={cart} setCart={setCart} />)}
+        {userId && cart.map((order, index) => <OrderForm index={index} product={order.product} userId={userId} order={order} cart={cart} setCart={setCart} handleClose={()=>{}}/>)}
       </Stack>
     </Container>
   );

@@ -16,7 +16,7 @@ import SwitchLabeled from './SwitchLabeled';
 import isDisabledDate from '../utils/DateConstraints';
 
 
-const style = {
+const modalStyle = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
@@ -26,6 +26,10 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+};
+
+const cartStyle = { 
+  border: '1px solid grey',
 };
 
 const validationSchema = yup.object({
@@ -39,18 +43,19 @@ const validationSchema = yup.object({
     recipient_message: yup.string().max(150),
     special_instructions: yup.string().max(150),
   });
+
   
 type Props = {
+    index: number | undefined;
     userId: number;
     product: Product;
-    initialOrder?: Order;
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
+    order: Order | undefined;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     handleClose: () => void;
 }
 
-export default function OrderForm({userId, product, setVisible, cart, setCart, handleClose}: Props) {
+export default function OrderForm({index, userId, product, order, cart, setCart, handleClose}: Props) {
 
   /**
    * TODO: Hard-coded values, the same from all Products. These could differ for each Product
@@ -63,156 +68,172 @@ export default function OrderForm({userId, product, setVisible, cart, setCart, h
     disabledDays: [0, 1, 3, 4, 6],
     disablePast: true
   }
-
-  /**
-   * Disabled dates for this set of DateConstraints
-   */
-     const isDisabled = isDisabledDate(constraints);
+  const isDisabled = isDisabledDate(constraints);
   
-     /**
-      * 
-      * @param startDate - Starting date
-      * @returns nextDate - The first enabled date in the year 365 days. || returns startDate
-      */
-       const nextEnabledDate = (startDate: Date): Date => {
-         let nextDate = new Date(startDate);
-         for (let i=0; i<365; i++) {
-             nextDate.setDate(nextDate.getDate() + 1);
-             if (!isDisabled(nextDate)) {
-                 return nextDate
-             }
-         }
-         return startDate;
-       }
+  /**
+  * @param startDate - Starting date
+  * @returns nextDate - The first enabled date in the year 365 days. || returns startDate
+  */
+  const nextEnabledDate = (startDate: Date): Date => {
+    let nextDate = new Date(startDate);
+    for (let i=0; i<365; i++) {
+        nextDate.setDate(nextDate.getDate() + 1);
+        if (!isDisabled(nextDate)) {
+            return nextDate
+        }
+    }
+    return startDate;
+  }
     
+  const defaultOrder = {
+    index_key: undefined,
+    confirmed: false,
+    delivered: false,
+    delivery_date: nextEnabledDate(new Date()),
+    meister: false,
+    number: 1,
+    order_date: '',
+    product: product,
+    recipient_address: undefined,
+    recipient_city: undefined,
+    recipient_message: undefined,
+    recipient_name: undefined,
+    recipient_state: undefined,
+    special_instructions: undefined,
+    standing: false,
+    this_is_a_gift: false,
+    user: userId
+  }  
+  /**
+   * The index is defined in the ShoppingCart, in that case the behavior is to 
+   * edit the items in the cart. If index is undefined, the cart object is in 
+   * the Products list and the item should be appended to the cart.
+   */
+
+  const isCart = typeof index !== 'undefined'
+
+
   const formik = useFormik({
-    initialValues: {
-      index_key: undefined,
-      confirmed: false,
-      delivered: false,
-      delivery_date: nextEnabledDate(new Date()),
-      meister: false,
-      number: 1,
-      order_date: '',
-      product: product,
-      recipient_address: undefined,
-      recipient_city: undefined,
-      recipient_message: undefined,
-      recipient_name: undefined,
-      recipient_state: undefined,
-      special_instructions: undefined,
-      standing: false,
-      this_is_a_gift: false,
-      user: userId  
-    },
+    initialValues: order || defaultOrder,
     validationSchema: validationSchema,
-    onSubmit: values => {
-      const order: Array<Order> = Array(values);
-      setCart(cart.concat(order))
-      handleClose();
-    },
+    onSubmit: values => { 
+      if (isCart) {
+        const newCart = [...cart];
+        newCart[index] = values;
+        setCart(newCart);
+      }
+      else {
+        const order: Array<Order> = Array(values);
+        setCart(cart.concat(order))
+        handleClose();
+      }
+    }
   });
 
+  /**
+   * The style also changes in the Order Modal and the ShoppingCart
+   */
+   const style = isCart ? cartStyle : modalStyle;
+   const buttonText = isCart ? 'Update' : 'Add to Cart' 
 
-    const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
-    const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
-    const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
-  
-    return (
-      <Container maxWidth="sm">
-        <Box sx={style}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Order {product.label}
-            <form onSubmit={formik.handleSubmit}>
-              <Stack spacing={1}>
-                <NumberPicker number={formik.values.number} maxNumber={5} handleNumberChange={handleNumberChange}/>
-                <DatePicker 
-                  date={formik.values.delivery_date} 
-                  handleDateChange={handleDateChange} 
-                  shouldDisableDate={isDisabled}/>
-                <TextField
-                fullWidth
-                    id="special_instructions"
-                    name="special_instructions"
-                    label="Special Instructions"
-                    value={formik.values.special_instructions}
-                    onChange={formik.handleChange}
-                    error={formik.touched.special_instructions && Boolean(formik.errors.special_instructions)}
-                    helperText={formik.touched.special_instructions && formik.errors.special_instructions}
-                />
-                <SwitchLabeled 
-                    label='Is this a gift?' 
-                    isChecked={formik.values.this_is_a_gift} 
-                    handleCheck={handleCheck}
-                />
-                {
-                  formik.values.this_is_a_gift &&
-                  <>
-                    <TextField
-                        fullWidth
-                        id="recipient_name"
-                        name="recipient_name"
-                        label="Recipient Name"
-                        value={formik.values.recipient_name}
-                        onChange={formik.handleChange}
-                        error={formik.touched.recipient_name && Boolean(formik.errors.recipient_name)}
-                        helperText={formik.touched.recipient_name && formik.errors.recipient_name}
-                    />                  
-                    <TextField
-                        fullWidth
-                        id="recipient_address"
-                        name="recipient_address"
-                        label="Recipient Address"
-                        value={formik.values.recipient_address}
-                        onChange={formik.handleChange}
-                        error={formik.touched.recipient_address && Boolean(formik.errors.recipient_address)}
-                        helperText={formik.touched.recipient_address && formik.errors.recipient_address}
-                    />
-                    <TextField
-                        fullWidth
-                        id="recipient_city"
-                        name="recipient_city"
-                        label="Recipient City"
-                        value={formik.values.recipient_city}
-                        onChange={formik.handleChange}
-                        error={formik.touched.recipient_city && Boolean(formik.errors.recipient_city)}
-                        helperText={formik.touched.recipient_city && formik.errors.recipient_city}
-                    />
-                    <TextField
-                        fullWidth
-                        id="recipient_state"
-                        name="recipient_state"
-                        label="Recipient State"
-                        value={formik.values.recipient_state}
-                        onChange={formik.handleChange}
-                        error={formik.touched.recipient_state && Boolean(formik.errors.recipient_state)}
-                        helperText={formik.touched.recipient_state && formik.errors.recipient_state}
-                    />
-                    <TextField
-                        fullWidth
-                        id="recipient_message"
-                        name="recipient_message"
-                        label="Recipient Message"
-                        value={formik.values.recipient_message}
-                        onChange={formik.handleChange}
-                        error={formik.touched.recipient_message && Boolean(formik.errors.recipient_message)}
-                        helperText={formik.touched.recipient_message && formik.errors.recipient_message}
-                    />
-                   </> 
-                }
 
-                <Stack direction="row" spacing={5}>
-                  <Button color="primary" variant="contained" type="submit">
-                    Add to Cart
-                  </Button>
-                  <Button color="primary" variant="contained" onClick={ () => handleClose()}>
-                    Cancel
-                  </Button>
-                </Stack>
+  const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
+  const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
+  const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
+
+  return (
+    <Container maxWidth="sm">
+      <Box sx={style}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Order {product.label}
+          <form onSubmit={formik.handleSubmit}>
+            <Stack spacing={1}>
+              <NumberPicker number={formik.values.number} maxNumber={5} handleNumberChange={handleNumberChange}/>
+              <DatePicker 
+                date={formik.values.delivery_date} 
+                handleDateChange={handleDateChange} 
+                shouldDisableDate={isDisabled}/>
+              <TextField
+              fullWidth
+                  id="special_instructions"
+                  name="special_instructions"
+                  label="Special Instructions"
+                  value={formik.values.special_instructions}
+                  onChange={formik.handleChange}
+                  error={formik.touched.special_instructions && Boolean(formik.errors.special_instructions)}
+                  helperText={formik.touched.special_instructions && formik.errors.special_instructions}
+              />
+              <SwitchLabeled 
+                  label='Is this a gift?' 
+                  isChecked={formik.values.this_is_a_gift} 
+                  handleCheck={handleCheck}
+              />
+              {
+                formik.values.this_is_a_gift &&
+                <>
+                  <TextField
+                      fullWidth
+                      id="recipient_name"
+                      name="recipient_name"
+                      label="Recipient Name"
+                      value={formik.values.recipient_name}
+                      onChange={formik.handleChange}
+                      error={formik.touched.recipient_name && Boolean(formik.errors.recipient_name)}
+                      helperText={formik.touched.recipient_name && formik.errors.recipient_name}
+                  />                  
+                  <TextField
+                      fullWidth
+                      id="recipient_address"
+                      name="recipient_address"
+                      label="Recipient Address"
+                      value={formik.values.recipient_address}
+                      onChange={formik.handleChange}
+                      error={formik.touched.recipient_address && Boolean(formik.errors.recipient_address)}
+                      helperText={formik.touched.recipient_address && formik.errors.recipient_address}
+                  />
+                  <TextField
+                      fullWidth
+                      id="recipient_city"
+                      name="recipient_city"
+                      label="Recipient City"
+                      value={formik.values.recipient_city}
+                      onChange={formik.handleChange}
+                      error={formik.touched.recipient_city && Boolean(formik.errors.recipient_city)}
+                      helperText={formik.touched.recipient_city && formik.errors.recipient_city}
+                  />
+                  <TextField
+                      fullWidth
+                      id="recipient_state"
+                      name="recipient_state"
+                      label="Recipient State"
+                      value={formik.values.recipient_state}
+                      onChange={formik.handleChange}
+                      error={formik.touched.recipient_state && Boolean(formik.errors.recipient_state)}
+                      helperText={formik.touched.recipient_state && formik.errors.recipient_state}
+                  />
+                  <TextField
+                      fullWidth
+                      id="recipient_message"
+                      name="recipient_message"
+                      label="Recipient Message"
+                      value={formik.values.recipient_message}
+                      onChange={formik.handleChange}
+                      error={formik.touched.recipient_message && Boolean(formik.errors.recipient_message)}
+                      helperText={formik.touched.recipient_message && formik.errors.recipient_message}
+                  />
+                  </> 
+              }
+
+              <Stack direction="row" spacing={5}>
+                <Button color="primary" variant="contained" type="submit">
+                  {buttonText}
+                </Button>
+                {!isCart && <Button color="primary" variant="contained" onClick={ () => handleClose()}>Cancel</Button>}
               </Stack>
-            </form>
-          </Typography>
-        </Box>
-      </Container>
-    );
-  };
+            </Stack>
+          </form>
+        </Typography>
+      </Box>
+    </Container>
+  );
+};
