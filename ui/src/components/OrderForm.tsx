@@ -130,20 +130,13 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     }
   });
 
-  /**
-   * The style also changes in the Order Modal and the ShoppingCart
-   */
-   const style = isCart ? cartStyle : modalStyle;
-   const buttonText = isCart ? 'Update' : 'Add to Cart' 
-
-
   const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
   const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
   const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
 
   return (
     <Container maxWidth="sm">
-      <Box sx={style}>
+      <Box sx={isCart ? cartStyle : modalStyle}>
         <Typography variant="h4" component="h1" gutterBottom>
           Order {product.label}
           <form onSubmit={formik.handleSubmit}>
@@ -226,9 +219,18 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
 
               <Stack direction="row" spacing={5}>
                 <Button color="primary" variant="contained" type="submit">
-                  {buttonText}
+                  {isCart ? 'Update' : 'Add to Cart' }
                 </Button>
-                {!isCart && <Button color="primary" variant="contained" onClick={ () => handleClose()}>Cancel</Button>}
+                {isCart ? 
+                  <Button color="primary" variant="contained" onClick={ 
+                    () => {
+                      const newCart = [...cart];
+                      newCart.splice(index, 1);
+                      setCart(newCart);
+                    }
+                  }>Delete</Button> : 
+                  <Button color="primary" variant="contained" onClick={ () => handleClose()}>Cancel</Button>
+                }
               </Stack>
             </Stack>
           </form>
