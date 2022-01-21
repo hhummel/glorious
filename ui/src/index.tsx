@@ -5,10 +5,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import App from './App';
 
 import MainContainer from './components/MainContainer';
-import theme from './theme';
+import  { darkTheme, lightTheme, hackerTheme } from './themes';
 
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
+  <ThemeProvider theme={darkTheme}>
     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
     <CssBaseline />
     <MainContainer title='Glorious Grain' />
