@@ -24,13 +24,13 @@ Glorious Roadmap for Customer Experience Epic: A cooler looking React frontend f
 
 - [ ] Gift packaging should be shown. The user should be able to see past gift receipts and offered the choice of reusing the same address without re-entring the details. 
   
-- [ ] Delivery options should be shown: local delivery, regional delivery using a 3rd party like Doordash, and shipping.
+- [ ] Delivery options should be shown: local delivery and shipping.
 
 - [x] Shopping cart should show all the items desired, and allow deletion and edits. There should be an option to clear it.
 
 - [ ] Checkout should include payment. Payment options should include Stripe, CoD (if we have to), and invoice at the end of the month. There should be a single payment transaction for all items in the shopping cart. The shopping cart should be cleared after checkout, orders and payments should be submitted to the backend 
 
-- [ ] The frontend design should assume there will be multiple stores using the same logic. This logic should also be added to the django models. No branding should be hard-coded into the front end: All images, copy and assumptions about delivery area should depend on the store.
+- [ ] The frontend design should assume there will be multiple stores using the same logic. No branding should be hard-coded into the front end: All images, copy and assumptions about delivery area should depend on the store.
 
 - [ ] Customers should be able to see and edit their account settings, e.g. address, email. They should be able to see their order history and account balance.
 
@@ -48,15 +48,15 @@ Glorious Roadmap for Admin Experience Epic: The user should be able to perform a
 
 - [ ] The admin should be able to see and edit Customer information, e.g. correct address and email.
 
-Glorious Roadmap for Delivery Epic: The local delivery person should have route planning and limited admin access. There should be regional and shipping delivery options
+Glorious Roadmap for Delivery Epic: The local delivery person(s) should have route planning and limited admin access. There should be a shipping delivery and charge.
 
 - [ ] The local delivery person should be able to see the town.
 
 - [ ] There should be an automated route planner for the local delivery person.
 
-- [ ] The local delivery person should not have full admin permissions.
+- [ ] It should be possible to have more than one delivery person and a way to allocate the deliveries among them.
 
-- [ ] There should be an implementation of regional delivery, e.g. Doordash, and for shipping. There should be a way to charge for these services.
+- [ ] The local delivery person should not have full admin permissions.
 
 Glorious Roadmap for Devops Epic:
 
