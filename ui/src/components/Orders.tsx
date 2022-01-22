@@ -4,24 +4,8 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import type {} from '@mui/x-data-grid/themeAugmentation';
-import { createTheme } from '@mui/material/styles';
-
 import { userOrders } from '../utils/api';
 import { Order } from '../../types';
-
-const theme = createTheme({
-  components: {
-    // Use `MuiDataGrid` on both DataGrid and DataGridPro
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'red',
-        },
-      },
-    },
-  },
-});
 
 const columns: GridColDef[] = [
     { field: 'product', headerName: 'Product', width: 150 },

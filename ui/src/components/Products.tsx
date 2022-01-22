@@ -3,26 +3,9 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
-import type {} from '@mui/x-data-grid/themeAugmentation';
-import { createTheme } from '@mui/material/styles';
-
 import { products } from '../utils/api';
 import { Product, Order } from '../../types';
 import ProductCard from './ProductCard'
-
-const theme = createTheme({
-  components: {
-    // Use `MuiDataGrid` on both DataGrid and DataGridPro
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'red',
-        },
-      },
-    },
-  },
-});
-
 
 type Props = {
     userId: number | undefined;

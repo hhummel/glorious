@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -7,13 +6,12 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import type {} from '@mui/x-data-grid/themeAugmentation';
-import { createTheme } from '@mui/material/styles';
 import { Order, Product, DateConstraints } from '../../types';
 import DatePicker from './DatePicker'
 import NumberPicker from './NumberPicker';
 import SwitchLabeled from './SwitchLabeled';
 import isDisabledDate from '../utils/DateConstraints';
+import { dateConstraints } from '../Configuration';
 
 
 const modalStyle = {
@@ -29,7 +27,10 @@ const modalStyle = {
 };
 
 const cartStyle = { 
-  border: '1px solid grey',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
 };
 
 const validationSchema = yup.object({
@@ -68,7 +69,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     disabledDays: [0, 1, 3, 4, 6],
     disablePast: true
   }
-  const isDisabled = isDisabledDate(constraints);
+  const isDisabled = isDisabledDate(dateConstraints);
   
   /**
   * @param startDate - Starting date
@@ -117,7 +118,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     initialValues: order || defaultOrder,
     validationSchema: validationSchema,
     onSubmit: values => { 
-      if (isCart) {
+      if (typeof index !== 'undefined') {
         const newCart = [...cart];
         newCart[index] = values;
         setCart(newCart);
@@ -221,7 +222,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
                 <Button color="primary" variant="contained" type="submit">
                   {isCart ? 'Update' : 'Add to Cart' }
                 </Button>
-                {isCart ? 
+                {typeof index !== 'undefined' ? 
                   <Button color="primary" variant="contained" onClick={ 
                     () => {
                       const newCart = [...cart];

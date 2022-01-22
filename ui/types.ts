@@ -67,3 +67,10 @@ disabledDates: Array<DateObj>;
 disabledDays: Array<number>;
 disablePast: boolean;
 }
+
+export type Brand = {
+  name: string,
+  legalEntityName: string,
+  legalEntityURL: string,
+  theme: string,
+}

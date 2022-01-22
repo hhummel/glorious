@@ -8,7 +8,6 @@ import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
 import Profile from './Profile';
 import { User, Order } from '../../types';
-import { palette } from '@mui/system';
 
 type Props = {
     title: string;

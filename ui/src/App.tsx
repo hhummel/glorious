@@ -4,12 +4,14 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 
+import { brand } from './Configuration';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://gloriousgrain.com/">
-        Glorious Grain LLC
+      <Link color="inherit" href={brand.legalEntityURL}>
+        {brand.legalEntityName}
       </Link>{' '}
       {new Date().getFullYear()}.
     </Typography>
