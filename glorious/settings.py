@@ -12,7 +12,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from glorious.passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, EMAIL_PORT, EMAIL_ASSISTANT, DEFAULT_FROM_EMAIL, THE_SECRET, HOST_LIST, DEBUG_SETTING
+from glorious.passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, EMAIL_PORT, THE_SECRET, HOST_LIST, DEBUG_SETTING, USPS_USER_ID
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = THE_SECRET
@@ -26,6 +26,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'https://secure.shippingapis.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

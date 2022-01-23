@@ -1,3 +1,4 @@
+import React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -6,32 +7,14 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { Order, Product, DateConstraints } from '../../types';
+import { Order, Product } from '../../types';
 import DatePicker from './DatePicker'
 import NumberPicker from './NumberPicker';
 import SwitchLabeled from './SwitchLabeled';
 import isDisabledDate from '../utils/DateConstraints';
 import { dateConstraints } from '../Configuration';
-
-
-const modalStyle = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 600,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
-
-const cartStyle = { 
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+import { modalStyle, cartStyle } from '../styles';
+import { getValidatedAddress } from '../utils/api';
 
 const validationSchema = yup.object({
     number: yup.number().required().positive().integer(),
@@ -58,17 +41,7 @@ type Props = {
 
 export default function OrderForm({index, userId, product, order, cart, setCart, handleClose}: Props) {
 
-  /**
-   * TODO: Hard-coded values, the same from all Products. These could differ for each Product
-   * or dependending on availability or delivery distance
-   */
-
-  const constraints: DateConstraints = {
-    enabledDates: [{"year": 2022, "month": 0, "date": 26}],
-    disabledDates: [{"year": 2022, "month": 0, "date": 28}],
-    disabledDays: [0, 1, 3, 4, 6],
-    disablePast: true
-  }
+ 
   const isDisabled = isDisabledDate(dateConstraints);
   
   /**
@@ -99,7 +72,8 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     recipient_city: undefined,
     recipient_message: undefined,
     recipient_name: undefined,
-    recipient_state: undefined,
+    recipient_state: 'PA',
+    recipient_zip: undefined,
     special_instructions: undefined,
     standing: false,
     this_is_a_gift: false,
@@ -117,12 +91,27 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
   const formik = useFormik({
     initialValues: order || defaultOrder,
     validationSchema: validationSchema,
-    onSubmit: values => { 
+    onSubmit: values => {
+      //validate address if a gift
+      if (values.this_is_a_gift && values.recipient_address && values.recipient_city && values.recipient_state) {
+        getValidatedAddress(values.recipient_address, values.recipient_city, values.recipient_state).then(
+          response => {
+            const validData = response?.data || ''
+            const {zip} = JSON.parse(validData)
+            formik.setFieldValue("recipient_zip", zip);
+          }).catch(
+            reason => console.log(`Address validation rejected: ${reason}`)
+        )
+      }
+
+      //update order in cart if in ShoppingCart
       if (typeof index !== 'undefined') {
         const newCart = [...cart];
         newCart[index] = values;
         setCart(newCart);
       }
+
+      //append order to cart if in Products
       else {
         const order: Array<Order> = Array(values);
         setCart(cart.concat(order))
@@ -139,7 +128,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     <Container maxWidth="sm">
       <Box sx={isCart ? cartStyle : modalStyle}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Order {product.label}
+          {product.label}
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={1}>
               <NumberPicker number={formik.values.number} maxNumber={5} handleNumberChange={handleNumberChange}/>
@@ -204,6 +193,14 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
                       onChange={formik.handleChange}
                       error={formik.touched.recipient_state && Boolean(formik.errors.recipient_state)}
                       helperText={formik.touched.recipient_state && formik.errors.recipient_state}
+                  />
+                  <TextField
+                      fullWidth
+                      id="recipient_zip"
+                      name="recipient_zip"
+                      label="Recipient Zip"
+                      value={formik.values.recipient_zip}
+                      onChange={formik.handleChange}
                   />
                   <TextField
                       fullWidth

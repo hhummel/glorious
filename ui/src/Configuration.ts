@@ -8,7 +8,7 @@ export const brand: Brand = {
     name: "Glorious Grain",
     legalEntityName: "Glorious Grain LLC",
     legalEntityURL: "https://GloriousGrain.com",
-    theme: "darkTheme",
+    theme: "hackerTheme",
 }
 
 export const dateConstraints: DateConstraints = {

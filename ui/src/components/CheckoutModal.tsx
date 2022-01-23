@@ -3,18 +3,17 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 
 import type {} from '@mui/x-data-grid/themeAugmentation';
-import OrderForm from './OrderForm';
-import { Order, Product} from '../../types';
+import CheckoutForm from './CheckoutForm';
+import { Order } from '../../types';
 
 type Props = {
     userId: number;
-    product: Product;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
-export default function OrderModal({userId, product, setVisible, cart, setCart}: Props) {
+export default function OrderModal({userId, setVisible, cart, setCart}: Props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -22,7 +21,7 @@ export default function OrderModal({userId, product, setVisible, cart, setCart}:
   
     return (
       <>
-      <Button size="small" onClick={() => handleOpen()}> Order</Button>
+      <Button color="primary" variant="contained" onClick={() => handleOpen()}>Checkout</Button>
 
       <Modal
         open={open}
@@ -30,12 +29,11 @@ export default function OrderModal({userId, product, setVisible, cart, setCart}:
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <OrderForm 
-          index={undefined}
+        <CheckoutForm 
           userId={userId} 
-          product={product}
-          order={undefined} 
-          cart={cart} setCart={setCart} 
+          cart={cart} 
+          setCart={setCart}
+          setVisible={setVisible}
           handleClose={handleClose} 
         />
       </Modal>

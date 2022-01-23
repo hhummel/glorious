@@ -1,6 +1,7 @@
 from decimal import Decimal
 import json
 import os
+import logging
 
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
@@ -20,14 +21,18 @@ from rest_framework.decorators import api_view
 from rest_framework import filters
 import django_filters.rest_framework
 
+import requests
 import stripe
+import xmltodict
 
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category
 from .models import Products, Subscription, Gift, Campaign
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
-from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_PUBLISHABLE, HISTORY
+from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
+    EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, \
+    STRIPE_PUBLISHABLE, HISTORY, USPS_USER_ID
 from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, OrderSerializer
 from .serializers import SubscriptionSerializer, GiftSerializer, PaymentSerializer, LedgerSerializer
@@ -36,6 +41,7 @@ from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
 
 # Path to  output file
 log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
+logger = logging.Logger('bread')
 
 # Stripe secret. TODO: Move this!
 stripe.api_key = STRIPE_SECRET
@@ -148,6 +154,44 @@ def session_login(request):
 def session_logout(request):
     logout(request)
     return Response(status=status.HTTP_200_OK)
+
+
+# Views returning json
+
+@api_view(["POST"])
+def validate_address(request):
+    address = request.data['address']
+    city = request.data['city']
+    state = request.data['state']
+
+    xml_body = f'<AddressValidateRequest USERID="{USPS_USER_ID}"><Address ID="1">' \
+        f'<Address1>{address}</Address1><Address2></Address2><City>{city}</City>' \
+        f'<State>{state}</State><Zip5></Zip5><Zip4></Zip4></Address></AddressValidateRequest>'
+
+    data = {
+        'API': "Verify",
+        'XML': xml_body
+    }
+
+    headers = {
+      'Content-Type': 'text/xml',
+    }
+    try:
+        res = requests.post("https://secure.shippingapis.com/ShippingAPI.dll", data=data, headers=headers)
+        logger.info(f'Address validation status: {res.status_code} text: {res.text}')
+        address_dict = xmltodict.parse(res.text).get('AddressValidateResponse').get('Address')
+        validated = {
+            'address': address_dict.get('Address2'),
+            'city': address_dict.get('City'),
+            'state': address_dict.get('State'),
+            'zip5': address_dict.get('Zip5'),
+            'zip4': address_dict.get('Zip4'),
+        }
+
+        return (Response(status=res.status_code, data=json.dumps(validated)))
+    except Exception as e:
+        # TODO: Should user logger
+        logger.error(f'Address validation failed: {e}')
 
 
 # Django HTML views

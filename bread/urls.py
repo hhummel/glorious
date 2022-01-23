@@ -146,4 +146,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('auth/login/', bread_views.session_login, name='login'),
     path('auth/logout/', bread_views.session_logout, name='logout'),
+
+    path('validate_address', bread_views.validate_address, name='validate_address'),
 ]

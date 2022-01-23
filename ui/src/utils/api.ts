@@ -2,14 +2,16 @@ import { useGridApiMethod } from '@mui/x-data-grid';
 import axios, { AxiosResponse } from 'axios';
 import { ExitStatus, NumberLiteralType } from 'typescript';
 
+import { Order, Contact } from '../../types';
+
 const LOGIN_ENDPOINT = '/bread/auth/login/';
-const LOGOUT_ENDPOINT = '/bread/alogout/';
+const LOGOUT_ENDPOINT = '/bread/logout/';
 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
 
-import { Order, Contact } from '../../types';
+
 
 
 const client = axios.create({
@@ -101,5 +103,19 @@ export async function updateContact(userId: number, contact: Contact): Promise<C
     return ({"status": res.status, "data": res?.data});
   } catch (e) {
     return ({"status": 400, "data": undefined});
+  }
+}
+
+type AddressResponse = {
+  status: number,
+  data: string | undefined
+}
+
+export async function getValidatedAddress(address: string, city: string, state: string): Promise<AddressResponse>  {
+  try {
+    const res = await client.post(`http://localhost:8000/bread/validate_address`, {address, city, state});
+    return ({"status": res.status, "data": res?.data});
+  } catch (e) {
+    return ({"status": 500, "data": undefined});
   }
 }
