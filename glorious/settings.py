@@ -12,7 +12,9 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from glorious.passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, EMAIL_PORT, THE_SECRET, HOST_LIST, DEBUG_SETTING, USPS_USER_ID
+from glorious.passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, \
+    MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, \
+        EMAIL_PORT, THE_SECRET, HOST_LIST, DEBUG_SETTING, USPS_USER_ID
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = THE_SECRET
@@ -129,10 +131,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+REACT_APP_DIR = os.path.join(BASE_DIR, 'ui')
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(REACT_APP_DIR, 'build'),
+]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 

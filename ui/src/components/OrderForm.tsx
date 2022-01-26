@@ -96,10 +96,11 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
       if (values.this_is_a_gift && values.recipient_address && values.recipient_city && values.recipient_state) {
         getValidatedAddress(values.recipient_address, values.recipient_city, values.recipient_state).then(
           response => {
-            const validData = response?.data || ''
-            const {zip} = JSON.parse(validData)
-            formik.setFieldValue("recipient_zip", zip);
+            const validData = response?.data || '';
+            const {address, city, state, zip5} = JSON.parse(validData);
+            formik.setFieldValue("recipient_zip", zip5);
           }).catch(
+            // TODO: Raise error if vlidation fails 
             reason => console.log(`Address validation rejected: ${reason}`)
         )
       }
@@ -113,8 +114,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
 
       //append order to cart if in Products
       else {
-        const order: Array<Order> = Array(values);
-        setCart(cart.concat(order))
+        setCart([...cart].concat(values))
         handleClose();
       }
     }

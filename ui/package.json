@@ -2,6 +2,7 @@
   "name": "create-react-app-with-typescript",
   "version": "5.0.0",
   "private": true,
+  "homepage": "static",
   "dependencies": {
     "@date-io/date-fns": "^2.11.0",
     "@emotion/react": "latest",

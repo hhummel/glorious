@@ -3,7 +3,10 @@ import json
 import os
 import logging
 
-from django.http import HttpResponseRedirect, Http404
+from django.views.generic import View
+from django.conf import settings
+
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse

@@ -11,7 +11,7 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
 
-
+const baseURL = ''// 'http://localhost:8000'; 
 
 
 const client = axios.create({
@@ -31,7 +31,7 @@ const client = axios.create({
  */
 export async function authenticate(username: String, password: String) {
   try {
-    const res = await client.post("http://localhost:8000/bread/auth/login/", { username, password });
+    const res = await client.post(`${baseURL}/bread/auth/login/`, { username, password });
     return ({"status": res.status, "data": res?.data});
   } catch (e) {
       if(axios.isAxiosError(e)){
@@ -45,7 +45,7 @@ export async function authenticate(username: String, password: String) {
  * API helper to log a user out
  */
 export async function logout() {
-  const res = await client.post("http://localhost:8000/bread/auth/logout/");
+  const res = await client.post(`${baseURL}/bread/auth/logout/`);
 }
 
 /**
@@ -56,7 +56,7 @@ export async function logout() {
  */
 
 export async function userOrders(userId: number) {
-  const {data} = await client.get(`http://localhost:8000/bread/order/?user=${userId}`);
+  const {data} = await client.get(`${baseURL}/bread/order/?user=${userId}`);
   return data;
 }
 
@@ -67,8 +67,7 @@ export async function userOrders(userId: number) {
  */
 
  export async function products() {
-  const {data} = await client.get(`http://localhost:8000/bread/products/`);
-  console.log(`Data: ${data}`)
+  const {data} = await client.get(`${baseURL}/bread/products/`);
   return data;
 }
 
@@ -80,7 +79,7 @@ export async function userOrders(userId: number) {
 */
 
 export async function getContact(userId: number): Promise<Contact> {
- const {data} = await client.get(`http://localhost:8000/bread/contacts/${userId}/`);
+ const {data} = await client.get(`${baseURL}/bread/contacts/${userId}/`);
  return data;
 }
 
@@ -99,7 +98,7 @@ type ContactResponse = {
 
 export async function updateContact(userId: number, contact: Contact): Promise<ContactResponse> {
   try {
-    const res = await client.patch(`http://localhost:8000/bread/contacts/${userId}/`, { ...contact});
+    const res = await client.patch(`${baseURL}/bread/contacts/${userId}/`, { ...contact});
     return ({"status": res.status, "data": res?.data});
   } catch (e) {
     return ({"status": 400, "data": undefined});
@@ -113,7 +112,7 @@ type AddressResponse = {
 
 export async function getValidatedAddress(address: string, city: string, state: string): Promise<AddressResponse>  {
   try {
-    const res = await client.post(`http://localhost:8000/bread/validate_address`, {address, city, state});
+    const res = await client.post(`${baseURL}/bread/validate_address`, {address, city, state});
     return ({"status": res.status, "data": res?.data});
   } catch (e) {
     return ({"status": 500, "data": undefined});

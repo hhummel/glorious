@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
-
 from bread.views import index, success, root_index
+from . import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,10 +30,13 @@ urlpatterns = [
     path('accounts/login/', index, name='index'),
 
     # Root page goes to bread app, as does login success
-    path('', root_index, name='root_index'),
+    # path('', root_index, name='root_index'),
     path('success/', success, name='success'),
 
     # Rest framework login and logout views
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
+
+    # React UI
+    path('', views.FrontendAppView.as_view(), name='ui'),
 ]
 

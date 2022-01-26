@@ -7,3 +7,4 @@ django-bootstrap4
 mysqlclient
 stripe
 django-cors-headers
+xmltodict
