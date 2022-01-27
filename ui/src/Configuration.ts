@@ -30,3 +30,5 @@ export const localZip = [
     19096,
     19087,
 ]
+
+export const baseURL = process.env.REACT_APP_STAGE === 'local' ? 'http://localhost:8000' : ''; 

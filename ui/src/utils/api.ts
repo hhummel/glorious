@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { ExitStatus, NumberLiteralType } from 'typescript';
 
 import { Order, Contact } from '../../types';
+import { baseURL } from '../Configuration';
 
 const LOGIN_ENDPOINT = '/bread/auth/login/';
 const LOGOUT_ENDPOINT = '/bread/logout/';
@@ -10,9 +11,6 @@ const LOGOUT_ENDPOINT = '/bread/logout/';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.withCredentials = true;
-
-const baseURL = ''// 'http://localhost:8000'; 
-
 
 const client = axios.create({
   headers: {
