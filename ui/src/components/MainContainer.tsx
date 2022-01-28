@@ -21,14 +21,14 @@ export default function MainContainer({ title }: Props) {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth='sm'>
-        <Typography variant="h2" component="h1" gutterBottom>
+        <Typography variant="h3" component="h1" gutterBottom>
           {title}
         </Typography>
         <NavBar user={user} setUser={setUser} setVisible={setVisible} />
         {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/> }
         {(visible === 2) && <Orders userId={user?.id}/>}
         {(visible === 3) && <ShoppingCart userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/>}
-        {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}       
+        {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}
       </Container>
     </React.Fragment>
   );

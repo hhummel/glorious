@@ -35,10 +35,11 @@ const validationSchema = yup.object({
 
 type Props = {
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Login({setUser}: Props) {
-  const [open, setOpen] = React.useState(false);
+export default function Login({setUser, open, setOpen}: Props) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const formik = useFormik({
@@ -55,51 +56,48 @@ export default function Login({setUser}: Props) {
         const user: User = data;
         setUser(user);
       }
+      setOpen(false);
     },
   });
 
   return (
-    <>
-       <Button color="inherit" onClick={handleOpen}>Login</Button>
-
-       <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-        <form onSubmit={formik.handleSubmit}>
-          <Stack spacing={1}>
-            <TextField
-              fullWidth
-              id="email"
-              name="email"
-              label="Email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-            />
-            <TextField
-              fullWidth
-              id="password"
-              name="password"
-              label="Password"
-              type="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-            />
-            <Button color="primary" variant="contained" type="submit">
-              Login
-            </Button>
-          </Stack>
-        </form>
-        </Box>
-      </Modal>
-    </>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+      <form onSubmit={formik.handleSubmit}>
+        <Stack spacing={1}>
+          <TextField
+            fullWidth
+            id="email"
+            name="email"
+            label="Email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+          />
+          <TextField
+            fullWidth
+            id="password"
+            name="password"
+            label="Password"
+            type="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+          />
+          <Button color="primary" variant="contained" type="submit">
+            Login
+          </Button>
+        </Stack>
+      </form>
+      </Box>
+    </Modal>
   );
 };
 

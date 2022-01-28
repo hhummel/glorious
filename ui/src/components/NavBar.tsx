@@ -19,6 +19,7 @@ import Login from './Login'
 import Logout from './Logout'
 import { logout } from '../utils/api';
 import {User} from '../../types'
+import { LocalGasStationOutlined } from '@mui/icons-material';
 
 
 type Props = {
@@ -30,6 +31,7 @@ type Props = {
 export default function NavBar({user, setUser, setVisible}: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [open, setOpen] = React.useState(false);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -66,12 +68,18 @@ export default function NavBar({user, setUser, setVisible}: Props) {
     setAnchorElUser(null);
   };
 
-  const handleLogout = () => {
-    logout();
-    setUser(undefined);
-    setVisible(1);
+  const handleLogInOut = () => {
+    if (user){
+      logout();
+      setUser(undefined);
+      setVisible(1);
+    } else {
+      setOpen(true);
+    }
     setAnchorElUser(null);
   };
+
+  const logInOut = user ? 'Logout' : 'Login';
 
   return (
     <AppBar position="static">
@@ -149,7 +157,6 @@ export default function NavBar({user, setUser, setVisible}: Props) {
               >
               Blog
               </Button>
-              {user ? <Logout setUser={setUser} setVisible={setVisible} /> : <Login setUser={setUser} />} 
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Shopping cart">
@@ -190,12 +197,13 @@ export default function NavBar({user, setUser, setVisible}: Props) {
                 <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">Subscription</Typography>
                 </MenuItem>
-                <MenuItem key={'Logout'} onClick={handleLogout}>
-                  <Typography textAlign="center">Logout</Typography>
+                <MenuItem key={'LogInOut'} onClick={handleLogInOut}>
+                  <Typography textAlign="center">{logInOut}</Typography>
                 </MenuItem>                
             </Menu>
           </Box>
         </Toolbar>
+        <Login setUser={setUser} open={open} setOpen={setOpen}/>
       </Container>
     </AppBar>
   );
