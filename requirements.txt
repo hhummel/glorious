@@ -1,10 +1,10 @@
 Django
-djangorestframework
-pytest
-markdown
-django-filter
 django-bootstrap4
-mysqlclient
-stripe
 django-cors-headers
+django-filter
+djangorestframework
+markdown
+mysqlclient
+pytest
+stripe
 xmltodict
