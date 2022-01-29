@@ -43,6 +43,7 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
           </Button>
         </Stack>
         {cart.map((order, index) => <OrderForm 
+          key={index}
           index={index} 
           product={order.product} 
           userId={userId} 

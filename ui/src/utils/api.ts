@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { ExitStatus, NumberLiteralType } from 'typescript';
 
 import { Order, Contact } from '../../types';
-import { baseURL } from '../Configuration';
+import { baseURL } from '../config';
 
 const LOGIN_ENDPOINT = '/bread/auth/login/';
 const LOGOUT_ENDPOINT = '/bread/logout/';

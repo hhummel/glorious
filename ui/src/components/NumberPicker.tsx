@@ -27,7 +27,7 @@ export default function NumberPicker({number, maxNumber, handleNumberChange}: Pr
           label="Number"
           onChange={handleChange}
         >
-        { [...Array(maxNumber)].map((_, i) => <MenuItem value={i+1}>{i+1}</MenuItem>)}
+        { [...Array(maxNumber)].map((_, i) => <MenuItem key={i} value={i+1}>{i+1}</MenuItem>)}
         </Select>
       </FormControl>
     </Box>

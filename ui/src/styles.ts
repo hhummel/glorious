@@ -3,7 +3,7 @@ export const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 479,
+    width: 400,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -13,6 +13,7 @@ export const modalStyle = {
   export const cartStyle = { 
     bgcolor: 'background.paper',
     border: '2px solid #000',
+    width: 400,
     boxShadow: 24,
     p: 4,
   };

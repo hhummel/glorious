@@ -29,13 +29,15 @@ export default function OrderModal({userId, setVisible, cart, setCart}: Props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <CheckoutForm 
-          userId={userId} 
-          cart={cart} 
-          setCart={setCart}
-          setVisible={setVisible}
-          handleClose={handleClose} 
-        />
+        <div>
+          <CheckoutForm 
+            userId={userId} 
+            cart={cart} 
+            setCart={setCart}
+            setVisible={setVisible}
+            handleClose={handleClose} 
+          />
+        </div>
       </Modal>
       </>
     );

@@ -12,23 +12,10 @@ import DatePicker from './DatePicker'
 import NumberPicker from './NumberPicker';
 import SwitchLabeled from './SwitchLabeled';
 import isDisabledDate from '../utils/DateConstraints';
-import { dateConstraints } from '../Configuration';
+import { dateConstraints } from '../config';
 import { modalStyle, cartStyle } from '../styles';
 import { getValidatedAddress } from '../utils/api';
 
-const validationSchema = yup.object({
-    number: yup.number().required().positive().integer(),
-    delivery_date: yup.date().required(),
-    this_is_a_gift: yup.boolean().required(),
-    recipient_name: yup.string().max(100),
-    recipient_address: yup.string().max(100),
-    recipient_city: yup.string().max(100),
-    recipient_state: yup.string().max(100),
-    recipient_message: yup.string().max(150),
-    special_instructions: yup.string().max(150),
-  });
-
-  
 type Props = {
     index: number | undefined;
     userId: number;
@@ -38,10 +25,20 @@ type Props = {
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     handleClose: () => void;
 }
+const validationSchema = yup.object({
+  number: yup.number().required().positive().integer(),
+  delivery_date: yup.date().required(),
+  this_is_a_gift: yup.boolean().required(),
+  recipient_name: yup.string().max(100),
+  recipient_address: yup.string().max(100),
+  recipient_city: yup.string().max(100),
+  recipient_state: yup.string().max(100),
+  recipient_message: yup.string().max(150),
+  special_instructions: yup.string().max(150),
+});
 
 export default function OrderForm({index, userId, product, order, cart, setCart, handleClose}: Props) {
 
- 
   const isDisabled = isDisabledDate(dateConstraints);
   
   /**

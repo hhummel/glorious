@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 
-import { brand } from './Configuration';
+import { brand } from './config';
 
 function Copyright() {
   return (

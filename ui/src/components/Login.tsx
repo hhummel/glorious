@@ -51,7 +51,6 @@ export default function Login({setUser, open, setOpen}: Props) {
     onSubmit: async (values) => {
       const res = await authenticate(values.email, values.password);
       const {status, data} = res
-      console.log(res, status, data)
       if (status === 200) {
         const user: User = data;
         setUser(user);

@@ -10,7 +10,7 @@ import { Order } from '../../types';
 import NumberPicker from './NumberPicker';
 import SwitchLabeled from './SwitchLabeled';
 import { modalStyle } from '../styles';
-import { localZip } from '../Configuration';
+import { localZip } from '../config';
 import { number } from 'yup/lib/locale';
 
 const validationSchema = yup.object({
