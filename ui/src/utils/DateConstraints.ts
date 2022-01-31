@@ -17,7 +17,7 @@ import { DateObj, DateConstraints } from '../../types';
  * @returns - (date) => bool that has contraints inclosure
  */
 
-export default function isDisabledDate(constraints: DateConstraints): (date: Date) => boolean {
+export function isDisabledDate(constraints: DateConstraints): (date: Date) => boolean {
     function isDisabled (date: Date) {
         const dateObj: DateObj = {"year": date.getFullYear(), "month": date.getMonth(), "date": date.getDate()};
         if (constraints.disablePast && date < new Date()) return true;
@@ -28,6 +28,6 @@ export default function isDisabledDate(constraints: DateConstraints): (date: Dat
     return isDisabled
 }
 
-const _compareDates = (d1: DateObj, d2: DateObj) => d1.year === d2.year && d1.month === d2.month && d1.date == d2.date; 
+const _compareDates = (d1: DateObj, d2: DateObj) => d1.year === d2.year && d1.month === d2.month && d1.date === d2.date; 
 const _hasDate = (arr: Array<DateObj>, date: DateObj) => arr.every(d => _compareDates(d, date))
 

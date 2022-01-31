@@ -1,3 +1,4 @@
+import React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -54,9 +55,9 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={1}>
             <Typography variant="body1" component="h2" gutterBottom>
-                <div>Order Total: ${productsTotal}</div>
-                <div>Shipping Details</div>
-                <div>Payment</div>
+                <>Order Total: ${productsTotal}</>
+                <>Shipping Details</>
+                <>Payment</>
             </Typography>    
               <Stack direction="row" spacing={5}>
                 <Button color="primary" variant="contained" type="submit">Submit</Button>

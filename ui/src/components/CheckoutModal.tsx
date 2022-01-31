@@ -13,32 +13,31 @@ type Props = {
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
-export default function OrderModal({userId, setVisible, cart, setCart}: Props) {
+export default function CheckoutModal({userId, setVisible, cart, setCart}: Props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  
-    return (
-      <>
-      <Button color="primary" variant="contained" onClick={() => handleOpen()}>Checkout</Button>
+  return (
+    <>
+    <Button color="primary" variant="contained" onClick={() => handleOpen()}>Checkout</Button>
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div>
-          <CheckoutForm 
-            userId={userId} 
-            cart={cart} 
-            setCart={setCart}
-            setVisible={setVisible}
-            handleClose={handleClose} 
-          />
-        </div>
-      </Modal>
-      </>
-    );
-  };
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <div>
+        <CheckoutForm 
+          userId={userId} 
+          cart={cart} 
+          setCart={setCart}
+          setVisible={setVisible}
+          handleClose={handleClose} 
+        />
+      </div>
+    </Modal>
+    </>
+  );
+};

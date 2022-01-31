@@ -22,6 +22,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import filters
+from rest_framework.decorators import action
 import django_filters.rest_framework
 
 import requests
@@ -95,7 +96,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [IsOwnerOrAdmin,]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-    filterset_fields = ['user'] 
+    filterset_fields = ['user']
+
+    @action(detail=True, methods=["get"])
+    def pending(self, request, pk):
+        today = timezone.datetime.today().date() 
+        pending_orders = self.queryset. \
+            filter(user=request.user). \
+            filter(delivery_date__gte=today). \
+            filter(confirmed=True). \
+            order_by('delivery_date')
+        serializer = self.get_serializer(pending_orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def history(self, request, pk):
+        today = timezone.datetime.today().date() 
+        past_orders = self.queryset. \
+            filter(user=request.user). \
+            filter(confirmed=True). \
+            filter(delivery_date__lt=today). \
+            order_by('-delivery_date')
+        serializer = self.get_serializer(past_orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
@@ -120,6 +143,18 @@ class LedgerViewSet(viewsets.ModelViewSet):
     queryset = Ledger.objects.all()
     serializer_class = LedgerSerializer
     permission_classes = [permissions.IsAdminUser,]
+
+    @action(detail=True, methods=["get"])
+    def debits(self, request, pk):
+        debits = self.queryset.filter(user=request.user).filter(credit=False).filter(cancelled=False).order_by('-date')
+        serializer = self.get_serializer(debits, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def credits(self, request, pk): 
+        credits = self.queryset.filter(user=request.user).filter(credit=True).filter(cancelled=False).order_by('-date')
+        serializer = self.get_serializer(credits, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SubscribersViewSet(viewsets.ModelViewSet):

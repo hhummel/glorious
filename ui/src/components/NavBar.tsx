@@ -16,10 +16,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { grey } from '@mui/material/colors';
 
 import Login from './Login'
-import Logout from './Logout'
 import { logout } from '../utils/api';
 import {User} from '../../types'
-import { LocalGasStationOutlined } from '@mui/icons-material';
 
 
 type Props = {
