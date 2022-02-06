@@ -13,7 +13,7 @@ class OrderViewSetTest(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(
-            username='test_user', 
+            username='test_user',
             password='1234')
         category = Category.objects.create(category='test', label='test')
         product = Products.objects.create(category=category, product='test', label='test', price=10)
@@ -73,7 +73,7 @@ class LedgerViewSetTest(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(
-            username='test_user', 
+            username='test_user',
             password='1234'
         )
         category = Category.objects.create(category='test', label='test')
@@ -188,4 +188,4 @@ class LedgerViewSetTest(APITestCase):
         total = sum([float(item['quantity']) for item in response.data])
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(len(response.data), 2)
-        self.assertEqual(total, 30.0)        
+        self.assertEqual(total, 30.0)

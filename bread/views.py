@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import filters
@@ -38,16 +38,16 @@ from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSW
     EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, \
     STRIPE_PUBLISHABLE, HISTORY, USPS_USER_ID
 from .bread import make_msg, write_log_message, mailer
-from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, OrderSerializer
-from .serializers import SubscriptionSerializer, GiftSerializer, PaymentSerializer, LedgerSerializer
-from .serializers import SubscribersSerializer, MailListSerializer, CampaignSerializer, UserSerializer
+from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
+    OrderSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
+    LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
+    UserSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
 
 # Path to  output file
 log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
 logger = logging.Logger('bread')
 
-# Stripe secret. TODO: Move this!
 stripe.api_key = STRIPE_SECRET
 
 # Logo images
@@ -73,25 +73,35 @@ card_message = "Pay off current balance"
 
 
 # DRF views
+class CreateListRetrieveViewSet(mixins.CreateModelMixin,
+                                mixins.ListModelMixin,
+                                mixins.RetrieveModelMixin,
+                                viewsets.GenericViewSet):
+    """
+    A viewset that provides `retrieve`, `create`, and `list` actions.
+    Excludes 'update', 'partial_update' and 'destroy'
+    """
+    pass
+
 class ContactsViewSet(viewsets.ModelViewSet):
     queryset = Contacts.objects.all()
     serializer_class = ContactsSerializer
     permission_classes = [IsOwnerOrAdmin,]
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly,]
 
 
-class ProductsViewSet(viewsets.ModelViewSet):
+class ProductsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     permission_classes = [IsAdminOrReadOnly,]
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(CreateListRetrieveViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsOwnerOrAdmin,]
@@ -134,13 +144,13 @@ class GiftViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrAdmin,]
 
 
-class PaymentViewSet(viewsets.ModelViewSet):
+class PaymentViewSet(CreateListRetrieveViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = [IsOwnerOrAdmin,]
 
 
-class LedgerViewSet(viewsets.ModelViewSet):
+class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ledger.objects.all()
     serializer_class = LedgerSerializer
     permission_classes = [IsOwnerOrAdmin,]
@@ -149,13 +159,15 @@ class LedgerViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def debits(self, request, pk):
-        debits = self.queryset.filter(user=request.user).filter(credit=False).filter(cancelled=False).order_by('-date')
+        debits = self.queryset.filter(user=request.user). \
+            filter(credit=False).filter(cancelled=False).order_by('-date')
         serializer = self.get_serializer(debits, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["get"])
     def credits(self, request, pk): 
-        credits = self.queryset.filter(user=request.user).filter(credit=True).filter(cancelled=False).order_by('-date')
+        credits = self.queryset.filter(user=request.user). \
+            filter(credit=True).filter(cancelled=False).order_by('-date')
         serializer = self.get_serializer(credits, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
