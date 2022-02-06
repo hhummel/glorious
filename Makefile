@@ -1,6 +1,6 @@
 test:
 	echo "Test"
-	python manage.py test
+	python manage.py test bread.tests
 	cd ui; npm test
 
 build:

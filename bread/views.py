@@ -100,7 +100,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def pending(self, request, pk):
-        today = timezone.datetime.today().date() 
+        today = timezone.datetime.today().date()
+
         pending_orders = self.queryset. \
             filter(user=request.user). \
             filter(delivery_date__gte=today). \
@@ -142,7 +143,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
 class LedgerViewSet(viewsets.ModelViewSet):
     queryset = Ledger.objects.all()
     serializer_class = LedgerSerializer
-    permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [IsOwnerOrAdmin,]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['user']
 
     @action(detail=True, methods=["get"])
     def debits(self, request, pk):
@@ -228,7 +231,6 @@ def validate_address(request):
 
         return (Response(status=res.status_code, data=json.dumps(validated)))
     except Exception as e:
-        # TODO: Should user logger
         logger.error(f'Address validation failed: {e}')
 
 
