@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 
-import { userOrders } from '../utils/api';
+import { userOrdersPending, userOrdersHistory } from '../utils/api';
 import { Order } from '../../types';
 
 const columns: GridColDef[] = [
@@ -18,14 +18,21 @@ type Props = {
 }
 
 export default function Orders({userId}: Props) {
-  const [rows, setRows] = useState<GridRowsProp | undefined>();
+  const [rowsPending, setRowsPending] = useState<GridRowsProp | undefined>();
+  const [rowsHistory, setRowsHistory] = useState<GridRowsProp | undefined>(); 
   useEffect(() => {
       if (userId) {
-        userOrders(userId).then(data => {
+        userOrdersPending(userId).then(data => {
           const rowData: Array<Order> = data.map( (e: { [x: string]: any; }, i: number) => (
               {'id': i + 1, 'product': e.product, 'quantity': e.number, 'delivery': e.delivery_date}
           ));
-          setRows(rowData)
+          setRowsPending(rowData)
+        }).catch(e => console.log(e));
+        userOrdersHistory(userId).then(data => {
+          const rowData: Array<Order> = data.map( (e: { [x: string]: any; }, i: number) => (
+              {'id': i + 1, 'product': e.product, 'quantity': e.number, 'delivery': e.delivery_date}
+          ));
+          setRowsHistory(rowData)
         }).catch(e => console.log(e));
       }
   }, []);
@@ -37,7 +44,16 @@ export default function Orders({userId}: Props) {
           Orders
         </Typography>
         <div style={{ height: 300, width: '100%' }}>
-          {rows ? <DataGrid rows={rows} columns={columns} /> : "No data" }
+          <Typography variant="h5" component="h1" gutterBottom>
+            Pending
+          </Typography>
+          {rowsPending ? <DataGrid rows={rowsPending} columns={columns} /> : "No data" }
+        </div>
+        <div style={{ height: 300, width: '100%' }}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            History
+          </Typography>
+          {rowsHistory ? <DataGrid rows={rowsHistory} columns={columns} /> : "No data" }
         </div>
       </Box>
     </Container>
