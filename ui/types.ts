@@ -1,3 +1,5 @@
+import { boolean } from "yup/lib/locale"
+
 export type User = {
   id: number,
   username: string,
@@ -28,6 +30,15 @@ export type Order = {
   standing: boolean,
   this_is_a_gift: boolean,
   user: number
+}
+
+export type Payment = {
+  index_key: number | undefined,
+  user: number,
+  value: number,
+  date: Date,
+  payment_method: string,
+  confirmed: boolean
 }
 
 export type Product = {
@@ -76,3 +87,15 @@ export type Brand = {
   theme: string,
 }
 
+export type Ledger = {
+  index_key: number,
+  user_id: number,
+  quantity: number,
+  credit: boolean,
+  non_cash: boolean,
+  cancelled: boolean,
+  order_reference: number | undefined,
+  payment_reference: number | undefined, 
+  expense_reference: number | undefined,
+  date: Date,
+}

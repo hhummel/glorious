@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Orders from './Orders';
+import Account from './Account';
 import Products from './Products';
 import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
@@ -26,7 +26,7 @@ export default function MainContainer({ title }: Props) {
         </Typography>
         <NavBar user={user} setUser={setUser} setVisible={setVisible} />
         {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/> }
-        {(visible === 2) && <Orders userId={user?.id}/>}
+        {(visible === 2) && <Account userId={user?.id}/>}
         {(visible === 3) && <ShoppingCart userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/>}
         {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}
       </Container>

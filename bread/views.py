@@ -145,7 +145,7 @@ class GiftViewSet(viewsets.ModelViewSet):
 
 
 class PaymentViewSet(CreateListRetrieveViewSet):
-    queryset = Payment.objects.all()
+    queryset = Payment.objects.all().order_by('-date')
     serializer_class = PaymentSerializer
     permission_classes = [IsOwnerOrAdmin,]
 

@@ -2,7 +2,7 @@ import { useGridApiMethod } from '@mui/x-data-grid';
 import axios, { AxiosResponse } from 'axios';
 import { ExitStatus, NumberLiteralType } from 'typescript';
 
-import { Order, Contact } from '../../types';
+import { Order, Payment, Contact } from '../../types';
 import { baseURL } from '../config';
 
 const LOGIN_ENDPOINT = '/bread/auth/login/';
@@ -55,6 +55,66 @@ export async function logout() {
 
 export async function userOrders(userId: number) {
   const {data} = await client.get(`${baseURL}/bread/order/?user=${userId}`);
+  return data;
+}
+
+/**
+ * API helper to return orders from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Order>
+ */
+
+ export async function userOrdersPending(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/order/${userId}/pending/`);
+  return data;
+}
+
+/**
+ * API helper to return orders from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Order>
+ */
+
+ export async function userOrdersHistory(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/order/${userId}/history/`);
+  return data;
+}
+
+/**
+ * API helper to return payments from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Payment>
+ */
+
+ export async function userPayments(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/payment/?user=${userId}`);
+  return data;
+}
+
+/**
+ * API helper to return credits from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Ledger>
+ */
+
+ export async function userCredits(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/ledger/${userId}/credits`);
+  return data;
+}
+
+/**
+ * API helper to return debits from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Ledger>
+ */
+
+ export async function userDebits(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/ledger/${userId}/debits`);
   return data;
 }
 
