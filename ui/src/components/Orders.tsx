@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 
 import { userOrdersPending, userOrdersHistory } from '../utils/api';
@@ -40,21 +41,23 @@ export default function Orders({userId}: Props) {
   return (    
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Orders
-        </Typography>
-        <div style={{ height: 300, width: '100%' }}>
-          <Typography variant="h5" component="h1" gutterBottom>
-            Pending
+        <Stack spacing={1}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Orders
           </Typography>
-          {rowsPending ? <DataGrid rows={rowsPending} columns={columns} /> : "No data" }
-        </div>
-        <div style={{ height: 300, width: '100%' }}>
-          <Typography variant="h5" component="h1" gutterBottom>
-            History
-          </Typography>
-          {rowsHistory ? <DataGrid rows={rowsHistory} columns={columns} /> : "No data" }
-        </div>
+          <div style={{ height: 300, width: '100%' }}>
+            <Typography variant="h5" component="h1" gutterBottom>
+              Pending
+            </Typography>
+            {rowsPending ? <DataGrid rows={rowsPending} columns={columns} /> : "No data" }
+          </div>
+          <div style={{ height: 300, width: '100%' }}>
+            <Typography variant="h5" component="h1" gutterBottom>
+              History
+            </Typography>
+            {rowsHistory ? <DataGrid rows={rowsHistory} columns={columns} /> : "No data" }
+          </div>
+        </Stack>
       </Box>
     </Container>
   );

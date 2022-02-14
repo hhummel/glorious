@@ -17,8 +17,9 @@ it('CheckoutForm renders whether or not ShoppingCart is visible / cart is empty'
         const [visible, setVisible] = useState(screenVisible);
         const initialCart = order ? Array<Order>(order) : Array<Order>();
         const [cart, setCart] = useState(initialCart);
+        const [secret, setSecret] = useState<string|undefined>();
     
-        return <CheckoutForm userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} handleClose={() => {}} />
+        return <CheckoutForm userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} handleClose={() => {}} secret={secret}/>
     }
 
     const div0 = document.createElement('div');

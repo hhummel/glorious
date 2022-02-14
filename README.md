@@ -32,7 +32,7 @@ Glorious Roadmap for Customer Experience Epic: A cooler looking React frontend f
 
 - [ ] The frontend design should assume there will be multiple stores using the same logic. No branding should be hard-coded into the front end: All images, copy and assumptions about delivery area should depend on the store.
 
-- [ ] Customers should be able to see and edit their account settings, e.g. address, email. They should be able to see their order history and account balance.
+- [x] Customers should be able to see and edit their account settings, e.g. address, email. They should be able to see their order history and account balance.
 
 - [ ] Customers with subscriptions should be able to see and edit their expected deliveries. Orders on subscription should be invoiced.
 

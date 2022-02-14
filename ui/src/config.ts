@@ -31,4 +31,12 @@ export const localZip = [
     19087,
 ]
 
+export const paymentChoices = {
+    CSH: 'Cash',
+    CHK: 'Check',
+    VEN: 'Venmo',
+    CRD: 'Card',
+    CMP: 'Comped',
+}
+
 export const baseURL = process.env.REACT_APP_STAGE === 'local' ? 'http://localhost:8000' : ''; 

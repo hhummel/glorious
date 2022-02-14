@@ -8,6 +8,7 @@ import CheckoutModal from './CheckoutModal';
 import OrderForm from './OrderForm';
 import { Order } from '../../types'
 
+
 type Props = {
     userId: number | undefined;
     cart: Array<Order>;
@@ -16,12 +17,8 @@ type Props = {
 }
 
 export default function ShoppingCart({userId, cart, setCart, setVisible}: Props) {
-
   const handleClear = () => setCart([]);
-  const handleSubmit = () => {
-    console.log('Submit shopping cart!');
-    handleClear();
-  }
+  const handleSubmit = () => handleClear();
   if (!userId || !cart.length ) return (
     <Container maxWidth="sm">
         <Typography variant="h4" component="h1" gutterBottom>
