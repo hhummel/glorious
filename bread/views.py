@@ -246,7 +246,25 @@ def validate_address(request):
         logger.error(f'Address validation failed: {e}')
 
 
+@api_view(['POST'])
+def payment_intent(request):
+    # TODO: Create a Cart model, serialize it and save it here instead of passing total
+    total = request.data['total']
+
+    # TODO: Set your secret key. Remember to switch to your live secret key in production.
+    stripe.api_key = 'sk_test_EV83No2k6yHdGKEQQf0a0gY2'
+
+    intent = stripe.PaymentIntent.create(
+        amount = total,
+        currency = 'usd',
+        automatic_payment_methods = {"enabled": True},
+    )
+
+    return Response({'client_secret': intent.client_secret})
+
+
 # Django HTML views
+
 def products(request):
     categories = Category.objects.all()
     c = {

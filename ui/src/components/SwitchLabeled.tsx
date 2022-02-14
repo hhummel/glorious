@@ -3,7 +3,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { FormikErrors } from 'formik';
-import { LabelImportantOutlined } from '@mui/icons-material';
 
 type Props = {
     label: string | ''

@@ -1,3 +1,4 @@
+import { DoNotDisturbOnTotalSilence } from '@mui/icons-material';
 import { useGridApiMethod } from '@mui/x-data-grid';
 import axios, { AxiosResponse } from 'axios';
 import { ExitStatus, NumberLiteralType } from 'typescript';
@@ -176,3 +177,17 @@ export async function getValidatedAddress(address: string, city: string, state: 
     return ({"status": 500, "data": undefined});
   }
 }
+
+type StripeSecretResponse = {
+  client_secret: string | undefined
+}
+
+export async function stripeSecret(total: number): Promise<StripeSecretResponse>  {
+  try {
+    const res = await client.post(`${baseURL}/bread/payment_intent`, {'total': total});
+    return ({"client_secret": res?.data?.client_secret});
+  } catch (e) {
+    return ({"client_secret": undefined});
+  }
+}
+
