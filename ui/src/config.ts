@@ -39,4 +39,7 @@ export const paymentChoices = {
     CMP: 'Comped',
 }
 
-export const baseURL = process.env.REACT_APP_STAGE === 'local' ? 'http://localhost:8000' : ''; 
+export const baseURL = process.env.REACT_APP_STAGE === 'local' ? 'http://localhost:8000' : '';
+
+// TODO: Test key
+export const stripePublishableKey = 'pk_test_DYeuYzpmoAucmljbl3yZ3Ds5';

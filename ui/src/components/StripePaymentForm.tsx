@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Elements, PaymentElement } from '@stripe/react-stripe-js';
+import React from 'react';
+import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import StripeInnerForm from './StripeInnerForm';
+import { stripePublishableKey } from '../config';
 
-
-// TODO: This is a hard-coded test key
-const stripePromise = loadStripe('pk_test_DYeuYzpmoAucmljbl3yZ3Ds5');
+const stripePromise = loadStripe(stripePublishableKey);
 
 type Props = {
     secret: string | undefined;
 }
+
 export default function StripePaymentForm({secret}: Props){
-  const options = {
-    clientSecret: secret,
-    appearance: {/*...*/}
-  }
-
-  if (secret) {
-      return (
-        <Elements stripe={stripePromise} options={options}>
-            <form>
-            <PaymentElement />
-            <button>Submit</button>
-            </form>
-        </Elements>
-    );
-  }
-
-  return (
-       <div>Loading...</div>
-  )
+    const options = {
+        clientSecret: secret,
+        appearance: {/*...*/}
+    }
+    
+    return (
+        <div>
+            {secret && (
+                <Elements options={options} stripe={stripePromise}>
+                  <StripeInnerForm />
+                </Elements>
+            )}
+        </div>
+    )
 };

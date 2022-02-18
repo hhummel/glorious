@@ -86,7 +86,7 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
               </Stack>
             </Stack>
           </form>
-          {paymentMethod === 'CRD' && <StripePaymentForm secret={secret}/>}
+          {paymentMethod === 'CRD' &&  <StripePaymentForm secret={secret}/> }
       </Box>
     </Container>
   );
