@@ -263,9 +263,19 @@ def payment_intent(request):
     return Response({'client_secret': intent.client_secret})
 
 
-# Using Django
+def handle_payment_intent_succeeded(payment_intent):
+    # TODO: Save payment_intent in a model
+    print(f'Payment intent success: {payment_intent}')
+
+
+def handle_payment_method_attached(payment_method):
+    # TODO: Save payment_method in a model
+    print(f'Payment method: {payment_method}')
+
+
 @api_view(['POST'])
-def stripe_webhook_view(request):
+def payment_webhook(request):
+    # Adapted from Stripe documentation: https://stripe.com/docs/webhooks
     payload = request.body
     event = None
 
@@ -275,22 +285,18 @@ def stripe_webhook_view(request):
         )
     except ValueError as e:
         # Invalid payload
-        return HttpResponse(status=400)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
         payment_intent = event.data.object # contains a stripe.PaymentIntent
-        # Then define and call a method to handle the successful payment intent.
-        # handle_payment_intent_succeeded(payment_intent)
+        handle_payment_intent_succeeded(payment_intent)
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
-        # Then define and call a method to handle the successful attachment of a PaymentMethod.
-        # handle_payment_method_attached(payment_method)
+        handle_payment_method_attached(payment_method)
     else:
         # ... handle other event types
-
         print('Unhandled event type {}'.format(event.type))
-
 
     return Response(status=status.HTTP_200_OK)
 
@@ -318,7 +324,7 @@ def about(request):
     return render(request, "bread/new_about.html", c )
 
 
-def help(request):
+def help_user(request):
     c = {
         'bread_template': 'bread/basic_template.html',
         'logo_image' : logo_image,

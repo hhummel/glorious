@@ -75,7 +75,7 @@ urlpatterns = [
     path('about', bread_views.about, name='about'),
 
     # Help
-    path('help', bread_views.help, name='help'),
+    path('help', bread_views.help_user, name='help'),
 
     # Success
     path('success', bread_views.success, name='success'),
@@ -147,5 +147,6 @@ urlpatterns = [
     path('auth/login/', bread_views.session_login, name='login'),
     path('auth/logout/', bread_views.session_logout, name='logout'),
     path('validate_address', bread_views.validate_address, name='validate_address'),
-    path('payment_intent', bread_views.payment_intent, name='payment_intent'), 
+    path('payment_intent', bread_views.payment_intent, name='payment_intent'),
+    path('payment_webhook', bread_views.payment_webhook, name='payment_webhook'),
 ]
