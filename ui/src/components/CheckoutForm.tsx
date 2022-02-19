@@ -9,6 +9,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Switch from '@mui/material/Switch';
+
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
@@ -17,6 +20,8 @@ import { Order } from '../../types';
 import { modalStyle } from '../styles';
 import { localZip, paymentChoices } from '../config';
 import StripePaymentForm from './StripePaymentForm';
+import SwitchLabeled from './SwitchLabeled';
+import { useDateTimePickerDefaultizedProps } from '@mui/lab/DateTimePicker/shared';
 
 
 const validationSchema = yup.object({});
@@ -31,11 +36,12 @@ type Props = {
 }
 
 export default function CheckoutForm({userId, cart, setCart, setVisible, handleClose, secret}: Props) {
-  const [paymentMethod, setPaymentMethod] = React.useState('CRD');
+  const [useCard, setUseCard] = React.useState(true);
+  const [paymentMethod, setPaymentMethod] = React.useState('VEN');
   const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
 
   const defaultValues = {
-    payment_method: 'CRD',
+    payment_method: 'VEN',
   }
 
   const formik = useFormik({
@@ -47,7 +53,7 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
       //setVisible(1);
     }
   });
-
+  const handleCheck = (status: boolean) => setUseCard(status);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethod((event.target as HTMLInputElement).value);
     console.log((event.target as HTMLInputElement).value);
@@ -59,12 +65,16 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
         <Typography variant="h4" component="h1" gutterBottom>
           Checkout
         </Typography>
-
+        <Typography variant="body1" component="h2" gutterBottom>
+            <div>Order Total: ${productsTotal}</div>
+            <div>Shipping Details</div>
+        </Typography>
+        <FormGroup>
+          <FormControlLabel control={<Switch onChange={() => setUseCard(!useCard)} />} label="Pay by Card" />
+        </FormGroup>
+        {useCard ? <StripePaymentForm secret={secret}/> :
           <form onSubmit={formik.handleSubmit}>
             <Stack spacing={1}>
-            <Typography variant="body1" component="h2" gutterBottom>
-                <div>Order Total: ${productsTotal}</div>
-                <div>Shipping Details</div>
                 <FormControl component="fieldset">
                   <FormLabel component="legend">Payment</FormLabel>
                   <RadioGroup
@@ -73,20 +83,18 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
                     name="radio-buttons-group"
                     onChange={handleChange}
                   >
-                    <FormControlLabel value="CRD" control={<Radio />} label="Card" />
                     <FormControlLabel value="VEN" control={<Radio />} label="Venmo" />
                     <FormControlLabel value="COD" control={<Radio />} label="Cash on Delivery" />
                     <FormControlLabel value="INV" control={<Radio />} label="Invoice" />
                   </RadioGroup>
                 </FormControl>
-            </Typography>    
               <Stack direction="row" spacing={5}>
                 <Button color="primary" variant="contained" type="submit">Submit</Button>
                 <Button color="primary" variant="contained" onClick={ () => handleClose()}>Cancel</Button>
               </Stack>
             </Stack>
           </form>
-          {paymentMethod === 'CRD' &&  <StripePaymentForm secret={secret}/> }
+        }  
       </Box>
     </Container>
   );
