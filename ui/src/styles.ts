@@ -17,3 +17,8 @@ export const modalStyle = {
     boxShadow: 24,
     p: 4,
   };
+
+  export const cardStyle = { 
+    minHeight: 225,
+    width: '100%',
+  };

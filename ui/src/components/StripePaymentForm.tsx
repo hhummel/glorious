@@ -11,14 +11,15 @@ type Props = {
 }
 
 export default function StripePaymentForm({secret}: Props){
+      
     const options = {
         clientSecret: secret,
-        appearance: {/*...*/}
+        appearance: {},
     }
     
     return (
         <div>
-            {secret && (
+            {secret && options && (
                 <Elements options={options} stripe={stripePromise}>
                   <StripeInnerForm />
                 </Elements>
