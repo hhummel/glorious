@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack'
+import { cardStyle } from '../styles';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 
@@ -41,11 +45,13 @@ export default function StripeInnerForm(){
     };
     
     return (
+  
         <form onSubmit={handleSubmit}>
-            <PaymentElement />
-            <button disabled={!stripe}>Submit</button>
-            {/* Show error message to your customers */}
-            {errorMessage && <div>{errorMessage}</div>}
+            <Stack direction="column" justifyContent="flex-end" alignItems="center" spacing={2}>
+              <Box sx={cardStyle}><PaymentElement /></Box>
+              <Button color="primary" variant="contained" disabled={!stripe}>Submit</Button>
+              {errorMessage && <div>{errorMessage}</div>}
+            </Stack>
         </form>
     )
   };
