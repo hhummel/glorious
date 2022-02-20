@@ -70,7 +70,7 @@ export default function CheckoutForm({userId, cart, setCart, setVisible, handleC
             <div>Shipping Details</div>
         </Typography>
         <FormGroup>
-          <FormControlLabel control={<Switch onChange={() => setUseCard(!useCard)} />} label="Pay by Card" />
+          <FormControlLabel control={<Switch checked={useCard} onChange={() => setUseCard(!useCard)} />} label="Pay by Card" />
         </FormGroup>
         {useCard ? <StripePaymentForm secret={secret}/> :
           <form onSubmit={formik.handleSubmit}>
