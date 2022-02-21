@@ -27,7 +27,7 @@ export default function StripeInnerForm(){
         //`Elements` instance that was used to create the Payment Element
         elements,
         confirmParams: {
-          return_url: 'https://sashette.com/bread/thanks',
+          return_url: 'https://sashette.com/bread/payment-received',
         },
       });
   
@@ -54,4 +54,4 @@ export default function StripeInnerForm(){
             </Stack>
         </form>
     )
-  };
+};
