@@ -27,7 +27,7 @@ export default function StripeInnerForm(){
         //`Elements` instance that was used to create the Payment Element
         elements,
         confirmParams: {
-          return_url: 'https://sashette.com/bread/payment-received',
+          return_url: 'https://sashette.com',
         },
       });
   
@@ -49,7 +49,7 @@ export default function StripeInnerForm(){
         <form onSubmit={handleSubmit}>
             <Stack direction="column" justifyContent="flex-end" alignItems="center" spacing={2}>
               <Box sx={cardStyle}><PaymentElement /></Box>
-              <Button color="primary" variant="contained" disabled={!stripe}>Submit</Button>
+              <Button color="primary" variant="contained" disabled={!stripe} type="submit">Submit</Button>
               {errorMessage && <div>{errorMessage}</div>}
             </Stack>
         </form>
