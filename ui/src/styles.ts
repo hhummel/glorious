@@ -8,17 +8,17 @@ export const modalStyle = {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-  };
-  
-  export const cartStyle = { 
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    width: 400,
-    boxShadow: 24,
-    p: 4,
-  };
+};
 
-  export const cardStyle = { 
-    minHeight: 225,
-    width: '100%',
-  };
+export const cartStyle = { 
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  width: 400,
+  boxShadow: 24,
+  p: 4,
+};
+
+export const cardStyle = { 
+  minHeight: 225,
+  width: '100%',
+};

@@ -24,7 +24,6 @@
     "formik": "^2.2.9",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "typescript": "latest",
     "yup": "^0.32.11"
@@ -46,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-router-dom": "^6.2.1"
   }
 }
