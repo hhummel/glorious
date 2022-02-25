@@ -1,8 +1,6 @@
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
-from django.forms import ModelForm
 
 #Choices
 PREFIX_CHOICES = (
@@ -212,8 +210,10 @@ EXCLUDED_DAYS = [0, 1, 3, 4, 6]
 MEISTER_EXCLUDED_DAYS = []
 
 
-# Helper function to find the next allowed delivery date, given the excluded days of the week in EXCLUDED_DAYS
 def next_day():
+    """
+    Helper function to find the next allowed delivery date, given the excluded days of the week in EXCLUDED_DAYS
+    """
     dow = timezone.datetime.today().weekday()
     # datetimepicker uses days of the week with Sunday = 0, but django uses Monday = 0.
     # Use picker so EXCLUDED_DAYS works.
@@ -227,8 +227,10 @@ def next_day():
     return days 
 
 
-# Contact information.  Note create is the creation time of the contact object in UTC
 class Contacts(models.Model):
+    """
+    Contact information.  Note create is the creation time of the contact object in UTC
+    """
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     creation = models.DateTimeField(auto_now_add=True, blank=True)
     first_name = models.CharField(max_length=35)
@@ -249,8 +251,8 @@ class Contacts(models.Model):
         return return_string
 
 
-# Product categories
 class Category(models.Model):
+    """Product categories"""
     index_key = models.AutoField(primary_key=True)
     category = models.CharField(max_length=17)
     label = models.CharField(max_length=100, null=False)
@@ -259,8 +261,8 @@ class Category(models.Model):
     font_color = models.CharField(max_length=15, null=True)
 
 
-# Products
 class Products(models.Model):
+    """Products"""
     index_key = models.AutoField(primary_key=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     product = models.CharField(max_length=17)
@@ -273,8 +275,8 @@ class Products(models.Model):
         return return_string
 
 
-# Material categories
 class MaterialCategory(models.Model):
+    """ Material categories"""
     index_key = models.AutoField(primary_key=True)
     category = models.CharField(max_length=17)
     label = models.CharField(max_length=100, null=False)
@@ -283,8 +285,8 @@ class MaterialCategory(models.Model):
     picture = models.CharField(max_length=500, null=True)
 
 
-# Materials
 class Materials(models.Model):
+    """Materials"""
     index_key = models.AutoField(primary_key=True)
     category = models.ForeignKey(MaterialCategory, on_delete=models.CASCADE, default=1)
     product = models.CharField(max_length=17)
@@ -295,9 +297,8 @@ class Materials(models.Model):
     picture = models.CharField(max_length=500, null=True)
 
 
-
-# Order information.
 class Order(models.Model):
+    """Order information."""
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
@@ -317,8 +318,8 @@ class Order(models.Model):
     recipient_message = models.TextField(max_length=150, null=True, blank=True) 
 
 
-# Expense information.
 class Expense(models.Model):
+    """Expense information."""
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     material = models.ForeignKey(Materials, on_delete=models.CASCADE)
@@ -330,8 +331,8 @@ class Expense(models.Model):
     special_instructions = models.TextField(max_length=150, null=True, blank=True) 
 
 
-# Subscription information.
 class Subscription(models.Model):
+    """Subscription information"""
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     challah_freq = models.CharField(max_length=6, choices=SUBSCRIPTION_CHOICES, default='WKLY')
@@ -349,8 +350,8 @@ class Subscription(models.Model):
     recipient_state = models.CharField(max_length=2, choices=STATE_CHOICES, default='PA', null=True)
 
 
-# Gift recipient details
 class Gift(models.Model):
+    """Gift recipient details"""
     index_key = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=35)
@@ -366,6 +367,7 @@ class Gift(models.Model):
 
 # Payment information
 class Payment(models.Model):
+    """An actual payment recorded in the Ledger"""
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=6, decimal_places=2, null=False)
@@ -375,14 +377,17 @@ class Payment(models.Model):
 
 
 # Stripe charge
-class StripeCharge(models.Model):
+class PaymentIntent(models.Model):
+    """An intent to pay, by card transaction or selecting cash or Venmo"""
     index_key = models.AutoField(primary_key=True)
+    payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
-    charge_id = models.CharField(max_length=234)
+    payment_intent_id = models.CharField(max_length=234)
+    success = models.BooleanField(default=False)
+    date = models.DateTimeField(null=False)
 
-
-# Credit or debit
 class Ledger(models.Model):
+    """Credit or debit"""
     index_key = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=6, decimal_places=2, null=False)
@@ -395,8 +400,8 @@ class Ledger(models.Model):
     date = models.DateTimeField(null=False)
 
 
-# Mailing list subscribers
 class Subscribers(models.Model):
+    """ Mailing list subscribers"""
     index_key = models.AutoField(primary_key=True)
     creation = models.DateTimeField(auto_now_add=True, blank=True)
     first_name = models.CharField(max_length=35)
@@ -407,15 +412,15 @@ class Subscribers(models.Model):
     user_id = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
 
-# Mail list
 class MailList(models.Model):
+    """Mail list"""
     index_key = models.AutoField(primary_key=True)
     label = models.CharField(max_length=100, null=False)
     recipients = models.ManyToManyField(Subscribers)
 
 
-# Mail campaign
 class Campaign(models.Model):
+    """Mail campaign"""
     index_key = models.AutoField(primary_key=True)
     mail_list = models.ForeignKey(MailList, on_delete=models.CASCADE)
     date = models.DateTimeField(null=False)

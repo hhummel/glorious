@@ -36,7 +36,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-] 
+]
 
 # Application definition
 

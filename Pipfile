@@ -15,6 +15,7 @@ stripe = "*"
 django-bootstrap4 = "*"
 django-cors-headers = "*"
 xmltodict = "*"
+ddtrace = "*"
 
 [dev-packages]
 

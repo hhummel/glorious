@@ -31,7 +31,7 @@ import xmltodict
 
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
-from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, StripeCharge, Category
+from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, PaymentIntent, Category
 from .models import Products, Subscription, Gift, Campaign
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
@@ -264,8 +264,24 @@ def payment_intent(request):
 
 
 def handle_payment_intent_succeeded(payment_intent):
-    # TODO: Save payment_intent in a model
+
     print(f'Payment intent success: {payment_intent}')
+
+    intent_dict = payment_intent.to_dict()
+    if intent_dict['type'] == "payment_intent.succeeded":
+        intent = intent_dict['data']['object']
+        print("Succeeded: ", intent['id'])
+        # Fulfill the customer's purchase
+        # TODO: Save successful payment_intent in a model
+        # TODO: Send success payment email
+    elif intent_dict['type'] == "payment_intent.payment_failed":
+        intent = intent_dict['data']['object']
+        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
+        print("Failed: ", intent['id']), error_message
+        # Notify the customer that payment failed
+        # TODO: Save failed payment_intent in a model
+        # TODO: Send failed payment email
+
 
 
 def handle_payment_method_attached(payment_method):
@@ -273,9 +289,15 @@ def handle_payment_method_attached(payment_method):
     print(f'Payment method: {payment_method}')
 
 
+def handle_checkout_completed(checkout_completed):
+    # TODO: Save checkout_completed in a model
+    print(f'Checkout completed: {checkout_completed}')
+
+
 @api_view(['POST'])
 def payment_webhook(request):
     # Adapted from Stripe documentation: https://stripe.com/docs/webhooks
+    endpoint_secret = 'we_1KUzy1Eabl1bisbXou0LDl9P'
     payload = request.body
     event = None
 
@@ -287,6 +309,18 @@ def payment_webhook(request):
         # Invalid payload
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    if endpoint_secret:
+        # Only verify the event if there is an endpoint secret defined
+        # Otherwise use the basic event deserialized with json
+        sig_header = request.headers.get('stripe-signature')
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret
+            )
+        except stripe.error.SignatureVerificationError as e:
+            print('⚠️  Webhook signature verification failed.' + str(e))
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
     # Handle the event
     if event.type == 'payment_intent.succeeded':
         payment_intent = event.data.object # contains a stripe.PaymentIntent
@@ -294,6 +328,9 @@ def payment_webhook(request):
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
         handle_payment_method_attached(payment_method)
+    elif event.type == 'checkout.session.completed':
+        checkout_completed= event.data.object # contains a stripe.PaymentMethod
+        handle_checkout_completed(checkout_completed)
     else:
         # ... handle other event types
         print('Unhandled event type {}'.format(event.type))
@@ -665,10 +702,11 @@ def stripe_charge(request):
             date = payment.date
         ) 
 
-        # Create a StripeCharge
-        stripe_charge = StripeCharge.objects.create(
+        # Create a PaymentIntent
+        stripe_charge = PaymentIntent.objects.create(
             payment_reference = payment,
-            charge_id = charge.id
+            payment_method = 'CRD',
+            payment_intent_id = charge.id
         )
 
     except stripe.error.CardError as ce:
