@@ -380,11 +380,13 @@ class Payment(models.Model):
 class PaymentIntent(models.Model):
     """An intent to pay, by card transaction or selecting cash or Venmo"""
     index_key = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    value = models.DecimalField(max_digits=6, decimal_places=2, null=True)
+    date = models.DateTimeField(null=True)
     payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
     payment_intent_id = models.CharField(max_length=234)
     success = models.BooleanField(default=False)
-    date = models.DateTimeField(null=False)
 
 class Ledger(models.Model):
     """Credit or debit"""
