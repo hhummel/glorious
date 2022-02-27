@@ -263,7 +263,7 @@ def payment_intent(request):
     PaymentIntent.objects.create(
         user = request.user,
         value = round(intent.amount/100, 2),
-        date = timezone.datetime.timestamp(intent.created),
+        date = timezone.datetime.fromtimestamp(intent.created),
         payment_method = 'CRD',
         payment_reference = None,
         payment_intent_id = intent.id,
