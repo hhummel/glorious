@@ -260,6 +260,15 @@ def payment_intent(request):
         automatic_payment_methods = {"enabled": True},
     )
 
+    PaymentIntent.objects.create(
+        user = request.user,
+        value = round(intent.amount/100, 2),
+        date = timezone.datetime.timestamp(intent.created),
+        payment_method = 'CRD',
+        payment_reference = None,
+        payment_intent_id = intent.id,
+        success = False,
+    )
     return Response({'client_secret': intent.client_secret})
 
 
