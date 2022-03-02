@@ -1,6 +1,7 @@
 import { DoNotDisturbOnTotalSilence } from '@mui/icons-material';
 import { useGridApiMethod } from '@mui/x-data-grid';
 import axios, { AxiosResponse } from 'axios';
+import { createElement } from 'react';
 import { ExitStatus, NumberLiteralType } from 'typescript';
 
 import { Order, Payment, Contact } from '../../types';
@@ -182,9 +183,11 @@ type StripeSecretResponse = {
   client_secret: string | undefined
 }
 
-export async function stripeSecret(total: number): Promise<StripeSecretResponse>  {
+export async function stripeSecret(total: number, cart: Array<Order>): Promise<StripeSecretResponse>  {
   try {
-    const res = await client.post(`${baseURL}/bread/payment_intent`, {'total': total});
+    console.log(`cart json: ${JSON.stringify(cart)}`)
+    const payload = {'total': total, 'cart': JSON.stringify(cart)}
+    const res = await client.post(`${baseURL}/bread/payment_intent`, payload);
     return ({"client_secret": res?.data?.client_secret});
   } catch (e) {
     return ({"client_secret": undefined});
