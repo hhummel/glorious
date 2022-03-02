@@ -297,6 +297,14 @@ class Materials(models.Model):
     picture = models.CharField(max_length=500, null=True)
 
 
+class ShoppingCart(models.Model):
+    """Object for ordered line items and payment intent"""
+    index_key = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(null=False)
+    confirmed = models.BooleanField(default=False)
+
+
 class Order(models.Model):
     """Order information."""
     index_key = models.AutoField(primary_key=True)
@@ -308,14 +316,15 @@ class Order(models.Model):
     standing = models.BooleanField(default=False)
     confirmed = models.BooleanField(default=False)
     delivered = models.BooleanField(default=False)
-    special_instructions = models.TextField(max_length=150, null=True, blank=True) 
+    special_instructions = models.TextField(max_length=150, null=True, blank=True)
     this_is_a_gift = models.BooleanField(default=False)
     meister = models.BooleanField(default=False)
-    recipient_name = models.CharField(max_length=100, null=True, blank=True) 
-    recipient_address = models.CharField(max_length=100, null=True, blank=True) 
-    recipient_city = models.CharField(max_length=100, null=True, blank=True) 
-    recipient_state = models.CharField(max_length=100, null=True, blank=True) 
-    recipient_message = models.TextField(max_length=150, null=True, blank=True) 
+    recipient_name = models.CharField(max_length=100, null=True, blank=True)
+    recipient_address = models.CharField(max_length=100, null=True, blank=True)
+    recipient_city = models.CharField(max_length=100, null=True, blank=True)
+    recipient_state = models.CharField(max_length=100, null=True, blank=True)
+    recipient_message = models.TextField(max_length=150, null=True, blank=True)
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 
 class Expense(models.Model):
@@ -387,6 +396,8 @@ class PaymentIntent(models.Model):
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
     payment_intent_id = models.CharField(max_length=234)
     success = models.BooleanField(default=False)
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
+
 
 class Ledger(models.Model):
     """Credit or debit"""
