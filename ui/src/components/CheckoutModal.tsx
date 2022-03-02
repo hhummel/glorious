@@ -21,7 +21,7 @@ export default function CheckoutModal({userId, setVisible, cart, setCart}: Props
     setOpen(true);
     const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
     console.log(`Submit shopping cart total: ${productsTotal}`);
-    stripeSecret(productsTotal * 100).
+    stripeSecret(productsTotal * 100, cart).
     then(data => {
         console.log(`Data from stripeSecret ${data.client_secret}`);
         setSecret(data?.client_secret);
