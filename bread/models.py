@@ -323,7 +323,8 @@ class Order(models.Model):
     recipient_address = models.CharField(max_length=100, null=True, blank=True)
     recipient_city = models.CharField(max_length=100, null=True, blank=True)
     recipient_state = models.CharField(max_length=100, null=True, blank=True)
-    recipient_message = models.TextField(max_length=150, null=True, blank=True)
+    recipient_zip = models.CharField(max_length=100, null=True, blank=True)
+    recipient_message = models.TextField(max_length=5, null=True, blank=True)
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 

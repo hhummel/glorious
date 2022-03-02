@@ -2,6 +2,7 @@ from decimal import Decimal
 import json
 import os
 import logging
+from datetime import datetime
 
 from django.views.generic import View
 from django.conf import settings
@@ -32,7 +33,7 @@ import xmltodict
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, PaymentIntent, Category
-from .models import Products, Subscription, Gift, Campaign
+from .models import Products, Subscription, Gift, Campaign, ShoppingCart
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
     EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, \
@@ -250,6 +251,8 @@ def validate_address(request):
 def payment_intent(request):
     # TODO: Create a Cart model, serialize it and save it here instead of passing total
     total = request.data['total']
+    orders = json.loads(request.data['cart'])
+    logger.warn(f'orders: {orders}')
 
     # TODO: Set your secret key. Remember to switch to your live secret key in production.
     stripe.api_key = 'sk_test_EV83No2k6yHdGKEQQf0a0gY2'
@@ -259,7 +262,42 @@ def payment_intent(request):
         currency = 'usd',
         automatic_payment_methods = {"enabled": True},
     )
+    
+    if not intent:
+        return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
+    # Make a ShoppingCart
+    cart = ShoppingCart.objects.create(
+        user = request.user,
+        date = timezone.datetime.now(),
+        confirmed = False,
+    )
+
+    # Make Orders
+    for order in orders:
+        product = Products.objects.get(index_key=order['product']['index_key'])
+        Order.objects.create(
+            user=request.user,
+            product=product,
+            number=order['number'],
+            delivery_date=order['delivery_date'][:-14],
+            order_date=timezone.datetime.now(),
+            standing=order['standing'],
+            confirmed=order['confirmed'],
+            delivered=order['delivered'],
+            meister=order['meister'],
+            special_instructions=order.get('special'),
+            this_is_a_gift=order['this_is_a_gift'],
+            recipient_name=order.get('recipient_name'),
+            recipient_address=order.get('recipient_address'),
+            recipient_city=order.get('recipient_city'),
+            recipient_state=order.get('recipient_state'),
+            recipient_zip=order.get('recipient_zip'),
+            recipient_message=order.get('recipient_message'),
+            cart=cart,
+        )
+
+    #Make PaymentIntent
     PaymentIntent.objects.create(
         user = request.user,
         value = round(intent.amount/100, 2),
@@ -268,6 +306,7 @@ def payment_intent(request):
         payment_reference = None,
         payment_intent_id = intent.id,
         success = False,
+        cart=cart,
     )
     return Response({'client_secret': intent.client_secret})
 
