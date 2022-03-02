@@ -262,6 +262,9 @@ def payment_intent(request):
         currency = 'usd',
         automatic_payment_methods = {"enabled": True},
     )
+    
+    if not intent:
+        return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
     # Make a ShoppingCart
     cart = ShoppingCart.objects.create(
