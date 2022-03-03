@@ -320,11 +320,11 @@ def handle_payment_intent_succeeded(payment_intent):
     if intent_dict['type'] == "payment_intent.succeeded":
         intent = intent_dict['data']['object']
         print("Succeeded: ", intent['id'])
+        """
 
         #Get PaymentIntent
         payment_intent=PaymentIntent.objects.get(index_key=intent['id'])
         
-        """
         # Create a Payment
         payment = Payment.objects.create(
             user=payment_intent.user,
@@ -364,7 +364,7 @@ def handle_payment_intent_succeeded(payment_intent):
                 expense_reference=None,
                 date=timezone.datetime.now(),
         )
-        """
+       
 
         # TODO: Create Expense and Ledger for shipping
 
@@ -373,7 +373,7 @@ def handle_payment_intent_succeeded(payment_intent):
         payment_intent.payment_reference=payment
         payment_intent.success=True
         payment_intent.save()
-
+        """
 
 
         # Fulfill the customer's purchase
