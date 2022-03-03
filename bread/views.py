@@ -37,7 +37,7 @@ from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, Pay
 from .models import Products, Subscription, Gift, Campaign, ShoppingCart
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
-    EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, \
+    EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_WEBHOOK_SECRET,\
     STRIPE_PUBLISHABLE, HISTORY, USPS_USER_ID
 from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
@@ -250,13 +250,12 @@ def validate_address(request):
 
 @api_view(['POST'])
 def payment_intent(request):
-    # TODO: Create a Cart model, serialize it and save it here instead of passing total
     total = request.data['total']
     orders = json.loads(request.data['cart'])
     logger.warn(f'orders: {orders}')
 
     # TODO: Set your secret key. Remember to switch to your live secret key in production.
-    stripe.api_key = 'sk_test_EV83No2k6yHdGKEQQf0a0gY2'
+    stripe.api_key = STRIPE_SECRET
 
     intent = stripe.PaymentIntent.create(
         amount = total,
@@ -265,7 +264,7 @@ def payment_intent(request):
     )
 
     if not intent:
-        return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
+        return Response(status=status.HTTP_402_PAYMENT_REQUIRED, data="Payment Intent Id not found")
 
     # Make a ShoppingCart
     cart = ShoppingCart.objects.create(
@@ -312,12 +311,11 @@ def payment_intent(request):
     return Response({'client_secret': intent.client_secret})
 
 
-def handle_payment_intent_succeeded(payment_intent_id):
+def handle_payment_intent_succeeded(id):
 
-    print(f'Payment intent success: {payment_intent_id}')
+    print(f'Payment intent success: {id}')
 
-    #Get PaymentIntent
-    payment_intent=PaymentIntent.objects.get(payment_intent_id=payment_intent_id)
+    payment_intent=PaymentIntent.objects.get(payment_intent_id=id)
     
     # Create a Payment
     payment = Payment.objects.create(
@@ -343,8 +341,8 @@ def handle_payment_intent_succeeded(payment_intent_id):
     )
 
     # Create a Ledger entry for orders
-    cart = ShoppingCart.objects.get(pk=payment_intent.cart.index_key)
-    orders = cart.order_set
+    cart = payment_intent.cart
+    orders = cart.order_set.all()
     for order in orders:
         quantity = order.product.price * order.number 
         Ledger.objects.create(
@@ -354,7 +352,7 @@ def handle_payment_intent_succeeded(payment_intent_id):
             non_cash=True,
             cancelled=False,
             order_reference=order,
-            payment_reference=NoOptionError,
+            payment_reference=None,
             expense_reference=None,
             date=timezone.datetime.now(),
     )
@@ -386,7 +384,8 @@ def handle_checkout_completed(checkout_completed):
 @api_view(['POST'])
 def payment_webhook(request):
     # Adapted from Stripe documentation: https://stripe.com/docs/webhooks
-    endpoint_secret = 'we_1KUzy1Eabl1bisbXou0LDl9P'
+    # TODO: Keep secret in SSM
+    endpoint_secret = STRIPE_WEBHOOK_SECRET
     payload = request.body
     event = None
 
@@ -396,7 +395,7 @@ def payment_webhook(request):
         )
     except ValueError as e:
         # Invalid payload
-        return Response(status=status.HTTP_418_IM_A_TEAPOT)
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="Valid Stripe event not found")
 
     if endpoint_secret:
         # Only verify the event if there is an endpoint secret defined
@@ -408,11 +407,13 @@ def payment_webhook(request):
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data="Webhook signature verification failed")
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
         payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
+        if not payment_intent_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Unable to find payment intent id"})
         handle_payment_intent_succeeded(payment_intent_id)
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
