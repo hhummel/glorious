@@ -312,16 +312,12 @@ def payment_intent(request):
     return Response({'client_secret': intent.client_secret})
 
 
-def handle_payment_intent_succeeded(payment_intent):
+def handle_payment_intent_succeeded(payment_intent_id):
 
-    print(f'Payment intent success: {payment_intent}')
-
-    intent_dict = payment_intent.to_dict()
-    intent = intent_dict['data']['object']
-    print("Succeeded: ", intent['id'])
+    print(f'Payment intent success: {payment_intent_id}')
 
     #Get PaymentIntent
-    payment_intent=PaymentIntent.objects.get(payment_intent_id=intent['id'])
+    payment_intent=PaymentIntent.objects.get(payment_intent_id=payment_intent_id)
     
     # Create a Payment
     payment = Payment.objects.create(
@@ -418,7 +414,7 @@ def payment_webhook(request):
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
-        payment_intent = event.data.object # contains a stripe.PaymentIntent
+        payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
         handle_payment_intent_succeeded(payment_intent)
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
