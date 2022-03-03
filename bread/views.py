@@ -1,3 +1,4 @@
+from configparser import NoOptionError
 from decimal import Decimal
 import json
 import os
@@ -262,7 +263,7 @@ def payment_intent(request):
         currency = 'usd',
         automatic_payment_methods = {"enabled": True},
     )
-    
+
     if not intent:
         return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
@@ -319,6 +320,61 @@ def handle_payment_intent_succeeded(payment_intent):
     if intent_dict['type'] == "payment_intent.succeeded":
         intent = intent_dict['data']['object']
         print("Succeeded: ", intent['id'])
+
+        #Get PaymentIntent
+        payment_intent=PaymentIntent.objects.get(index_key=intent['id'])
+
+        # Create a Payment
+        payment = Payment.objects.create(
+            user=payment_intent.user,
+            value=payment_intent.value,
+            date=timezone.datetime.now(),
+            payment_method='CRD',
+            confirmed=True,
+            cart=payment_intent.cart
+        )
+
+        cart=payment_intent.cart
+
+        # Create a Ledger entry for payment
+        Ledger.objects.create(
+            user=payment_intent.user,
+            quantity=payment_intent.value,
+            credit=True,
+            non_cash=False,
+            cancelled=False,
+            order_reference=None,
+            payment_reference=payment,
+            expense_reference=None,
+            date=timezone.datetime.now(),
+        )
+
+        # Create a Ledger entry for orders
+        cart = payment_intent.cart
+        orders = cart.order_set
+        for order in orders:
+            Ledger.objects.create(
+                user=order.user,
+                quantity=order.product.price * order.number,
+                credit=False,
+                non_cash=True,
+                cancelled=False,
+                order_reference=order,
+                payment_reference=NoOptionError,
+                expense_reference=None,
+                date=timezone.datetime.now(),
+        )
+
+        # TODO: Create Expense and Ledger for shipping
+
+
+        # Update PaymentIntent
+        payment_intent.payment_reference=payment
+        payment_intent.success=True
+        payment_intent.save()
+
+
+
         # Fulfill the customer's purchase
         # TODO: Save successful payment_intent in a model
         # TODO: Send success payment email
