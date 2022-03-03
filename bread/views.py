@@ -373,8 +373,6 @@ def handle_payment_intent_succeeded(payment_intent_id):
     # TODO: Send success payment email
 
 
-
-
 def handle_payment_method_attached(payment_method):
     # TODO: Save payment_method in a model
     print(f'Payment method: {payment_method}')
