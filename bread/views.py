@@ -316,7 +316,7 @@ def handle_payment_intent_succeeded(payment_intent_id):
 
     print(f'Payment intent success: {payment_intent_id}')
 
-    #Get PaymentIntent
+    # Get PaymentIntent
     payment_intent=PaymentIntent.objects.get(payment_intent_id=payment_intent_id)
     
     # Create a Payment
@@ -408,7 +408,7 @@ def payment_webhook(request):
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))
-            # return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            # TODO: return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
