@@ -323,7 +323,8 @@ def handle_payment_intent_succeeded(payment_intent):
 
         #Get PaymentIntent
         payment_intent=PaymentIntent.objects.get(index_key=intent['id'])
-
+        
+        """
         # Create a Payment
         payment = Payment.objects.create(
             user=payment_intent.user,
@@ -333,8 +334,6 @@ def handle_payment_intent_succeeded(payment_intent):
             confirmed=True,
             cart=payment_intent.cart
         )
-
-        cart=payment_intent.cart
 
         # Create a Ledger entry for payment
         Ledger.objects.create(
@@ -350,12 +349,13 @@ def handle_payment_intent_succeeded(payment_intent):
         )
 
         # Create a Ledger entry for orders
-        cart = payment_intent.cart
+        cart = ShoppingCart.objects.get(pk=payment_intent.cart.index_key)
         orders = cart.order_set
         for order in orders:
+            quantity = order.product.price * order.number 
             Ledger.objects.create(
                 user=order.user,
-                quantity=order.product.price * order.number,
+                quantity=quantity,
                 credit=False,
                 non_cash=True,
                 cancelled=False,
@@ -364,6 +364,7 @@ def handle_payment_intent_succeeded(payment_intent):
                 expense_reference=None,
                 date=timezone.datetime.now(),
         )
+        """
 
         # TODO: Create Expense and Ledger for shipping
 
