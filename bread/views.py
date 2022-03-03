@@ -312,79 +312,66 @@ def payment_intent(request):
     return Response({'client_secret': intent.client_secret})
 
 
-def handle_payment_intent_succeeded(payment_intent):
+def handle_payment_intent_succeeded(payment_intent_id):
 
-    print(f'Payment intent success: {payment_intent}')
+    print(f'Payment intent success: {payment_intent_id}')
 
-    intent_dict = payment_intent.to_dict()
-    if intent_dict['type'] == "payment_intent.succeeded":
-        intent = intent_dict['data']['object']
-        print("Succeeded: ", intent['id'])
-
-        #Get PaymentIntent
-        payment_intent=PaymentIntent.objects.get(index_key=intent['id'])
-
-        # Create a Payment
-        payment = Payment.objects.create(
-            user=payment_intent.user,
-            value=payment_intent.value,
-            date=timezone.datetime.now(),
-            payment_method='CRD',
-            confirmed=True,
-            cart=payment_intent.cart
-        )
-
+    #Get PaymentIntent
+    payment_intent=PaymentIntent.objects.get(payment_intent_id=payment_intent_id)
+    
+    # Create a Payment
+    payment = Payment.objects.create(
+        user=payment_intent.user,
+        value=payment_intent.value,
+        date=timezone.datetime.now(),
+        payment_method='CRD',
+        confirmed=True,
         cart=payment_intent.cart
+    )
 
-        # Create a Ledger entry for payment
+    # Create a Ledger entry for payment
+    Ledger.objects.create(
+        user=payment_intent.user,
+        quantity=payment_intent.value,
+        credit=True,
+        non_cash=False,
+        cancelled=False,
+        order_reference=None,
+        payment_reference=payment,
+        expense_reference=None,
+        date=timezone.datetime.now(),
+    )
+
+    # Create a Ledger entry for orders
+    cart = ShoppingCart.objects.get(pk=payment_intent.cart.index_key)
+    orders = cart.order_set
+    for order in orders:
+        quantity = order.product.price * order.number 
         Ledger.objects.create(
-            user=payment_intent.user,
-            quantity=payment_intent.value,
-            credit=True,
-            non_cash=False,
+            user=order.user,
+            quantity=quantity,
+            credit=False,
+            non_cash=True,
             cancelled=False,
-            order_reference=None,
-            payment_reference=payment,
+            order_reference=order,
+            payment_reference=NoOptionError,
             expense_reference=None,
             date=timezone.datetime.now(),
-        )
+    )
+    
 
-        # Create a Ledger entry for orders
-        cart = payment_intent.cart
-        orders = cart.order_set
-        for order in orders:
-            Ledger.objects.create(
-                user=order.user,
-                quantity=order.product.price * order.number,
-                credit=False,
-                non_cash=True,
-                cancelled=False,
-                order_reference=order,
-                payment_reference=NoOptionError,
-                expense_reference=None,
-                date=timezone.datetime.now(),
-        )
-
-        # TODO: Create Expense and Ledger for shipping
+    # TODO: Create Expense and Ledger for shipping
 
 
-        # Update PaymentIntent
-        payment_intent.payment_reference=payment
-        payment_intent.success=True
-        payment_intent.save()
+    # Update PaymentIntent
+    payment_intent.payment_reference=payment
+    payment_intent.success=True
+    payment_intent.save()
 
 
+    # Fulfill the customer's purchase
+    # TODO: Send success payment email
 
-        # Fulfill the customer's purchase
-        # TODO: Save successful payment_intent in a model
-        # TODO: Send success payment email
-    elif intent_dict['type'] == "payment_intent.payment_failed":
-        intent = intent_dict['data']['object']
-        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
-        print("Failed: ", intent['id']), error_message
-        # Notify the customer that payment failed
-        # TODO: Save failed payment_intent in a model
-        # TODO: Send failed payment email
 
 
 
@@ -411,7 +398,7 @@ def payment_webhook(request):
         )
     except ValueError as e:
         # Invalid payload
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
     if endpoint_secret:
         # Only verify the event if there is an endpoint secret defined
@@ -423,12 +410,12 @@ def payment_webhook(request):
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            # TODO: return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
-        payment_intent = event.data.object # contains a stripe.PaymentIntent
-        handle_payment_intent_succeeded(payment_intent)
+        payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
+        handle_payment_intent_succeeded(payment_intent_id)
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
         handle_payment_method_attached(payment_method)
@@ -437,6 +424,7 @@ def payment_webhook(request):
         handle_checkout_completed(checkout_completed)
     else:
         # ... handle other event types
+        # TODO: Handle failed payment_intent
         print('Unhandled event type {}'.format(event.type))
 
     return Response(status=status.HTTP_200_OK)
