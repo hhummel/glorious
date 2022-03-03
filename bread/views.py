@@ -374,7 +374,6 @@ def handle_payment_intent_succeeded(payment_intent):
 
 
     # Fulfill the customer's purchase
-    # TODO: Save successful payment_intent in a model
     # TODO: Send success payment email
 
 
@@ -429,6 +428,7 @@ def payment_webhook(request):
         handle_checkout_completed(checkout_completed)
     else:
         # ... handle other event types
+        # TODO: Handle failed payment_intent
         print('Unhandled event type {}'.format(event.type))
 
     return Response(status=status.HTTP_200_OK)
