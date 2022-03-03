@@ -350,7 +350,7 @@ def handle_payment_intent_succeeded(payment_intent):
         )
 
         # Create a Ledger entry for orders
-        cart = payment_intent.cart
+        cart = ShoppingCart.objects.get(pk=payment_intent.cart.index_key)
         orders = cart.order_set
         for order in orders:
             Ledger.objects.create(
