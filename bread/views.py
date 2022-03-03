@@ -408,7 +408,7 @@ def payment_webhook(request):
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            # return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
