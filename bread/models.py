@@ -384,6 +384,7 @@ class Payment(models.Model):
     date = models.DateField(null=False)
     payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES)
     confirmed = models.BooleanField(default=False)
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 
 # Stripe charge
