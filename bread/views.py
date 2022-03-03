@@ -410,7 +410,7 @@ def payment_webhook(request):
         )
     except ValueError as e:
         # Invalid payload
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
     if endpoint_secret:
         # Only verify the event if there is an endpoint secret defined
@@ -422,7 +422,7 @@ def payment_webhook(request):
             )
         except stripe.error.SignatureVerificationError as e:
             print('⚠️  Webhook signature verification failed.' + str(e))
-            # return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
