@@ -397,7 +397,7 @@ class PaymentIntent(models.Model):
     payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
     payment_intent_id = models.CharField(max_length=234)
-    success = models.BooleanField(default=False)
+    success = models.BooleanField(null=True)
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 

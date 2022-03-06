@@ -305,17 +305,21 @@ def payment_intent(request):
         payment_method = 'CRD',
         payment_reference = None,
         payment_intent_id = intent.id,
-        success = False,
+        success = None,
         cart=cart,
     )
     return Response({'client_secret': intent.client_secret})
 
 
 def handle_payment_intent_succeeded(id):
-
+    """ Handle payment success by updating PaymentIntent and creating ShoppingCart, Payment and Orders"""
     print(f'Payment intent success: {id}')
 
     payment_intent=PaymentIntent.objects.get(payment_intent_id=id)
+
+    # No action if status has been set take for idempotency
+    if payment_intent.success is not None:
+        return
     
     # Create a Payment
     payment = Payment.objects.create(
@@ -356,19 +360,30 @@ def handle_payment_intent_succeeded(id):
             expense_reference=None,
             date=timezone.datetime.now(),
     )
-    
 
     # TODO: Create Expense and Ledger for shipping
-
 
     # Update PaymentIntent
     payment_intent.payment_reference=payment
     payment_intent.success=True
     payment_intent.save()
 
+    # TODO: Notify the customer that payment succeeded
 
-    # Fulfill the customer's purchase
-    # TODO: Send success payment email
+
+def handle_payment_intent_failed(id, error_message):
+        print(f'Payment Intent Failed: {id} Error: {error_message}')
+        payment_intent=PaymentIntent.objects.get(payment_intent_id=id)
+
+        # No action if status has been set take for idempotency
+        if payment_intent.success is not None:
+            return
+
+        # Update PaymentIntent
+        payment_intent.success=False
+        payment_intent.save()
+
+        # Notify the customer that payment failed
 
 
 def handle_payment_method_attached(payment_method):
@@ -415,6 +430,16 @@ def payment_webhook(request):
         if not payment_intent_id:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Unable to find payment intent id"})
         handle_payment_intent_succeeded(payment_intent_id)
+    elif event.type == "payment_intent.payment_failed":
+        payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
+        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
+        if not payment_intent_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Unable to find payment intent id"})
+        handle_payment_intent_failed(payment_intent_id, error_message)
+        intent = event_dict['data']['object']
+        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
+        print("Failed: ", intent['id']), error_message
+        # Notify the customer that payment failed
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
         handle_payment_method_attached(payment_method)
