@@ -1,10 +1,10 @@
 import React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 
-import CheckoutModal from './CheckoutModal';
+import CardModal from './CardModal';
+import BaseModal from './BaseModal';
 import OrderForm from './OrderForm';
 import { Order } from '../../types'
 
@@ -34,10 +34,9 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
           Shopping Cart
         </Typography>
         <Stack direction="row" spacing={5}>
-          <CheckoutModal userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} />
-          <Button color="primary" variant="contained" onClick={handleClear}>
-            Empty cart
-          </Button>
+          <CardModal userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} /> 
+          <BaseModal paymentMethod="VEN" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} />
+          <BaseModal paymentMethod="CSH" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} /> 
         </Stack>
         {cart.map((order, index) => <OrderForm 
           key={index}

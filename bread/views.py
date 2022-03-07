@@ -4,6 +4,8 @@ import json
 import os
 import logging
 from datetime import datetime
+from uuid import uuid4
+from time import time 
 
 from django.views.generic import View
 from django.conf import settings
@@ -248,23 +250,74 @@ def validate_address(request):
         logger.error(f'Address validation failed: {e}')
 
 
+class Intent():
+    """Locally created intent object parallel to one created in Stripe"""
+    def __init__(self, amount):
+        self.id = uuid4()
+        self.client_secret = self.id
+        self.amount = amount
+        self.created = int(time())
+
+
+
+def create_ledger_payment(payment_intent, payment, non_cash=False):
+    """Create a Ledger entry for payment"""
+    Ledger.objects.create(
+        user=payment_intent.user,
+        quantity=payment_intent.value,
+        credit=True,
+        non_cash=non_cash,
+        cancelled=False,
+        order_reference=None,
+        payment_reference=payment,
+        expense_reference=None,
+        date=timezone.datetime.now(),
+    )
+
+
+def create_ledger_orders(payment_intent):
+    """Create a Ledger object for each Order item in Shopping Cart"""
+    cart = payment_intent.cart
+    orders = cart.order_set.all()
+    for order in orders:
+        quantity = order.product.price * order.number 
+        Ledger.objects.create(
+            user=order.user,
+            quantity=quantity,
+            credit=False,
+            non_cash=True,
+            cancelled=False,
+            order_reference=order,
+            payment_reference=None,
+            expense_reference=None,
+            date=timezone.datetime.now(),
+    )
+
+
 @api_view(['POST'])
 def payment_intent(request):
     total = request.data['total']
+    # TODO: Add payment_method
+    payment_method = request.data['payment_method'] 
     orders = json.loads(request.data['cart'])
     logger.warn(f'orders: {orders}')
 
-    # TODO: Set your secret key. Remember to switch to your live secret key in production.
-    stripe.api_key = STRIPE_SECRET
+    if payment_method == 'CRD':
+        # Get intent from Stripe
+        stripe.api_key = STRIPE_SECRET
 
-    intent = stripe.PaymentIntent.create(
-        amount = total,
-        currency = 'usd',
-        automatic_payment_methods = {"enabled": True},
-    )
+        intent = stripe.PaymentIntent.create(
+            amount = total,
+            currency = 'usd',
+            automatic_payment_methods = {"enabled": True},
+        )
 
-    if not intent:
-        return Response(status=status.HTTP_402_PAYMENT_REQUIRED, data="Payment Intent Id not found")
+        if not intent:
+            return Response(status=status.HTTP_402_PAYMENT_REQUIRED, data="Payment Intent Id not found")
+    else:
+        # Create an intent id here
+        intent = Intent(total)
+
 
     # Make a ShoppingCart
     cart = ShoppingCart.objects.create(
@@ -298,17 +351,24 @@ def payment_intent(request):
         )
 
     #Make PaymentIntent
-    PaymentIntent.objects.create(
+    payment_intent_object = PaymentIntent.objects.create(
         user = request.user,
         value = round(intent.amount/100, 2),
         date = timezone.datetime.fromtimestamp(intent.created),
-        payment_method = 'CRD',
+        payment_method = payment_method,
         payment_reference = None,
         payment_intent_id = intent.id,
         success = None,
         cart=cart,
     )
+
+    if payment_method in ['CSH', 'CHK', 'VEN']:
+        # Payment is on trade credit, so create Ledger entry for Orders
+        create_ledger_orders(payment_intent=payment_intent_object) 
+
     return Response({'client_secret': intent.client_secret})
+
+
 
 
 def handle_payment_intent_succeeded(id):
@@ -321,45 +381,23 @@ def handle_payment_intent_succeeded(id):
     if payment_intent.success is not None:
         return
     
-    # Create a Payment
-    payment = Payment.objects.create(
-        user=payment_intent.user,
-        value=payment_intent.value,
-        date=timezone.datetime.now(),
-        payment_method='CRD',
-        confirmed=True,
-        cart=payment_intent.cart
-    )
+    # Create a Payment if PaymentIntent is CRD and payment has been made
+    if payment_intent.payment_method == 'CRD':
+        payment = Payment.objects.create(
+            user=payment_intent.user,
+            value=payment_intent.value,
+            date=timezone.datetime.now(),
+            payment_method='CRD',
+            confirmed=True,
+            cart=payment_intent.cart
+        )
 
-    # Create a Ledger entry for payment
-    Ledger.objects.create(
-        user=payment_intent.user,
-        quantity=payment_intent.value,
-        credit=True,
-        non_cash=False,
-        cancelled=False,
-        order_reference=None,
-        payment_reference=payment,
-        expense_reference=None,
-        date=timezone.datetime.now(),
-    )
+        # Create a Ledger entry for payment
+        create_ledger_payment(payment_intent, payment)
 
     # Create a Ledger entry for orders
-    cart = payment_intent.cart
-    orders = cart.order_set.all()
-    for order in orders:
-        quantity = order.product.price * order.number 
-        Ledger.objects.create(
-            user=order.user,
-            quantity=quantity,
-            credit=False,
-            non_cash=True,
-            cancelled=False,
-            order_reference=order,
-            payment_reference=None,
-            expense_reference=None,
-            date=timezone.datetime.now(),
-    )
+    create_ledger_orders(payment_intent=payment_intent)
+
 
     # TODO: Create Expense and Ledger for shipping
 

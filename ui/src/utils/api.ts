@@ -183,10 +183,10 @@ type StripeSecretResponse = {
   client_secret: string | undefined
 }
 
-export async function stripeSecret(total: number, cart: Array<Order>): Promise<StripeSecretResponse>  {
+export async function stripeSecret(total: number, paymentMethod: string, cart: Array<Order>): Promise<StripeSecretResponse>  {
   try {
     console.log(`cart json: ${JSON.stringify(cart)}`)
-    const payload = {'total': total, 'cart': JSON.stringify(cart)}
+    const payload = {'total': total, 'payment_method': paymentMethod, cart: JSON.stringify(cart)}
     const res = await client.post(`${baseURL}/bread/payment_intent`, payload);
     return ({"client_secret": res?.data?.client_secret});
   } catch (e) {
