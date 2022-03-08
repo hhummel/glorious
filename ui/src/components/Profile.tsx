@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -7,9 +7,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import type {} from '@mui/x-data-grid/themeAugmentation';
-import { createTheme } from '@mui/material/styles';
-import { Contact} from '../../types';
+
 import { getContact, updateContact } from '../utils/api'
 
 const validationSchema = yup.object({

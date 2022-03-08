@@ -97,6 +97,12 @@ CARRIER_CHOICES = (
     ('VRG', 'Virgin Mobile'),
 )
 
+SHIPPER_CHOICES = (
+    ('USPS', 'US Postal Service'),
+    ('FEDEX', 'FedEx'),
+    ('UPS', 'UPS'),
+)
+
 
 MUNICIPAL_CHOICES = (
     ('PHILADELPHIA', 'Philadelphia, PA'),
@@ -305,6 +311,31 @@ class ShoppingCart(models.Model):
     confirmed = models.BooleanField(default=False)
 
 
+class Shipment(models.Model):
+    """Shipping information."""
+    index_key = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    shipper = models.CharField(max_length=6, choices=SHIPPER_CHOICES, default='USPS')
+    cost = models.FloatField(null=True) 
+    tracking_number = models.CharField(max_length=100, null=True, blank=True)
+    order_date = models.DateTimeField(null=False, default=timezone.datetime.now())
+    shipping_date = models.DateField(null=True)
+    delivery_date = models.DateField(null=True)
+    confirmed = models.BooleanField(default=False)
+    shipped = models.BooleanField(default=False)
+    delivered = models.BooleanField(default=False)
+    special_instructions = models.TextField(max_length=150, null=True, blank=True)
+    this_is_a_gift = models.BooleanField(default=False)
+    meister = models.BooleanField(default=False)
+    recipient_name = models.CharField(max_length=100, null=True, blank=True)
+    recipient_address = models.CharField(max_length=100, null=True, blank=True)
+    recipient_city = models.CharField(max_length=100, null=True, blank=True)
+    recipient_state = models.CharField(max_length=100, null=True, blank=True)
+    recipient_zip = models.CharField(max_length=100, null=True, blank=True)
+    recipient_message = models.TextField(max_length=5, null=True, blank=True)
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
+
+
 class Order(models.Model):
     """Order information."""
     index_key = models.AutoField(primary_key=True)
@@ -318,6 +349,7 @@ class Order(models.Model):
     delivered = models.BooleanField(default=False)
     special_instructions = models.TextField(max_length=150, null=True, blank=True)
     this_is_a_gift = models.BooleanField(default=False)
+    ship_this = models.BooleanField(default=False)
     meister = models.BooleanField(default=False)
     recipient_name = models.CharField(max_length=100, null=True, blank=True)
     recipient_address = models.CharField(max_length=100, null=True, blank=True)
@@ -326,6 +358,7 @@ class Order(models.Model):
     recipient_zip = models.CharField(max_length=100, null=True, blank=True)
     recipient_message = models.TextField(max_length=5, null=True, blank=True)
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
+    shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE, null=True) 
 
 
 class Expense(models.Model):
@@ -412,6 +445,7 @@ class Ledger(models.Model):
     order_reference = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
     expense_reference = models.ForeignKey(Expense, on_delete=models.CASCADE, null=True)
+    shipment_reference = models.ForeignKey(Shipment, on_delete=models.CASCADE, null=True) 
     date = models.DateTimeField(null=False)
 
 

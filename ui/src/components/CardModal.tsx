@@ -5,8 +5,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { modalStyle } from '../styles';
-
-import type {} from '@mui/x-data-grid/themeAugmentation';
 import StripePaymentForm from './StripePaymentForm';
 import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
@@ -22,14 +20,11 @@ export default function CardModal({userId, setVisible, cart, setCart}: Props) {
   const [secret, setSecret] = React.useState<string | undefined>('');
   const [open, setOpen] = React.useState(false);
   const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
-  console.log(`Submit shopping cart total: ${productsTotal}`);
   const handleOpen = () => {
     setOpen(true);
     const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
-    console.log(`Submit shopping cart total: ${productsTotal}`);
     stripeSecret(productsTotal * 100, 'CRD', cart).
     then(data => {
-        console.log(`Data from stripeSecret ${data.client_secret}`);
         setSecret(data?.client_secret);
     }).catch(e => console.log(`Stripe secret error ${e}`));
   }

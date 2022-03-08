@@ -259,7 +259,6 @@ class Intent():
         self.created = int(time())
 
 
-
 def create_ledger_payment(payment_intent, payment, non_cash=False):
     """Create a Ledger entry for payment"""
     Ledger.objects.create(
@@ -297,7 +296,6 @@ def create_ledger_orders(payment_intent):
 @api_view(['POST'])
 def payment_intent(request):
     total = request.data['total']
-    # TODO: Add payment_method
     payment_method = request.data['payment_method'] 
     orders = json.loads(request.data['cart'])
     logger.warn(f'orders: {orders}')
@@ -421,7 +419,7 @@ def handle_payment_intent_failed(id, error_message):
         payment_intent.success=False
         payment_intent.save()
 
-        # Notify the customer that payment failed
+        # TODO: Notify the customer that payment failed
 
 
 def handle_payment_method_attached(payment_method):
@@ -468,6 +466,7 @@ def payment_webhook(request):
         if not payment_intent_id:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Unable to find payment intent id"})
         handle_payment_intent_succeeded(payment_intent_id)
+
     elif event.type == "payment_intent.payment_failed":
         payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
         error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
@@ -478,12 +477,15 @@ def payment_webhook(request):
         error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
         print("Failed: ", intent['id']), error_message
         # Notify the customer that payment failed
+
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
         handle_payment_method_attached(payment_method)
+
     elif event.type == 'checkout.session.completed':
         checkout_completed= event.data.object # contains a stripe.PaymentMethod
         handle_checkout_completed(checkout_completed)
+        
     else:
         # ... handle other event types
         # TODO: Handle failed payment_intent

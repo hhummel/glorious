@@ -1,8 +1,6 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-
-import type {} from '@mui/x-data-grid/themeAugmentation';
 import OrderForm from './OrderForm';
 import { Order, Product} from '../../types';
 

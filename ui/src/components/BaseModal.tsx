@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import { modalStyle } from '../styles';
 
 import type {} from '@mui/x-data-grid/themeAugmentation';
-import StripePaymentForm from './StripePaymentForm';
 import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
 import { Stack } from '@mui/material';
@@ -23,15 +22,10 @@ type Props = {
 export default function BaseModal({paymentMethod, userId, setVisible, cart, setCart}: Props) {
   const [open, setOpen] = React.useState(false);
   const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
-  console.log(`Submit shopping cart total: ${productsTotal}`);
   const handleOpen = () => {
     setOpen(true);
     const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
-    console.log(`Submit shopping cart total: ${productsTotal}`);
-    stripeSecret(productsTotal * 100, paymentMethod, cart).
-    then(data => {
-        console.log(`Data from stripeSecret ${data.client_secret}`);
-    })
+    stripeSecret(productsTotal * 100, paymentMethod, cart)
   }
   const handleClose = () => {
       setOpen(false);
