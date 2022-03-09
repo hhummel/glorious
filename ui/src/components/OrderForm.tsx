@@ -28,6 +28,7 @@ type Props = {
 const validationSchema = yup.object({
   number: yup.number().required().positive().integer(),
   delivery_date: yup.date().required(),
+  ship_this: yup.boolean().required(),
   this_is_a_gift: yup.boolean().required(),
   recipient_name: yup.string().max(100),
   recipient_address: yup.string().max(100),
@@ -73,6 +74,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     recipient_zip: '',
     special_instructions: '',
     standing: false,
+    ship_this: false,
     this_is_a_gift: false,
     user: userId
   }  
@@ -120,6 +122,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
   const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
   const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
   const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
+  const handleShipCheck = (status: boolean) => formik.setFieldValue("ship_this", status);
 
   return (
     <Container maxWidth="sm">
@@ -142,6 +145,11 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
                   onChange={formik.handleChange}
                   error={formik.touched.special_instructions && Boolean(formik.errors.special_instructions)}
                   helperText={formik.touched.special_instructions && formik.errors.special_instructions}
+              />
+              <SwitchLabeled 
+                  label='Should this item be shipped?' 
+                  isChecked={formik.values.ship_this} 
+                  handleCheck={handleShipCheck}
               />
               <SwitchLabeled 
                   label='Is this a gift?' 

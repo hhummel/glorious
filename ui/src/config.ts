@@ -43,3 +43,5 @@ export const baseURL = process.env.REACT_APP_STAGE === 'local' ? 'http://localho
 
 // TODO: Test key
 export const stripePublishableKey = 'pk_test_DYeuYzpmoAucmljbl3yZ3Ds5';
+
+export const parcelCost = 12;

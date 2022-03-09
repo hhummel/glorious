@@ -339,6 +339,7 @@ def payment_intent(request):
             meister=order['meister'],
             special_instructions=order.get('special'),
             this_is_a_gift=order['this_is_a_gift'],
+            ship_this=order['ship_this'],
             recipient_name=order.get('recipient_name'),
             recipient_address=order.get('recipient_address'),
             recipient_city=order.get('recipient_city'),
@@ -485,7 +486,7 @@ def payment_webhook(request):
     elif event.type == 'checkout.session.completed':
         checkout_completed= event.data.object # contains a stripe.PaymentMethod
         handle_checkout_completed(checkout_completed)
-        
+
     else:
         # ... handle other event types
         # TODO: Handle failed payment_intent

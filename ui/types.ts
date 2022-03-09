@@ -26,6 +26,7 @@ export type Order = {
   recipient_name: string | undefined,
   recipient_state: string | undefined,
   recipient_zip: string | undefined,
+  ship_this: boolean,
   special_instructions: string | undefined,
   standing: boolean,
   this_is_a_gift: boolean,

@@ -34,7 +34,8 @@ export default function OrderModal({userId, product, setVisible, cart, setCart}:
             userId={userId} 
             product={product}
             order={undefined} 
-            cart={cart} setCart={setCart} 
+            cart={cart} 
+            setCart={setCart} 
             handleClose={handleClose} 
           />
         </div>

@@ -27,6 +27,7 @@ export const order: Order = {
     special_instructions: undefined,
     standing: false,
     this_is_a_gift: false,
+    ship_this: false,
     user: 1,
 }
 

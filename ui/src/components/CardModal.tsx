@@ -8,6 +8,7 @@ import { modalStyle } from '../styles';
 import StripePaymentForm from './StripePaymentForm';
 import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
+import { parcelCost } from '../config';
 
 type Props = {
     userId: number;
@@ -19,11 +20,12 @@ type Props = {
 export default function CardModal({userId, setVisible, cart, setCart}: Props) {
   const [secret, setSecret] = React.useState<string | undefined>('');
   const [open, setOpen] = React.useState(false);
-  const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
+  const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 );
+  const shippingTotal = cart.filter(order => order.ship_this === true).length * parcelCost;
+
   const handleOpen = () => {
     setOpen(true);
-    const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 )
-    stripeSecret(productsTotal * 100, 'CRD', cart).
+    stripeSecret((productsTotal + shippingTotal)* 100, 'CRD', cart).
     then(data => {
         setSecret(data?.client_secret);
     }).catch(e => console.log(`Stripe secret error ${e}`));
@@ -46,7 +48,8 @@ export default function CardModal({userId, setVisible, cart, setCart}: Props) {
             <Typography variant="h4" component="h1" gutterBottom>Checkout</Typography>
             <Typography variant="body1" component="h2" gutterBottom>
                 <div>Order Total: ${productsTotal}</div>
-                <div>Shipping Details</div>
+                <div>Shipping Total: ${shippingTotal}</div>
+                <div>Grand Total ${productsTotal + shippingTotal}</div>
             </Typography>
             <StripePaymentForm secret={secret}/>
           </Box>
