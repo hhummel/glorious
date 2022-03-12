@@ -180,17 +180,28 @@ export async function getValidatedAddress(address: string, city: string, state: 
 }
 
 type StripeSecretResponse = {
-  client_secret: string | undefined
+  client_secret: string | undefined,
+  product_cost: number | undefined,
+  shipping_cost: number | undefined
 }
 
-export async function stripeSecret(total: number, paymentMethod: string, cart: Array<Order>): Promise<StripeSecretResponse>  {
+export async function stripeSecret(paymentMethod: string, cart: Array<Order>): Promise<StripeSecretResponse>  {
   try {
     console.log(`cart json: ${JSON.stringify(cart)}`)
-    const payload = {'total': total, 'payment_method': paymentMethod, cart: JSON.stringify(cart)}
+    const payload = {'payment_method': paymentMethod, cart: JSON.stringify(cart)}
     const res = await client.post(`${baseURL}/bread/payment_intent`, payload);
-    return ({"client_secret": res?.data?.client_secret});
+    return ({
+      "client_secret": res?.data?.client_secret,
+      "product_cost": res?.data?.product_cost,
+      "shipping_cost": res?.data?.shipping_cost,      
+      
+    });
   } catch (e) {
-    return ({"client_secret": undefined});
+    return ({
+      "client_secret": undefined,
+      "product_cost": undefined,
+      "shipping_cost": undefined,
+    });
   }
 }
 

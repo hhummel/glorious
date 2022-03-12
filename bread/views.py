@@ -1,3 +1,4 @@
+from calendar import c
 from configparser import NoOptionError
 from decimal import Decimal
 import json
@@ -47,6 +48,7 @@ from .serializers import ContactsSerializer, CategorySerializer, ProductsSeriali
     LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
     UserSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
+from .shipping import create_shipping_objects, get_shipping_cost, get_shipping_list
 
 # Path to  output file
 log_file = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'log/message.log'))
@@ -295,27 +297,8 @@ def create_ledger_orders(payment_intent):
 
 @api_view(['POST'])
 def payment_intent(request):
-    total = request.data['total']
     payment_method = request.data['payment_method'] 
     orders = json.loads(request.data['cart'])
-    logger.warn(f'orders: {orders}')
-
-    if payment_method == 'CRD':
-        # Get intent from Stripe
-        stripe.api_key = STRIPE_SECRET
-
-        intent = stripe.PaymentIntent.create(
-            amount = total,
-            currency = 'usd',
-            automatic_payment_methods = {"enabled": True},
-        )
-
-        if not intent:
-            return Response(status=status.HTTP_402_PAYMENT_REQUIRED, data="Payment Intent Id not found")
-    else:
-        # Create an intent id here
-        intent = Intent(total)
-
 
     # Make a ShoppingCart
     cart = ShoppingCart.objects.create(
@@ -324,9 +307,13 @@ def payment_intent(request):
         confirmed = False,
     )
 
+    product_cost = 0
+
     # Make Orders
     for order in orders:
         product = Products.objects.get(index_key=order['product']['index_key'])
+        product_cost += order['number'] * product.price
+
         Order.objects.create(
             user=request.user,
             product=product,
@@ -337,7 +324,7 @@ def payment_intent(request):
             confirmed=order['confirmed'],
             delivered=order['delivered'],
             meister=order['meister'],
-            special_instructions=order.get('special'),
+            special_instructions=order.get('special_instructions'),
             this_is_a_gift=order['this_is_a_gift'],
             ship_this=order['ship_this'],
             recipient_name=order.get('recipient_name'),
@@ -348,6 +335,26 @@ def payment_intent(request):
             recipient_message=order.get('recipient_message'),
             cart=cart,
         )
+
+    shipping_cost = get_shipping_cost(get_shipping_list(cart))
+    total_cost = product_cost + shipping_cost
+
+    if payment_method == 'CRD':
+        # Get intent from Stripe
+        stripe.api_key = STRIPE_SECRET
+
+        intent = stripe.PaymentIntent.create(
+            amount = total_cost * 100,
+            currency = 'usd',
+            automatic_payment_methods = {"enabled": True},
+        )
+
+        if not intent:
+            return Response(status=status.HTTP_402_PAYMENT_REQUIRED, data="Payment Intent Id not found")
+    else:
+        # Create an intent id here
+        intent = Intent(total_cost)
+
 
     #Make PaymentIntent
     payment_intent_object = PaymentIntent.objects.create(
@@ -363,16 +370,18 @@ def payment_intent(request):
 
     if payment_method in ['CSH', 'CHK', 'VEN']:
         # Payment is on trade credit, so create Ledger entry for Orders
-        create_ledger_orders(payment_intent=payment_intent_object) 
+        create_ledger_orders(payment_intent=payment_intent_object)
+        create_shipping_objects(cart=payment_intent_object.cart)
 
-    return Response({'client_secret': intent.client_secret})
-
-
+    return Response({
+        'client_secret': intent.client_secret, 
+        'product_cost': product_cost,
+        'shipping_cost': shipping_cost,
+    })
 
 
 def handle_payment_intent_succeeded(id):
-    """ Handle payment success by updating PaymentIntent and creating ShoppingCart, Payment and Orders"""
-    print(f'Payment intent success: {id}')
+    """ Handle payment success for CRD by updating PaymentIntent and creating ShoppingCart, Payment and Orders"""
 
     payment_intent=PaymentIntent.objects.get(payment_intent_id=id)
 
@@ -381,24 +390,25 @@ def handle_payment_intent_succeeded(id):
         return
     
     # Create a Payment if PaymentIntent is CRD and payment has been made
-    if payment_intent.payment_method == 'CRD':
-        payment = Payment.objects.create(
-            user=payment_intent.user,
-            value=payment_intent.value,
-            date=timezone.datetime.now(),
-            payment_method='CRD',
-            confirmed=True,
-            cart=payment_intent.cart
-        )
+    payment = Payment.objects.create(
+        user=payment_intent.user,
+        value=payment_intent.value,
+        date=timezone.datetime.now(),
+        payment_method='CRD',
+        confirmed=True,
+        cart=payment_intent.cart
+    )
 
-        # Create a Ledger entry for payment
-        create_ledger_payment(payment_intent, payment)
+    # Create a Ledger entry for payment
+    create_ledger_payment(payment_intent, payment)
 
     # Create a Ledger entry for orders
     create_ledger_orders(payment_intent=payment_intent)
 
 
-    # TODO: Create Expense and Ledger for shipping
+    # Create Expense and Ledger for shipping
+    shipping_cost = create_shipping_objects(payment_intent.cart)
+    # TODO Calculate all expected costs for payment intent in backend
 
     # Update PaymentIntent
     payment_intent.payment_reference=payment

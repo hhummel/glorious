@@ -5,6 +5,7 @@ django-filter
 djangorestframework
 markdown
 mysqlclient
+pylint-django
 pytest
 stripe
 xmltodict

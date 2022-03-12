@@ -8,7 +8,6 @@ import { modalStyle } from '../styles';
 import StripePaymentForm from './StripePaymentForm';
 import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
-import { parcelCost } from '../config';
 
 type Props = {
     userId: number;
@@ -18,16 +17,19 @@ type Props = {
 }
 
 export default function CardModal({userId, setVisible, cart, setCart}: Props) {
+  const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [secret, setSecret] = React.useState<string | undefined>('');
   const [open, setOpen] = React.useState(false);
-  const productsTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 );
-  const shippingTotal = cart.filter(order => order.ship_this === true).length * parcelCost;
+  const [productTotal, setProductTotal] = React.useState<number | undefined>(initialTotal);
+  const [shippingTotal, setShippingTotal] = React.useState<number | undefined>(undefined);
 
   const handleOpen = () => {
     setOpen(true);
-    stripeSecret((productsTotal + shippingTotal)* 100, 'CRD', cart).
+    stripeSecret('CRD', cart).
     then(data => {
         setSecret(data?.client_secret);
+        setProductTotal(data?.product_cost);
+        setShippingTotal(data?.shipping_cost);
     }).catch(e => console.log(`Stripe secret error ${e}`));
   }
   const handleClose = () => setOpen(false);
@@ -47,9 +49,12 @@ export default function CardModal({userId, setVisible, cart, setCart}: Props) {
           <Box sx={modalStyle}>
             <Typography variant="h4" component="h1" gutterBottom>Checkout</Typography>
             <Typography variant="body1" component="h2" gutterBottom>
-                <div>Order Total: ${productsTotal}</div>
+                <div>Order Total: ${productTotal}</div>
                 <div>Shipping Total: ${shippingTotal}</div>
-                <div>Grand Total ${productsTotal + shippingTotal}</div>
+                {productTotal && shippingTotal ? 
+                  <div>Grand Total: ${productTotal + shippingTotal}</div> : 
+                  <div>Grand Total: $: ...</div>
+                }
             </Typography>
             <StripePaymentForm secret={secret}/>
           </Box>
