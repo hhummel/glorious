@@ -24,7 +24,7 @@ export default function ProductCard({userId, product, cart, setCart, setVisible}
       <CardMedia
         component="img"
         height="140"
-        image={"https://gloriousgrain.s3.amazonaws.com/PXL_20220107_144009933.MP.jpg"}
+        image={product.picture || "https://gloriousgrain.s3.amazonaws.com/PXL_20220107_144009933.MP.jpg"}
         alt={product.label || "Winter light"}
       />
       <CardContent>
