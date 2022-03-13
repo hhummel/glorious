@@ -8,7 +8,6 @@ from datetime import datetime
 from uuid import uuid4
 from time import time 
 
-from django.views.generic import View
 from django.conf import settings
 
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -26,7 +25,6 @@ from django.contrib.auth.forms import UserCreationForm
 from rest_framework import viewsets, permissions, status, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import filters
 from rest_framework.decorators import action
 import django_filters.rest_framework
 

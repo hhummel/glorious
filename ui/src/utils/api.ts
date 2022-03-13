@@ -1,14 +1,7 @@
-import { DoNotDisturbOnTotalSilence } from '@mui/icons-material';
-import { useGridApiMethod } from '@mui/x-data-grid';
-import axios, { AxiosResponse } from 'axios';
-import { createElement } from 'react';
-import { ExitStatus, NumberLiteralType } from 'typescript';
+import axios from 'axios';
 
-import { Order, Payment, Contact } from '../../types';
+import { Order, Contact } from '../../types';
 import { baseURL } from '../config';
-
-const LOGIN_ENDPOINT = '/bread/auth/login/';
-const LOGOUT_ENDPOINT = '/bread/logout/';
 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.xsrfCookieName = 'csrftoken';
