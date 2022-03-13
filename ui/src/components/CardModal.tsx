@@ -14,9 +14,10 @@ type Props = {
     setVisible: React.Dispatch<React.SetStateAction<number>>;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
+    buttonWidth: string;
 }
 
-export default function CardModal({userId, setVisible, cart, setCart}: Props) {
+export default function CardModal({userId, setVisible, cart, setCart, buttonWidth}: Props) {
   const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [secret, setSecret] = React.useState<string | undefined>('');
   const [open, setOpen] = React.useState(false);
@@ -36,7 +37,7 @@ export default function CardModal({userId, setVisible, cart, setCart}: Props) {
 
   return (
     <>
-    <Button color="primary" variant="contained" onClick={() => handleOpen()}>Card</Button>
+    <Button color="primary" variant="contained" style={{ minWidth: buttonWidth }} onClick={() => handleOpen()}>Card</Button>
 
     <Modal
       open={open}

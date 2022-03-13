@@ -41,6 +41,7 @@ const validationSchema = yup.object({
 export default function OrderForm({index, userId, product, order, cart, setCart, handleClose}: Props) {
 
   const isDisabled = isDisabledDate(dateConstraints);
+  const buttonWidth = '120px'
   
   /**
   * @param startDate - Starting date
@@ -85,7 +86,6 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
    */
 
   const isCart = typeof index !== 'undefined'
-
 
   const formik = useFormik({
     initialValues: order || defaultOrder,
@@ -221,18 +221,20 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
               }
 
               <Stack direction="row" spacing={5}>
-                <Button color="primary" variant="contained" type="submit">
+                <Button color="primary" variant="contained" style={{minWidth: buttonWidth}} type="submit">
                   {isCart ? 'Update' : 'Add to Cart' }
                 </Button>
                 {typeof index !== 'undefined' ? 
-                  <Button color="primary" variant="contained" onClick={ 
+                  <Button color="primary" variant="contained" style={{minWidth: buttonWidth}} onClick={ 
                     () => {
                       const newCart = [...cart];
                       newCart.splice(index, 1);
                       setCart(newCart);
                     }
                   }>Delete</Button> : 
-                  <Button color="primary" variant="contained" onClick={ () => handleClose()}>Cancel</Button>
+                  <Button color="primary" variant="contained" style={{minWidth: buttonWidth}} onClick={ () => handleClose()}>
+                    Cancel
+                  </Button>
                 }
               </Stack>
             </Stack>

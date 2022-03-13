@@ -270,7 +270,7 @@ def create_ledger_payment(payment_intent, payment, non_cash=False):
         order_reference=None,
         payment_reference=payment,
         expense_reference=None,
-        date=timezone.datetime.now(),
+        date=timezone.datetime.now(tz=timezone.utc),
     )
 
 
@@ -289,7 +289,7 @@ def create_ledger_orders(payment_intent):
             order_reference=order,
             payment_reference=None,
             expense_reference=None,
-            date=timezone.datetime.now(),
+            date=timezone.datetime.now(tz=timezone.utc),
     )
 
 
@@ -301,7 +301,7 @@ def payment_intent(request):
     # Make a ShoppingCart
     cart = ShoppingCart.objects.create(
         user = request.user,
-        date = timezone.datetime.now(),
+        date = timezone.datetime.now(tz=timezone.utc),
         confirmed = False,
     )
 
@@ -317,7 +317,7 @@ def payment_intent(request):
             product=product,
             number=order['number'],
             delivery_date=order['delivery_date'][:-14],
-            order_date=timezone.datetime.now(),
+            order_date=timezone.datetime.now(tz=timezone.utc),
             standing=order['standing'],
             confirmed=order['confirmed'],
             delivered=order['delivered'],
@@ -358,7 +358,7 @@ def payment_intent(request):
     payment_intent_object = PaymentIntent.objects.create(
         user = request.user,
         value = round(intent.amount/100, 2),
-        date = timezone.datetime.fromtimestamp(intent.created),
+        date = timezone.datetime.fromtimestamp(intent.created, tz=timezone.utc),
         payment_method = payment_method,
         payment_reference = None,
         payment_intent_id = intent.id,
@@ -391,7 +391,7 @@ def handle_payment_intent_succeeded(id):
     payment = Payment.objects.create(
         user=payment_intent.user,
         value=payment_intent.value,
-        date=timezone.datetime.now(),
+        date=timezone.datetime.now(tz=timezone.utc),
         payment_method='CRD',
         confirmed=True,
         cart=payment_intent.cart

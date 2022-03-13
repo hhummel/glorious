@@ -1,12 +1,15 @@
 import React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Stack from '@mui/material/Stack'
 
 import CardModal from './CardModal';
 import BaseModal from './BaseModal';
 import OrderForm from './OrderForm';
 import { Order } from '../../types'
+
+const buttonWidth = '120px';
 
 
 type Props = {
@@ -19,6 +22,7 @@ type Props = {
 export default function ShoppingCart({userId, cart, setCart, setVisible}: Props) {
   const handleClear = () => setCart([]);
   const handleSubmit = () => handleClear();
+
   if (!userId || !cart.length ) return (
     <Container maxWidth="sm">
         <Typography variant="h4" component="h1" gutterBottom>
@@ -33,10 +37,17 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
         <Typography variant="h4" component="h1" gutterBottom>
           Shopping Cart
         </Typography>
-        <Stack direction="row" spacing={5}>
-          <CardModal userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} /> 
-          <BaseModal paymentMethod="VEN" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} />
-          <BaseModal paymentMethod="CSH" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} /> 
+        <Stack direction="row" spacing={2}>
+            <CardModal userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} /> 
+            <BaseModal 
+              paymentMethod="VEN" 
+              userId={userId} 
+              cart={cart} 
+              setCart={setCart} 
+              setVisible={setVisible} 
+              buttonWidth={buttonWidth} 
+            />
+            <BaseModal paymentMethod="CSH" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} />
         </Stack>
         {cart.map((order, index) => <OrderForm 
           key={index}

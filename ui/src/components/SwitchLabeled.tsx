@@ -16,6 +16,6 @@ export default function SwitchLabeled({label, isChecked, handleCheck}: Props) {
 
   return (
     <FormGroup>
-      <FormControlLabel control={<Switch onChange={handleClick} />} label={label} />
+      <FormControlLabel checked={isChecked} control={<Switch onChange={handleClick} />} label={label} />
     </FormGroup>
   )}

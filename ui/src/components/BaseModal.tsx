@@ -15,18 +15,20 @@ type Props = {
     setVisible: React.Dispatch<React.SetStateAction<number>>;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
+    buttonWidth: string;
 }
 
-export default function BaseModal({paymentMethod, userId, setVisible, cart, setCart}: Props) {
+export default function BaseModal({paymentMethod, userId, setVisible, cart, setCart, buttonWidth}: Props) {
   const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [open, setOpen] = React.useState(false);
   const [productTotal, setProductTotal] = React.useState<number | undefined>(initialTotal);
-  const [shippingTotal, setShippingTotal] = React.useState<number | undefined>(undefined);
+
+  const hasShipping = cart.filter(order => order.ship_this === true).length > 0 ? true : false;
+
   const handleOpen = () => {
     setOpen(true);
     stripeSecret(paymentMethod, cart).then(data => {
       setProductTotal(data?.product_cost);
-      setShippingTotal(data?.shipping_cost);
     })
   }
   const handleClose = () => {
@@ -34,11 +36,17 @@ export default function BaseModal({paymentMethod, userId, setVisible, cart, setC
       setVisible(1);
       setCart([]);
   }
-  const message = paymentMethod === "VEN" ? "Venmo" : "Cash or Check"
+  const message = paymentMethod === "VEN" ? "Venmo" : "Check"
 
   return (
     <>
-    <Button color="primary" variant="contained" onClick={() => handleOpen()}>{message}</Button>
+    <Button 
+      color="primary" 
+      variant="contained"  
+      style={{ minWidth: buttonWidth }} 
+      disabled={hasShipping} 
+      onClick={() => handleOpen()}>{message}
+    </Button>
 
     <Modal
       open={open}
@@ -50,17 +58,13 @@ export default function BaseModal({paymentMethod, userId, setVisible, cart, setC
         <Container maxWidth="sm">
           <Box sx={modalStyle}>
             <Typography variant="h4" component="h1" gutterBottom>Checkout</Typography>
-            <Typography variant="body1" component="h2" gutterBottom>
-                <div>Order Total: ${productTotal}</div>
-                <div>Shipping Total: ${shippingTotal}</div>
-                {productTotal && shippingTotal ? 
-                  <div>Grand Total: ${productTotal + shippingTotal}</div> : 
-                  <div>Grand Total: $: ...</div>
-                }
-            </Typography>
             <Stack spacing={1}>
-            <div>Thanks for paying by {message}! If we don't get it before or at delivery, we'll invoice you.</div>
-            <Button color="primary" variant="contained" onClick={ () => handleClose()}>Agreed</Button>
+              <Typography variant="body1" component="h2" gutterBottom>
+                <div>Order Total: ${productTotal}</div>
+              </Typography>
+              <div>Thanks for paying by {message}!</div>
+              <div>We'll email you an invoice if we don't receive your payment before or at the time of delivery</div>
+              <Button color="primary" variant="contained" onClick={ () => handleClose()}>Close</Button>
             </Stack>
           </Box>
         </Container>

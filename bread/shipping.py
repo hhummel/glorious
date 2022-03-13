@@ -104,7 +104,7 @@ def create_shipping_objects(cart):
             non_cash=True,
             cancelled=False,
             shipment_reference=shipment_object,
-            date=timezone.datetime.now(),
+            date=timezone.datetime.now(tz=timezone.utc),
         )
 
     # Return total cost of shipments
