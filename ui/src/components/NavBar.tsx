@@ -51,6 +51,16 @@ export default function NavBar({user, setUser, setVisible}: Props) {
     handleCloseNavMenu();
   };
 
+  const handleAboutClick = () => {
+    setVisible(5);
+    handleCloseNavMenu();
+  };
+
+  const handleFAQClick = () => {
+    setVisible(6);
+    handleCloseNavMenu();
+  };
+
   const handleAccountClick = () => {
     setVisible(2);
     setAnchorElUser(null);
@@ -124,11 +134,11 @@ export default function NavBar({user, setUser, setVisible}: Props) {
               <MenuItem key={'Products'} onClick={handleProductsClick}>
                 <Typography textAlign="center">Products</Typography>
               </MenuItem>
-              <MenuItem key={'Pricing'} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">Pricing</Typography>
+              <MenuItem key={'About'} onClick={handleAboutClick}>
+                <Typography textAlign="center">About Us</Typography>
               </MenuItem>
-              <MenuItem key={'Blog'} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">Blog</Typography>
+              <MenuItem key={'FAQ'} onClick={handleFAQClick}>
+                <Typography textAlign="center">FAQ</Typography>
               </MenuItem>
             </Menu>
           </Box>
@@ -149,11 +159,18 @@ export default function NavBar({user, setUser, setVisible}: Props) {
                 Products
               </Button>
               <Button
-                key={'Pricing'}
-                onClick={handleCloseNavMenu}
+                key={'About'}
+                onClick={handleAboutClick}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-              Blog
+              About Us
+              </Button>
+              <Button
+                key={'FAQ'}
+                onClick={handleFAQClick}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+              FAQ
               </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
