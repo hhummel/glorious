@@ -6,11 +6,11 @@ import os
 import logging
 from datetime import datetime
 from uuid import uuid4
-from time import time 
+from time import time
 
 from django.conf import settings
-
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.db import transaction
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
@@ -152,7 +152,13 @@ class PaymentViewSet(CreateListRetrieveViewSet):
     queryset = Payment.objects.all().order_by('-date')
     serializer_class = PaymentSerializer
     permission_classes = [IsOwnerOrAdmin,]
+    filterset_fields = ['user']
 
+    @action(detail=True, methods=["get"]) 
+    def user(self, request, pk): 
+        user_payments = self.queryset.filter(user=request.user).order_by('-date')
+        serializer = self.get_serializer(user_payments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ledger.objects.all()
@@ -294,6 +300,7 @@ def create_ledger_orders(payment_intent):
 
 
 @api_view(['POST'])
+@transaction.atomic
 def payment_intent(request):
     payment_method = request.data['payment_method'] 
     orders = json.loads(request.data['cart'])
@@ -319,7 +326,7 @@ def payment_intent(request):
             delivery_date=order['delivery_date'][:-14],
             order_date=timezone.datetime.now(tz=timezone.utc),
             standing=order['standing'],
-            confirmed=order['confirmed'],
+            confirmed=True,
             delivered=order['delivered'],
             meister=order['meister'],
             special_instructions=order.get('special_instructions'),
@@ -377,9 +384,10 @@ def payment_intent(request):
         'shipping_cost': shipping_cost,
     })
 
-
+@transaction.atomic
 def handle_payment_intent_succeeded(id):
-    """ Handle payment success for CRD by updating PaymentIntent and creating ShoppingCart, Payment and Orders"""
+    """ 
+    Handle payment success for CRD by updating PaymentIntent and creating ShoppingCart, Payment and Orders"""
 
     payment_intent=PaymentIntent.objects.get(payment_intent_id=id)
 
@@ -390,7 +398,7 @@ def handle_payment_intent_succeeded(id):
     # Create a Payment if PaymentIntent is CRD and payment has been made
     payment = Payment.objects.create(
         user=payment_intent.user,
-        value=payment_intent.value,
+        value=-payment_intent.value,
         date=timezone.datetime.now(tz=timezone.utc),
         payment_method='CRD',
         confirmed=True,

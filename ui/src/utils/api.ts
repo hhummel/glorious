@@ -85,7 +85,7 @@ export async function userOrders(userId: number) {
  */
 
  export async function userPayments(userId: number) {
-  const {data} = await client.get(`${baseURL}/bread/payment/?user=${userId}`);
+  const {data} = await client.get(`${baseURL}/bread/payment/${userId}/user`);
   return data;
 }
 
