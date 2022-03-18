@@ -10,14 +10,11 @@ import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
 
 type Props = {
-    userId: number;
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
     cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     buttonWidth: string;
 }
 
-export default function CardModal({userId, setVisible, cart, setCart, buttonWidth}: Props) {
+export default function CardModal({cart, buttonWidth}: Props) {
   const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [secret, setSecret] = React.useState<string | undefined>('');
   const [open, setOpen] = React.useState(false);

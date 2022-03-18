@@ -38,16 +38,15 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
           Shopping Cart
         </Typography>
         <Stack direction="row" spacing={2}>
-            <CardModal userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} /> 
+            <CardModal cart={cart} buttonWidth={buttonWidth} /> 
             <BaseModal 
               paymentMethod="VEN" 
-              userId={userId} 
               cart={cart} 
               setCart={setCart} 
               setVisible={setVisible} 
               buttonWidth={buttonWidth} 
             />
-            <BaseModal paymentMethod="CSH" userId={userId} cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} />
+            <BaseModal paymentMethod="CSH" cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} />
         </Stack>
         {cart.map((order, index) => <OrderForm 
           key={index}

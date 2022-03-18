@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from glorious.passwords import MYSQL_HOST, MYSQL_PORT, MYSQL_PASSWORD, \
     MYSQL_NAME, MYSQL_USER, EMAIL_SERVER, EMAIL_USER, EMAIL_PASSWORD, \
-        EMAIL_PORT, THE_SECRET, HOST_LIST, DEBUG_SETTING, USPS_USER_ID
+        EMAIL_PORT, THE_SECRET, HOST_LIST, DEBUG_SETTING
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = THE_SECRET
@@ -157,7 +157,7 @@ EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
 REST_FRAMEWORK = {
     # Apply permissions at the view level rather than DRF
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny', 
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

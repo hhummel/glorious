@@ -1,3 +1,4 @@
+""" Functions related to shiiping cost and process """
 import logging
 from typing import List
 
@@ -16,7 +17,7 @@ def parcel_cost(shipment_items: List[Order]) -> float:
     """
     Calculate cost of sending shipment_items. This is the price charged to the customer
     The real cost would reflect the number of items and the distance sent.
-    TODO: Get expected postage cost from USPS. Pricing should also represent packaging and delivery to Post Ofice
+    TODO: Get expected postage cost from USPS
     TODO: Crude estimate for shipping cost, ignoring number of items, weight or distance
     TODO: Here I simply return a constant
     """
@@ -26,7 +27,8 @@ def parcel_cost(shipment_items: List[Order]) -> float:
 
 def get_shipping_list(cart):
     """
-    Create a list of lists of Orders to be shipped. The sublist is the constituent items in the shipment
+    Create a list of lists of Orders to be shipped.
+    The sublist is the constituent items in the shipment
     """
     # Get Orders from cart
     shipped_orders = Order.objects.select_related().filter(cart_id = cart).filter(ship_this = True)
@@ -43,7 +45,8 @@ def get_shipping_list(cart):
         gift.recipient_zip) for gift in gifts
     }
 
-    # shipment_list contains a list of Order lists, consolidated by shipping recipient and destination 
+    # shipment_list contains a list of Order lists, consolidated by shipping
+    # recipient and destination
     shipping_list =  [non_gifts] if non_gifts else []
     for key in consolidated_gift_keys:
         matched = [gift for gift in gifts if
@@ -86,7 +89,7 @@ def create_shipping_objects(cart):
             recipient_address=first.recipient_address,
             recipient_city=first.recipient_city,
             recipient_state=first.recipient_state,
-            recipient_zip=first.recipient_zip,            
+            recipient_zip=first.recipient_zip,
             recipient_message=coalesce(shipment, 'recipient_message'),
             cart=cart,
         )

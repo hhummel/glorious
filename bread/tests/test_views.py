@@ -1,6 +1,7 @@
+""" Tests for views """
 from django.utils import timezone
 from django.contrib.auth.models import User
-from rest_framework.test import APITestCase 
+from rest_framework.test import APITestCase
 from rest_framework import status
 
 from bread.models import Category, Ledger, Order, Payment, Products
@@ -9,6 +10,7 @@ BASE_URL = "http://localhost:8000"
 
 
 class OrderViewSetTest(APITestCase):
+    """Test special features of Order in views"""
 
     @classmethod
     def setUpTestData(cls):
@@ -19,8 +21,8 @@ class OrderViewSetTest(APITestCase):
         product = Products.objects.create(category=category, product='test', label='test', price=10)
         cls.orders = [
             Order.objects.create(
-                user=cls.user, 
-                product=product, 
+                user=cls.user,
+                product=product,
                 number=1,
                 delivery_date=timezone.datetime.today(),
                 order_date=timezone.datetime.now(),
@@ -30,7 +32,7 @@ class OrderViewSetTest(APITestCase):
                 this_is_a_gift=False
             ),
             Order.objects.create(
-                user=cls.user, 
+                user=cls.user,
                 product=product,
                 number=2,
                 delivery_date=(timezone.datetime.today() - timezone.timedelta(days=1)).date(),
@@ -43,17 +45,20 @@ class OrderViewSetTest(APITestCase):
         ]
 
     def test_can_browse_orders_without_login(self):
+        """ Unauthenticated user should see products """
         response = self.client.get(f'{BASE_URL}/bread/order/')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(len(self.orders), len(response.data))
 
     def test_can_browse_order_detail_with_login(self):
+        """ Authenticated should see order detail """
         self.client.login(username='test_user', password='1234')
         response = self.client.get(f'{BASE_URL}/bread/order/')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(len(self.orders), len(response.data))
-    
+
     def test_can_browse_pending_order_detail_with_good_login(self):
+        """ Authenticated should see pending orders """
         self.client.force_authenticate(user=OrderViewSetTest.user)
         response = self.client.get(f'{BASE_URL}/bread/order/{OrderViewSetTest.user.id}/pending/')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -61,6 +66,7 @@ class OrderViewSetTest(APITestCase):
         self.assertEqual(response.data[0]['number'], 1)
 
     def test_can_browse_history_order_detail_with_good_login(self):
+        """ Authenticated should see order history """
         self.client.force_authenticate(user=OrderViewSetTest.user)
         response = self.client.get(f'{BASE_URL}/bread/order/{OrderViewSetTest.user.id}/history/')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -69,6 +75,7 @@ class OrderViewSetTest(APITestCase):
 
 
 class LedgerViewSetTest(APITestCase):
+    """ Test for Ledger in views """
 
     @classmethod
     def setUpTestData(cls):
@@ -80,8 +87,8 @@ class LedgerViewSetTest(APITestCase):
         product = Products.objects.create(category=category, product='test', label='test', price=10)
         orders = [
             Order.objects.create(
-                user=cls.user, 
-                product=product, 
+                user=cls.user,
+                product=product,
                 number=1,
                 delivery_date=timezone.datetime.today(),
                 order_date=timezone.datetime.now(),
@@ -91,7 +98,7 @@ class LedgerViewSetTest(APITestCase):
                 this_is_a_gift=False
             ),
             Order.objects.create(
-                user=cls.user, 
+                user=cls.user,
                 product=product,
                 number=2,
                 delivery_date=(timezone.datetime.today() - timezone.timedelta(days=1)).date(),

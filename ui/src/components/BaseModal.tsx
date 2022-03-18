@@ -11,14 +11,13 @@ import { Stack } from '@mui/material';
 
 type Props = {
     paymentMethod: string;
-    userId: number;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     buttonWidth: string;
 }
 
-export default function BaseModal({paymentMethod, userId, setVisible, cart, setCart, buttonWidth}: Props) {
+export default function BaseModal({paymentMethod, setVisible, cart, setCart, buttonWidth}: Props) {
   const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [open, setOpen] = React.useState(false);
   const [productTotal, setProductTotal] = React.useState<number | undefined>(initialTotal);

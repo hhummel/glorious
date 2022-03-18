@@ -126,7 +126,7 @@ class OrderViewSet(CreateListRetrieveViewSet):
 
     @action(detail=True, methods=["get"])
     def history(self, request, pk):
-        today = timezone.datetime.today().date() 
+        today = timezone.datetime.today().date()
         past_orders = self.queryset. \
             filter(user=request.user). \
             filter(confirmed=True). \
@@ -486,14 +486,11 @@ def payment_webhook(request):
 
     elif event.type == "payment_intent.payment_failed":
         payment_intent_id = event.data.object.id # contains a stripe.PaymentIntent
-        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
+        intent = event.data.object
+        error_message = intent.last_payment_error.message if intent.last_payment_error else None
         if not payment_intent_id:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Unable to find payment intent id"})
         handle_payment_intent_failed(payment_intent_id, error_message)
-        intent = event_dict['data']['object']
-        error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
-        print("Failed: ", intent['id']), error_message
-        # Notify the customer that payment failed
 
     elif event.type == 'payment_method.attached':
         payment_method = event.data.object # contains a stripe.PaymentMethod
