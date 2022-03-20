@@ -89,6 +89,16 @@ export default function NavBar({user, setUser, setVisible}: Props) {
 
   const logInOut = user ? 'Logout' : 'Login';
 
+  const handleNewUserClick = () => {
+    setVisible(7);
+    setAnchorElUser(null);
+  };
+
+  const handleResetClick = () => {
+    setVisible(8);
+    setAnchorElUser(null);
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -203,18 +213,30 @@ export default function NavBar({user, setUser, setVisible}: Props) {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-                <MenuItem key={'Profile'} onClick={handleProfileClick}>
+                {user && <MenuItem key={'Profile'} onClick={handleProfileClick}>
                   <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
-                <MenuItem key={'Account'} onClick={handleAccountClick}>
+                </MenuItem>}
+
+                {user && <MenuItem key={'Account'} onClick={handleAccountClick}>
                   <Typography textAlign="center">Account</Typography>
-                </MenuItem>
+                </MenuItem>}
+
                 <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">Subscription</Typography>
                 </MenuItem>
+
+                { user ? 
+                  <MenuItem key={'Reset'} onClick={handleResetClick}>
+                  <Typography textAlign="center">Reset Password</Typography>
+                </MenuItem> : 
+                  <MenuItem key={'NewUser'} onClick={handleNewUserClick}>
+                  <Typography textAlign="center">New User</Typography>
+                </MenuItem>}   
+
                 <MenuItem key={'LogInOut'} onClick={handleLogInOut}>
                   <Typography textAlign="center">{logInOut}</Typography>
-                </MenuItem>                
+                </MenuItem>
+  
             </Menu>
           </Box>
         </Toolbar>

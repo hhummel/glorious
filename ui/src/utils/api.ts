@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Order, Contact } from '../../types';
+import { Order, Contact, NewUser } from '../../types';
 import { baseURL } from '../config';
 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -154,6 +154,16 @@ export async function updateContact(userId: number, contact: Contact): Promise<C
     const res = await client.patch(`${baseURL}/bread/contacts/${userId}/`, { ...contact});
     return ({"status": res.status, "data": res?.data});
   } catch (e) {
+    return ({"status": 400, "data": undefined});
+  }
+}
+
+export async function createContact(newUser: NewUser): Promise<ContactResponse> {
+  try {
+    const res = await client.post(`${baseURL}/bread/contacts/`, { ...newUser});
+    return ({"status": res.status, "data": res?.data});
+  } catch (e) {
+    console.log(`Error: ${e}`);
     return ({"status": 400, "data": undefined});
   }
 }

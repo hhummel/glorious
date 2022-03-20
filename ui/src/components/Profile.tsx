@@ -168,6 +168,4 @@ export default function Profile({userId, setVisible}: Props) {
         </Box>
       </Container>
     );
-  };
-
-  
+  };  

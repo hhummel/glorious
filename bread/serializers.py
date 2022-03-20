@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from .models import Contacts, Category, Products, Order, Subscription
@@ -9,16 +10,40 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for User"""
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_superuser', 'is_staff', 'is_active']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_superuser', 'is_staff', 'is_active', 'password']
         read_only_fields = ('id',)
+        extra_kwargs = {'password': {'write_only': True}}
 
 class ContactsSerializer(serializers.ModelSerializer):
     """Serializer for Contacts"""
+    password=serializers.CharField(write_only=True)
+
     class Meta:
         model = Contacts
         fields = '__all__'
         read_only_fields = ('index_key', 'user', 'creation',)
+        extra_kwargs = {'password': {'write_only': True}}
 
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            email=validated_data['email'],
+            is_superuser=False,
+            is_staff=False,
+            is_active=True,
+            password = make_password(validated_data['password']),
+        )
+
+        validated_data.pop('password')
+
+        contact = Contacts.objects.create(
+            user=user,
+            **validated_data,
+        )
+
+        return contact
 
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer for Category"""

@@ -68,6 +68,22 @@ export type Contact = {
   active: boolean
 }
 
+export type NewUser = {
+  password: string,
+  first_name: string,
+  middle_name: string | undefined,
+  last_name: string,
+  address: string,
+  city: string,
+  state: string,
+  zip: string,
+  municipality: string | undefined
+  email: string,
+  mobile: string,
+  carrier: string | undefined,
+  active: boolean
+}
+
 export type DateObj = {
   year: number;
   month: number;
