@@ -21,7 +21,7 @@ type Props = {
     setVisible: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function ResetPassword({setVisible}: Props) {
+export default function ForgotPassword({setVisible}: Props) {
     const formik = useFormik({
       initialValues: initialValues,
       validationSchema: validationSchema,
@@ -35,7 +35,7 @@ export default function ResetPassword({setVisible}: Props) {
       <Container maxWidth="sm">
         <Box sx={{ my: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
-              Reset Your Password
+              Forgot Your Password
           </Typography>
         <form onSubmit={formik.handleSubmit}>
             <Stack spacing={1}>

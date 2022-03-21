@@ -76,6 +76,8 @@ export default function NavBar({user, setUser, setVisible}: Props) {
     setAnchorElUser(null);
   };
 
+  const logInOut = user ? 'Logout' : 'Login';
+
   const handleLogInOut = () => {
     if (user){
       logout();
@@ -87,8 +89,6 @@ export default function NavBar({user, setUser, setVisible}: Props) {
     setAnchorElUser(null);
   };
 
-  const logInOut = user ? 'Logout' : 'Login';
-
   const handleNewUserClick = () => {
     setVisible(7);
     setAnchorElUser(null);
@@ -96,6 +96,11 @@ export default function NavBar({user, setUser, setVisible}: Props) {
 
   const handleResetClick = () => {
     setVisible(8);
+    setAnchorElUser(null);
+  };
+
+  const handleForgotClick = () => {
+    setVisible(9);
     setAnchorElUser(null);
   };
 
@@ -221,18 +226,26 @@ export default function NavBar({user, setUser, setVisible}: Props) {
                   <Typography textAlign="center">Account</Typography>
                 </MenuItem>}
 
-                <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Subscription</Typography>
-                </MenuItem>
-
                 { user ? 
                   <MenuItem key={'Reset'} onClick={handleResetClick}>
-                  <Typography textAlign="center">Reset Password</Typography>
-                </MenuItem> : 
-                  <MenuItem key={'NewUser'} onClick={handleNewUserClick}>
-                  <Typography textAlign="center">New User</Typography>
-                </MenuItem>}   
+                    <Typography textAlign="center">Reset Password</Typography>
+                  </MenuItem> :
 
+                 <MenuItem key={'Forgot'} onClick={handleForgotClick}>
+                    <Typography textAlign="center">Forgot Password</Typography>
+                  </MenuItem>
+                }
+
+                { user ? 
+                  <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">Subscription</Typography>
+                  </MenuItem> :
+
+                  <MenuItem key={'NewUser'} onClick={handleNewUserClick}>
+                    <Typography textAlign="center">New User</Typography>
+                  </MenuItem>
+                }
+                
                 <MenuItem key={'LogInOut'} onClick={handleLogInOut}>
                   <Typography textAlign="center">{logInOut}</Typography>
                 </MenuItem>
