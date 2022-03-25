@@ -99,7 +99,7 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
             const {address, city, state, zip5} = JSON.parse(validData);
             formik.setFieldValue("recipient_zip", zip5);
           }).catch(
-            // TODO: Raise error if vlidation fails 
+            // TODO: Raise error if validation fails 
             reason => console.log(`Address validation rejected: ${reason}`)
         )
       }

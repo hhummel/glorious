@@ -8,13 +8,22 @@ import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
+import { resetPassword } from '../utils/api';
 
 const validationSchema = yup.object({
-  email: yup.string().email().required(),
+    old_password: yup
+    .string()
+    .min(8, 'Password should be of minimum 8 characters length')
+    .required('Old password is required'),
+    new_password: yup
+    .string()
+    .min(8, 'Password should be of minimum 8 characters length')
+    .required('New password is required'),
 });
 
 const initialValues = {
-    'email': ''
+    'old_password': '',
+    'new_password': ''
   };
 
 type Props = {
@@ -26,7 +35,16 @@ export default function ResetPassword({setVisible}: Props) {
       initialValues: initialValues,
       validationSchema: validationSchema,
       onSubmit: values => {
-          console.log('Reset password logic');
+          resetPassword(values.old_password, values.new_password).then(response => {
+              const status = response?.status;
+              if (status === 200) {
+                  console.log('Password reset success');
+              } else if (status === 400) {
+                  console.log('Password reset failed');
+              } else {
+                  console.log(`Password reset returned status ${status}`);
+              }
+          })
           setVisible(1);
       },  
     });
@@ -41,15 +59,25 @@ export default function ResetPassword({setVisible}: Props) {
             <Stack spacing={1}>
                 <TextField
                     fullWidth
-                    id="email"
-                    name="email"
-                    label="Email"
-                    value={formik.values.email}
+                    id="old_passwod"
+                    name="old_password"
+                    label="Old password"
+                    value={formik.values.old_password}
                     onChange={formik.handleChange}
-                    error={formik.touched.email && Boolean(formik.errors.email)}
-                    helperText={formik.touched.email && formik.errors.email}
+                    error={formik.touched.old_password && Boolean(formik.errors.old_password)}
+                    helperText={formik.touched.old_password && formik.errors.old_password}
                 />
-                <Button color="primary" variant="contained" type="submit">Get Reset Email</Button>
+                <TextField
+                    fullWidth
+                    id="new_passwod"
+                    name="new_password"
+                    label="New password"
+                    value={formik.values.new_password}
+                    onChange={formik.handleChange}
+                    error={formik.touched.new_password && Boolean(formik.errors.new_password)}
+                    helperText={formik.touched.new_password && formik.errors.new_password}
+                />
+                <Button color="primary" variant="contained" type="submit">Reset Password</Button>
             </Stack>
         </form>
         </Box>

@@ -208,3 +208,45 @@ export async function stripeSecret(paymentMethod: string, cart: Array<Order>): P
   }
 }
 
+type ResetResponse = {
+  status: number,
+}
+
+export async function resetPassword(oldPassword: string, newPassword: string): Promise<ResetResponse> {
+  try {
+    const res = await client.patch(
+      `${baseURL}/bread/change_password/`,
+      { old_password: oldPassword, new_password: newPassword}
+    );
+    return ({"status": res.status});
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    return ({"status": 400});
+  }
+}
+
+export async function forgotPassword(email: string): Promise<ResetResponse> {
+  try {
+    const res = await client.post(
+      `${baseURL}/bread/reset_password/`,
+      { email: email}
+    );
+    return ({"status": res.status});
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    return ({"status": 400});
+  }
+}
+
+export async function confirmPassword(token: number, password: string): Promise<ResetResponse> {
+  try {
+    const res = await client.post(
+      `${baseURL}/bread/reset_password/confirm/`,
+      { token: token, password: password}
+    );
+    return ({"status": res.status});
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    return ({"status": 400});
+  }
+}

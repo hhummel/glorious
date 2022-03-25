@@ -17,6 +17,7 @@ django-cors-headers = "*"
 xmltodict = "*"
 ddtrace = "*"
 pylint-django = "*"
+django-rest-passwordreset = "*"
 
 [dev-packages]
 

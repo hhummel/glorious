@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import { forgotPassword } from '../utils/api';
 
 
 const validationSchema = yup.object({
@@ -26,9 +27,15 @@ export default function ForgotPassword({setVisible}: Props) {
       initialValues: initialValues,
       validationSchema: validationSchema,
       onSubmit: values => {
-          console.log('Reset password logic');
-          setVisible(1);
-      },  
+          forgotPassword(values.email).then(response => {
+            if (response.status === 200) {
+              setVisible(10);           
+            } else {
+              console.log(`TODO: Forgot password status failed`); 
+            }
+          })
+
+        },  
     });
 
     return (    
@@ -49,7 +56,7 @@ export default function ForgotPassword({setVisible}: Props) {
                     error={formik.touched.email && Boolean(formik.errors.email)}
                     helperText={formik.touched.email && formik.errors.email}
                 />
-                <Button color="primary" variant="contained" type="submit">Get Reset Email</Button>
+                <Button color="primary" variant="contained" type="submit">Get Reset Token</Button>
             </Stack>
         </form>
         </Box>

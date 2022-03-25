@@ -21,12 +21,15 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
+from django.dispatch import receiver
 
-from rest_framework import viewsets, permissions, status, mixins
+from rest_framework import viewsets, permissions, status, mixins, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated 
 import django_filters.rest_framework
+from django_rest_passwordreset.signals import reset_password_token_created
 
 import requests
 import stripe
@@ -44,7 +47,7 @@ from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
     OrderSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
     LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
-    UserSerializer
+    UserSerializer, ChangePasswordSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
 from .shipping import create_shipping_objects, get_shipping_cost, get_shipping_list
 
@@ -506,6 +509,74 @@ def payment_webhook(request):
         print('Unhandled event type {}'.format(event.type))
 
     return Response(status=status.HTTP_200_OK)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    """
+    An endpoint for changing password.
+    """
+    serializer_class = ChangePasswordSerializer
+    model = User
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return Response(response)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+    """
+    Modified from: django-rest-passwordreset
+
+    Handles password reset tokens
+    When a token is created, an e-mail needs to be sent to the user
+    :param sender: View Class that sent the signal
+    :param instance: View Instance that sent the signal
+    :param reset_password_token: Token Model Object
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    # send an e-mail to the user
+    context = {
+        'current_user': reset_password_token.user,
+        'username': reset_password_token.user.username,
+        'email': reset_password_token.user.email,
+        'reset_password_url': "{}?token={}".format(
+            instance.request.build_absolute_uri(reverse('password_reset:reset-password-confirm')),
+            reset_password_token.key)
+    }
+    reset_message = f"Please use this token in the reset password form: {reset_password_token.key}"
+    # TODO: Remove me!
+    print(f"Forgot password message {reset_message}")
+    mailer("Password reset", reset_message, breadmeister_address, [context['email'], assistant_meister], log_file)
 
 
 # Django HTML views

@@ -5,6 +5,9 @@ from rest_framework.routers import DefaultRouter
 
 from bread import views as bread_views
 
+
+
+
 admin.autodiscover()
 
 router = DefaultRouter()
@@ -149,4 +152,6 @@ urlpatterns = [
     path('validate_address', bread_views.validate_address, name='validate_address'),
     path('payment_intent', bread_views.payment_intent, name='payment_intent'),
     path('payment_webhook', bread_views.payment_webhook, name='payment_webhook'),
+    path('change_password/', bread_views.ChangePasswordView.as_view(), name='change_password'),
+    path('reset_password/', include('django_rest_passwordreset.urls', namespace='reset_password')),
 ]

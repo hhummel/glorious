@@ -13,6 +13,7 @@ import FAQ from './FAQ';
 import NewUser from './NewUser';
 import ResetPassword from './ResetPassword';
 import ForgotPassword from './ForgotPassword';
+import ConfirmPassword from './ConfirmPassword';
 
 type Props = {
     title: string;
@@ -39,6 +40,7 @@ export default function MainContainer({ title }: Props) {
         {(visible === 7) && <NewUser setVisible={setVisible}/>}
         {(visible === 8) && <ResetPassword setVisible={setVisible}/>}
         {(visible === 9) && <ForgotPassword setVisible={setVisible}/>}
+        {(visible === 10) && <ConfirmPassword setVisible={setVisible}/>}
       </Container>
     </React.Fragment>
   );
