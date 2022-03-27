@@ -574,8 +574,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
             reset_password_token.key)
     }
     reset_message = f"Please use this token in the reset password form: {reset_password_token.key}"
-    # TODO: Remove me!
-    print(f"Forgot password message {reset_message}")
     mailer("Password reset", reset_message, breadmeister_address, [context['email'], assistant_meister], log_file)
 
 
