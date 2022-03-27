@@ -3,6 +3,7 @@ django-bootstrap4
 django-cors-headers
 django-filter
 djangorestframework
+django-rest-passwordreset
 markdown
 mysqlclient
 pylint-django
