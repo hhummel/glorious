@@ -114,7 +114,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
             component="div"
             sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            LOGO
+            <img src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" width="75" height="75"/>
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -150,7 +150,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
                 <Typography textAlign="center">Products</Typography>
               </MenuItem>
               <MenuItem key={'About'} onClick={handleAboutClick}>
-                <Typography textAlign="center">About Us</Typography>
+                <Typography textAlign="center">About</Typography>
               </MenuItem>
               <MenuItem key={'FAQ'} onClick={handleFAQClick}>
                 <Typography textAlign="center">FAQ</Typography>
@@ -163,7 +163,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
           >
-            LOGO
+            <img src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" width="75" height="75"/>
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button
@@ -178,7 +178,7 @@ export default function NavBar({user, setUser, setVisible}: Props) {
                 onClick={handleAboutClick}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-              About Us
+              About
               </Button>
               <Button
                 key={'FAQ'}
