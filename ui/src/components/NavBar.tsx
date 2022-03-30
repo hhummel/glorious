@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
@@ -17,16 +18,17 @@ import { grey } from '@mui/material/colors';
 
 import Login from './Login'
 import { logout } from '../utils/api';
-import {User} from '../../types'
+import { User, Order } from '../../types';
 
 
 type Props = {
     user: User | undefined;
     setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
+    cart: Array<Order>;
   };
 
-export default function NavBar({user, setUser, setVisible}: Props) {
+export default function NavBar({user, setUser, setVisible, cart}: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -114,7 +116,12 @@ export default function NavBar({user, setUser, setVisible}: Props) {
             component="div"
             sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
           >
-            <img src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" width="75" height="75"/>
+            <img 
+              src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" 
+              width="75" 
+              height="75" 
+              onClick={handleProductsClick}
+            />
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -163,7 +170,12 @@ export default function NavBar({user, setUser, setVisible}: Props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
           >
-            <img src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" width="75" height="75"/>
+            <img 
+              src= "https://gloriousgrain.s3.amazonaws.com/logo_baked_transparent.png" 
+              width="75" 
+              height="75" 
+              onClick={handleProductsClick}
+            />
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button
@@ -191,7 +203,10 @@ export default function NavBar({user, setUser, setVisible}: Props) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Shopping cart">
               <IconButton onClick={handleShoppingCartClick} sx={{ p: 0 }}>
-                <ShoppingCartIcon style={{fill: grey[200]}} />
+                {cart.length ?
+                  <ShoppingCartCheckoutIcon style={{fill: grey[200]}} /> :
+                  <ShoppingCartIcon style={{fill: grey[200]}} />
+                }
               </IconButton>
             </Tooltip>
           </Box>

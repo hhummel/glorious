@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from 'react-dom';
 import { User } from '../../../types';
 import NavBar from '../NavBar';
-import { user } from './fixtures';
+import { user, order } from './fixtures';
 
 it('NavBar render correctly', () => {
 
@@ -15,8 +15,9 @@ it('NavBar render correctly', () => {
     
         const [visible, setVisible] = useState(screenVisible);
         const [user, setUser] = useState(initialUser || undefined);
+        const cart = new Array(order);
 
-        return <NavBar user={user} setUser={setUser} setVisible={setVisible} />;
+        return <NavBar user={user} setUser={setUser} setVisible={setVisible} cart={cart}/>;
     }
 
     const div0 = document.createElement('div');

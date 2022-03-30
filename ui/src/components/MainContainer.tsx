@@ -30,7 +30,7 @@ export default function MainContainer({ title }: Props) {
         <Typography variant="h3" component="h1" gutterBottom>
           {title}
         </Typography>
-        <NavBar user={user} setUser={setUser} setVisible={setVisible} />
+        <NavBar user={user} setUser={setUser} setVisible={setVisible} cart={cart} />
         {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/> }
         {(visible === 2) && <Account userId={user?.id}/>}
         {(visible === 3) && <ShoppingCart userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/>}
