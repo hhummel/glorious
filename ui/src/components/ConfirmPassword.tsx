@@ -15,7 +15,7 @@ const validationSchema = yup.object({
   .number()
   .positive()
   .integer()
-  .required('Token is required'),
+  .nullable(true),
   password: yup
   .string()
   .min(8, 'Password should be of minimum 8 characters length')
@@ -23,7 +23,7 @@ const validationSchema = yup.object({
 });
 
 const initialValues = {
-    'token': 1234,
+    'token': undefined,
     'password': '',
   };
 
@@ -36,8 +36,10 @@ export default function ConfirmPassword({setVisible}: Props) {
       initialValues: initialValues,
       validationSchema: validationSchema,
       onSubmit: values => {
+        if (values.token){
           confirmPassword(values.token, values.password).then(response => console.log(`TODO: Confirm password status ${response.status}`))
           setVisible(1);
+        }
       },  
     });
 
@@ -54,6 +56,7 @@ export default function ConfirmPassword({setVisible}: Props) {
                     id="token"
                     name="token"
                     label="Token"
+                    placeholder="****"
                     value={formik.values.token}
                     onChange={formik.handleChange}
                     error={formik.touched.token && Boolean(formik.errors.token)}
