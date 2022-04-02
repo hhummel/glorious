@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 
 import { Order, Product } from '../../types'
 import OrderModal from './OrderModal'
+import ProductDetailModal from './ProductDetailModal'
 
 type Props = {
     userId: number | undefined;
@@ -36,7 +37,7 @@ export default function ProductCard({userId, product, cart, setCart, setVisible}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Learn More</Button>
+        <ProductDetailModal product={product} />
         { userId && <OrderModal userId={userId} product={product} setVisible={setVisible} cart={cart} setCart={setCart} />}
       </CardActions>
     </Card>
