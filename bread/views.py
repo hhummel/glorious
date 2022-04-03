@@ -272,7 +272,7 @@ def create_ledger_payment(payment_intent, payment, non_cash=False):
     """Create a Ledger entry for payment"""
     Ledger.objects.create(
         user=payment_intent.user,
-        quantity=payment_intent.value,
+        quantity=payment_intent.value * -1,
         credit=True,
         non_cash=non_cash,
         cancelled=False,
@@ -399,9 +399,10 @@ def handle_payment_intent_succeeded(id):
         return
     
     # Create a Payment if PaymentIntent is CRD and payment has been made
+    logger.warning(f"value: {payment_intent.value}")
     payment = Payment.objects.create(
         user=payment_intent.user,
-        value=-payment_intent.value,
+        value=payment_intent.value,
         date=timezone.datetime.now(tz=timezone.utc),
         payment_method='CRD',
         confirmed=True,
