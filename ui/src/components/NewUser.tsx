@@ -15,6 +15,8 @@ const validationSchema = yup.object({
   .string()
   .min(8, 'Password should be of minimum 8 characters length')
   .required('Password is required'),
+  passwordConfirmation: yup.string()
+  .oneOf([yup.ref('password'), null], 'Passwords must match'),
   first_name: yup.string().required().max(35),
   last_name: yup.string().required().max(35),
   email: yup.string().email().required(),
@@ -27,6 +29,7 @@ const validationSchema = yup.object({
 
 const initialValues = {
     'password': '',
+    'passwordConfirmation': null,
     'first_name': '',
     'middle_name': 'Horner',
     'last_name': '',
@@ -70,10 +73,22 @@ export default function NewUser({setVisible}: Props) {
                 id="password"
                 name="password"
                 label="Password"
+                type="password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
+            />
+            <TextField
+                fullWidth
+                id="passwordConfirmation"
+                name="passwordConfirmation"
+                label="Re-enter Password"
+                type="password"
+                value={formik.values.passwordConfirmation}
+                onChange={formik.handleChange}
+                error={formik.touched.password && Boolean(formik.errors.passwordConfirmation)}
+                helperText={formik.touched.passwordConfirmation && formik.errors.passwordConfirmation}
             />
             <TextField
                 fullWidth
