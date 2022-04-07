@@ -38,7 +38,7 @@ import xmltodict
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, PaymentIntent, Category
-from .models import Products, Subscription, Gift, Campaign, ShoppingCart
+from .models import Products, Subscription, Gift, Campaign, ShoppingCart, Refund
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
     EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_WEBHOOK_SECRET,\
@@ -137,6 +137,68 @@ class OrderViewSet(CreateListRetrieveViewSet):
             order_by('-delivery_date')
         serializer = self.get_serializer(past_orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["patch"])
+    @transaction.atomic
+    def cancel(self, request, pk):
+        order = Order.objects.get(pk)
+        # If order isn't delivered, then cancelling is allowed
+        if order.delivered == True:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data="Cannot cancel order that has been delivered")
+
+        # Cancel the order
+        order.confirmed = False
+        order.save()
+
+        # Cancel entry in ledger
+        entry = get_object_or_404(Ledger, order_reference=order)
+        entry.cancelled = True
+        entry.save() 
+
+        payment = entry.payment_reference
+
+        if payment and payment.payment_method == "CRD":
+            # Issue a refund if payment via Stripe
+            payment_intent = get_object_or_404(PaymentIntent, payment_reference=payment)
+            stripe.api_key = STRIPE_SECRET
+            stripe_refund = stripe.Refund.create(payment_intent=payment_intent, reason='requested_by_customer')
+            refund = Refund.objects.create(
+                    user=payment_intent.user,
+                    value=order.number * order.product.price
+                    date=timezone.datetime.now(tz=timezone.utc),
+                    refund_method = 'CRD',
+                    refund_id = stripe_refund.id,
+                    confirmed = True,
+                    reason = stripe_refund.reason,
+            )
+
+            payment_intent.refund_reference = refund
+            payment_intent.save()
+            
+            Ledger.objects.create(
+                user=refund.user,
+                quantity=refund.value,
+                credit=False,
+                non_cash=False,
+                cancelled=False,
+                refund_reference=refund,
+                date=timezone.datetime.now(tz=timezone.utc),
+            )
+
+            # Send email notification that order was cancelled and card payment refunded
+            message = f"Your order number: {order.id} has been cancelled and your card has been credited"
+
+        elif payment:
+            # Send email notification that order was cancelled and we'll return payment
+            message = f"Your order number: {order.id} has been cancelled. If you've already paid we will refund it"
+
+        else:
+            # Send email notification that order was cancelled
+            message = f"Your order number: {order.id} has been cancelled"
+
+        user_email = order.user.email
+        mailer("Order cancelled", message, breadmeister_address, [user_email, assistant_meister], log_file)
+        return Response(status=status.HTTP_200_OK)
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
@@ -399,7 +461,6 @@ def handle_payment_intent_succeeded(id):
         return
     
     # Create a Payment if PaymentIntent is CRD and payment has been made
-    logger.warning(f"value: {payment_intent.value}")
     payment = Payment.objects.create(
         user=payment_intent.user,
         value=payment_intent.value,
@@ -546,9 +607,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 @receiver(reset_password_token_created)

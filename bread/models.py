@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.db import models
 
+
 #Choices
 PREFIX_CHOICES = (
     ('Mr.', 'Mr.'),
@@ -420,6 +421,19 @@ class Payment(models.Model):
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 
+# Refund information
+class Refund(models.Model):
+    """A payment refund recorded in the Ledger"""
+    index_key = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    value = models.DecimalField(max_digits=6, decimal_places=2, null=False)
+    date = models.DateTimeField(null=False)
+    refund_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES)
+    refund_id = models.CharField(max_length=234)
+    confirmed = models.BooleanField(default=False)
+    reason = models.CharField(max_length=100, null=True)
+
+
 # Stripe charge
 class PaymentIntent(models.Model):
     """An intent to pay, by card transaction or selecting cash or Venmo"""
@@ -429,6 +443,7 @@ class PaymentIntent(models.Model):
     date = models.DateTimeField(null=True)
     payment_method = models.CharField(max_length=3, choices=PAYMENT_CHOICES, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
+    refund_reference = models.ForeignKey(Refund, on_delete=models.CASCADE, null=True)
     payment_intent_id = models.CharField(max_length=234)
     success = models.BooleanField(null=True)
     cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
@@ -444,6 +459,7 @@ class Ledger(models.Model):
     cancelled = models.BooleanField(default=True)
     order_reference = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     payment_reference = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
+    refund_reference = models.ForeignKey(Refund, on_delete=models.CASCADE, null=True)
     expense_reference = models.ForeignKey(Expense, on_delete=models.CASCADE, null=True)
     shipment_reference = models.ForeignKey(Shipment, on_delete=models.CASCADE, null=True) 
     date = models.DateTimeField(null=False)
