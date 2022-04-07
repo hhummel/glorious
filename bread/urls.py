@@ -5,9 +5,6 @@ from rest_framework.routers import DefaultRouter
 
 from bread import views as bread_views
 
-
-
-
 admin.autodiscover()
 
 router = DefaultRouter()
