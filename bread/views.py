@@ -138,10 +138,10 @@ class OrderViewSet(CreateListRetrieveViewSet):
         serializer = self.get_serializer(past_orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["patch"])
+    @action(detail=True, methods=["get"])
     @transaction.atomic
     def cancel(self, request, pk):
-        order = Order.objects.get(pk)
+        order = Order.objects.get(index_key=pk)
         # If order isn't delivered, then cancelling is allowed
         if order.delivered == True:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Cannot cancel order that has been delivered")
@@ -153,18 +153,21 @@ class OrderViewSet(CreateListRetrieveViewSet):
         # Cancel entry in ledger
         entry = get_object_or_404(Ledger, order_reference=order)
         entry.cancelled = True
-        entry.save() 
+        entry.save()
 
-        payment = entry.payment_reference
+        # Get the associated shopping cart and payment
+        cart = order.cart
+        payment = Payment.objects.get(cart=cart)
 
         if payment and payment.payment_method == "CRD":
             # Issue a refund if payment via Stripe
             payment_intent = get_object_or_404(PaymentIntent, payment_reference=payment)
+            id = payment_intent.payment_intent_id
             stripe.api_key = STRIPE_SECRET
-            stripe_refund = stripe.Refund.create(payment_intent=payment_intent, reason='requested_by_customer')
+            stripe_refund = stripe.Refund.create(payment_intent=id, reason='requested_by_customer')
             refund = Refund.objects.create(
                     user=payment_intent.user,
-                    value=order.number * order.product.price
+                    value=order.number * order.product.price,
                     date=timezone.datetime.now(tz=timezone.utc),
                     refund_method = 'CRD',
                     refund_id = stripe_refund.id,
@@ -186,15 +189,15 @@ class OrderViewSet(CreateListRetrieveViewSet):
             )
 
             # Send email notification that order was cancelled and card payment refunded
-            message = f"Your order number: {order.id} has been cancelled and your card has been credited"
+            message = f"Your order number: {order.index_key} has been cancelled and your card has been credited"
 
         elif payment:
             # Send email notification that order was cancelled and we'll return payment
-            message = f"Your order number: {order.id} has been cancelled. If you've already paid we will refund it"
+            message = f"Your order number: {order.index_key} has been cancelled. If you've already paid we will refund it"
 
         else:
             # Send email notification that order was cancelled
-            message = f"Your order number: {order.id} has been cancelled"
+            message = f"Your order number: {order.index_key} has been cancelled"
 
         user_email = order.user.email
         mailer("Order cancelled", message, breadmeister_address, [user_email, assistant_meister], log_file)
