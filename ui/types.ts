@@ -39,7 +39,8 @@ export type Payment = {
   value: number,
   date: Date,
   payment_method: string,
-  confirmed: boolean
+  confirmed: boolean,
+  cart: number,
 }
 
 export type Refund = {
