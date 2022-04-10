@@ -62,7 +62,3 @@ export default function Orders({userId}: Props) {
     </Container>
   );
 };
-
-function e(e: any, arg1: (any: any) => any): Order[] {
-    throw new Error('Function not implemented.');
-}

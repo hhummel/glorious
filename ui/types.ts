@@ -42,6 +42,15 @@ export type Payment = {
   confirmed: boolean
 }
 
+export type Refund = {
+  index_key: number | undefined,
+  user: number,
+  value: number,
+  date: Date,
+  payment_method: string,
+  confirmed: boolean
+}
+
 export type Product = {
   id: number,
   category: number,

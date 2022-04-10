@@ -4,12 +4,12 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import { userPayments } from '../utils/api';
-import { Payment } from '../../types';
+import { userRefunds } from '../utils/api';
+import { Refund } from '../../types';
 
 const columns: GridColDef[] = [
     { field: 'value', headerName: 'Amount', width: 150 },
-    { field: 'payment_method', headerName: 'Payment Type', width: 150 },   
+    { field: 'refund_method', headerName: 'Refund Type', width: 150 },   
     { field: 'date', headerName: 'Date', width: 150 },
   ];
 
@@ -17,13 +17,13 @@ type Props = {
     userId: number | undefined;
 }
 
-export default function Payments({userId}: Props) {
+export default function Refunds({userId}: Props) {
   const [rows, setRows] = useState<GridRowsProp | undefined>();
   useEffect(() => {
       if (userId) {
-        userPayments(userId).then(data => {
-          const rowData: Array<Payment> = data.map( (e: { [x: string]: any; }, i: number) => (
-              {'id': i + 1, 'value': e.value, 'payment_method': e.payment_method, 'date': e.date}
+        userRefunds(userId).then(data => {
+          const rowData: Array<Refund> = data.map( (refund: { [x: string]: any; }, i: number) => (
+              {'id': i + 1, 'value': refund.value, 'refund_method': refund.refund_method, 'date': refund.date}
           ));
           setRows(rowData)
         }).catch(e => console.log(e));
@@ -34,7 +34,7 @@ export default function Payments({userId}: Props) {
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Payments
+          Refunds
         </Typography>
         <div style={{ height: 300, width: '100%' }}>
           {rows ? <DataGrid rows={rows} columns={columns} /> : "No data" }
