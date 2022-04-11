@@ -90,6 +90,18 @@ export async function userOrders(userId: number) {
 }
 
 /**
+ * API helper to return refunds from a specified user
+ * 
+ * @param userId 
+ * @returns Array<Payment>
+ */
+
+ export async function userRefunds(userId: number) {
+  const {data} = await client.get(`${baseURL}/bread/refund/${userId}/user`);
+  return data;
+}
+
+/**
  * API helper to return credits from a specified user
  * 
  * @param userId 

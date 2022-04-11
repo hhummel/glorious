@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 
 import Orders from './Orders';
 import Payments from './Payments';
+import Refunds from './Refunds';
 import Balance from './Balance';
 
 
@@ -22,6 +23,7 @@ export default function Account({userId}: Props) {
                 <Balance userId={userId} />
                 <Orders userId={userId} />
                 <Payments userId={userId} />
+                <Refunds userId={userId} />
             </Stack>
         </Container>
     )

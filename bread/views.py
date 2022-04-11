@@ -47,7 +47,7 @@ from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
     OrderSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
     LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
-    UserSerializer, ChangePasswordSerializer
+    UserSerializer, ChangePasswordSerializer, RefundSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
 from .shipping import create_shipping_objects, get_shipping_cost, get_shipping_list
 
@@ -146,14 +146,8 @@ class OrderViewSet(CreateListRetrieveViewSet):
         if order.delivered == True:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Cannot cancel order that has been delivered")
 
-        # Cancel the order
-        order.confirmed = False
-        order.save()
-
-        # Cancel entry in ledger
-        entry = get_object_or_404(Ledger, order_reference=order)
-        entry.cancelled = True
-        entry.save()
+        if order.confirmed == False:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"Order {order.index_key} has already been canceled")
 
         # Get the associated shopping cart and payment
         cart = order.cart
@@ -164,38 +158,69 @@ class OrderViewSet(CreateListRetrieveViewSet):
             payment_intent = get_object_or_404(PaymentIntent, payment_reference=payment)
             id = payment_intent.payment_intent_id
             stripe.api_key = STRIPE_SECRET
-            stripe_refund = stripe.Refund.create(payment_intent=id, reason='requested_by_customer')
-            refund = Refund.objects.create(
-                    user=payment_intent.user,
-                    value=order.number * order.product.price,
+            try:
+                stripe_refund = stripe.Refund.create(payment_intent=id, transfer_reversal=True, reason='requested_by_customer')
+
+                refund = Refund.objects.create(
+                        user=payment_intent.user,
+                        value=order.number * order.product.price,
+                        date=timezone.datetime.now(tz=timezone.utc),
+                        refund_method = 'CRD',
+                        refund_id = stripe_refund.id,
+                        confirmed = True,
+                        reason = stripe_refund.reason,
+                )
+                # Cancel the order
+                order.confirmed = False
+                order.save()
+
+                # Cancel entry in ledger
+                entry = get_object_or_404(Ledger, order_reference=order)
+                entry.cancelled = True
+                entry.save()
+
+                payment_intent.refund_reference = refund
+                payment_intent.save()
+                
+                Ledger.objects.create(
+                    user=refund.user,
+                    quantity=refund.value,
+                    credit=False,
+                    non_cash=False,
+                    cancelled=False,
+                    refund_reference=refund,
                     date=timezone.datetime.now(tz=timezone.utc),
-                    refund_method = 'CRD',
-                    refund_id = stripe_refund.id,
-                    confirmed = True,
-                    reason = stripe_refund.reason,
-            )
+                )
 
-            payment_intent.refund_reference = refund
-            payment_intent.save()
-            
-            Ledger.objects.create(
-                user=refund.user,
-                quantity=refund.value,
-                credit=False,
-                non_cash=False,
-                cancelled=False,
-                refund_reference=refund,
-                date=timezone.datetime.now(tz=timezone.utc),
-            )
+                # Send email notification that order was cancelled and card payment refunded
+                message = f"Your order number: {order.index_key} has been cancelled and your card has been credited"
 
-            # Send email notification that order was cancelled and card payment refunded
-            message = f"Your order number: {order.index_key} has been cancelled and your card has been credited"
+            except stripe.error.InvalidRequestError as e:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=f"A refund has already been issued for payment on order {order.index_key}")
 
         elif payment:
+            # Cancel the order
+            order.confirmed = False
+            order.save()
+
+            # Cancel entry in ledger
+            entry = get_object_or_404(Ledger, order_reference=order)
+            entry.cancelled = True
+            entry.save()
+
             # Send email notification that order was cancelled and we'll return payment
             message = f"Your order number: {order.index_key} has been cancelled. If you've already paid we will refund it"
 
         else:
+            # Cancel the order
+            order.confirmed = False
+            order.save()
+
+            # Cancel entry in ledger
+            entry = get_object_or_404(Ledger, order_reference=order)
+            entry.cancelled = True
+            entry.save()
+
             # Send email notification that order was cancelled
             message = f"Your order number: {order.index_key} has been cancelled"
 
@@ -227,6 +252,20 @@ class PaymentViewSet(CreateListRetrieveViewSet):
         user_payments = self.queryset.filter(user=request.user).order_by('-date')
         serializer = self.get_serializer(user_payments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RefundViewSet(CreateListRetrieveViewSet):
+    queryset = Refund.objects.all().order_by('-date')
+    serializer_class = RefundSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+    filterset_fields = ['user']
+
+    @action(detail=True, methods=["get"])
+    def user(self, request, pk): 
+        user_refunds = self.queryset.filter(user=request.user).order_by('-date')
+        serializer = self.get_serializer(user_refunds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ledger.objects.all()
