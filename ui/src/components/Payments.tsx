@@ -88,8 +88,6 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-
-
 type Props = {
     userId: number | undefined;
 }
@@ -98,7 +96,6 @@ export default function Payments({userId}: Props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = useState<Array<Payment> | undefined>();
-
 
   useEffect(() => {
       if (userId) {
@@ -135,6 +132,15 @@ export default function Payments({userId}: Props) {
     setPage(0);
   };
 
+  type PaymentKey = keyof Payment;
+  const columnHeaders = ['Date', 'Amount', 'Method', 'Cart'];
+  const columnAttributes: Array<PaymentKey> = [
+    'date',
+    'value',
+    'payment_method',
+    'cart'
+  ];
+
   return (    
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
@@ -145,10 +151,7 @@ export default function Payments({userId}: Props) {
           <Table sx={{ minWidth: 350 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="left">Date</TableCell>
-                <TableCell align="left">Amount</TableCell>
-                <TableCell align="left">Method</TableCell>
-                <TableCell align="left">Cart</TableCell>                
+                {columnHeaders.map(header => <TableCell align="left">{header}</TableCell>)}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -159,10 +162,7 @@ export default function Payments({userId}: Props) {
                     key={row.index_key}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell align="left">{row.date}</TableCell>
-                    <TableCell align="left">{row.value}</TableCell>
-                    <TableCell align="left">{row.payment_method}</TableCell>
-                    <TableCell align="left">{row.cart}</TableCell>
+                    {columnAttributes.map(attribute => <TableCell align="left">{row[attribute]}</TableCell>)}
                   </TableRow>
               ))}
               {emptyRows > 0 && (
