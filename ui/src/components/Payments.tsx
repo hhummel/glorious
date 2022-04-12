@@ -21,7 +21,7 @@ export default function Payments({userId}: Props) {
                 'date': new Date(el.date).toDateString(), 
                 'value': el.value, 
                 'payment_method': el.payment_method, 
-                'cart': el.cart,
+                'id': el.index_key,
             }
           ));
           setRows(rowData)
@@ -33,8 +33,8 @@ export default function Payments({userId}: Props) {
     'Date',
     'Amount',
     'Method',
-    'Cart'
+    'ID'
   ]
 
-  return <BaseTable<Payment> columnHeaders={columnHeaders} rows={rows}/>
+  return <BaseTable<Payment> title={'Payments'} columnHeaders={columnHeaders} rows={rows}/>
 };
