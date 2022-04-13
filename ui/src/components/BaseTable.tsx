@@ -87,11 +87,12 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 // Generics from https://www.carlrippon.com/React-generic-props/
 type Props<Type> = {
+    title: string;
     columnHeaders: Array<string>;
     rows: Array<Type>;
 }
 
-export default function BaseTable<Type>({columnHeaders, rows}: Props<Type>) {
+export default function BaseTable<Type>({title, columnHeaders, rows}: Props<Type>) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -116,9 +117,6 @@ export default function BaseTable<Type>({columnHeaders, rows}: Props<Type>) {
   return (    
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Payments
-        </Typography>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 350 }} aria-label="simple table">
             <TableHead>

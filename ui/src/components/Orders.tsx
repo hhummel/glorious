@@ -3,35 +3,49 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import BaseTable from './BaseTable'
 
 import { userOrdersPending, userOrdersHistory } from '../utils/api';
 import { Order } from '../../types';
 
-const columns: GridColDef[] = [
-    { field: 'product', headerName: 'Product', width: 150 },
-    { field: 'quantity', headerName: 'Quantity', width: 150 },   
-    { field: 'delivery', headerName: 'Delivery date', width: 150 },
-  ];
+const columnHeaders = [
+  'Order Date',
+  'Product',
+  'Quantity',
+  'Delivery Date',
+  'ID',
+]  
 
 type Props = {
     userId: number | undefined;
 }
 
 export default function Orders({userId}: Props) {
-  const [rowsPending, setRowsPending] = useState<GridRowsProp | undefined>();
-  const [rowsHistory, setRowsHistory] = useState<GridRowsProp | undefined>(); 
+  const [rowsPending, setRowsPending] = useState<Array<Order>> ([]);
+  const [rowsHistory, setRowsHistory] = useState<Array<Order>> ([]);
   useEffect(() => {
       if (userId) {
         userOrdersPending(userId).then(data => {
-          const rowData: Array<Order> = data.map( (e: { [x: string]: any; }, i: number) => (
-              {'id': i + 1, 'product': e.product, 'quantity': e.number, 'delivery': e.delivery_date}
+          const rowData: Array<Order> = data.map( (e: { [x: string]: any; }) => (
+              {
+                'date': new Date(e.order_date).toDateString(), 
+                'product': e.product, 
+                'quantity': e.number, 
+                'delivery': e.delivery_date,
+                'id': e.index_key,
+              }
           ));
           setRowsPending(rowData)
         }).catch(e => console.log(e));
         userOrdersHistory(userId).then(data => {
           const rowData: Array<Order> = data.map( (e: { [x: string]: any; }, i: number) => (
-              {'id': i + 1, 'product': e.product, 'quantity': e.number, 'delivery': e.delivery_date}
+            {
+              'date': new Date(e.order_date).toDateString(), 
+              'product': e.product, 
+              'quantity': e.number, 
+              'delivery': e.delivery_date,
+              'id': e.index_key,
+            }
           ));
           setRowsHistory(rowData)
         }).catch(e => console.log(e));
@@ -45,18 +59,8 @@ export default function Orders({userId}: Props) {
           <Typography variant="h4" component="h1" gutterBottom>
             Orders
           </Typography>
-          <div style={{ height: 300, width: '100%' }}>
-            <Typography variant="h5" component="h1" gutterBottom>
-              Pending
-            </Typography>
-            {rowsPending ? <DataGrid rows={rowsPending} columns={columns} /> : "No data" }
-          </div>
-          <div style={{ height: 300, width: '100%' }}>
-            <Typography variant="h5" component="h1" gutterBottom>
-              History
-            </Typography>
-            {rowsHistory ? <DataGrid rows={rowsHistory} columns={columns} /> : "No data" }
-          </div>
+          {rowsPending ?  <BaseTable<Order> title={'Pending'} columnHeaders={columnHeaders} rows={rowsPending}/> : "No pending orders" }
+          {rowsHistory ?  <BaseTable<Order> title={'History'} columnHeaders={columnHeaders} rows={rowsHistory}/> : "No order history" }
         </Stack>
       </Box>
     </Container>
