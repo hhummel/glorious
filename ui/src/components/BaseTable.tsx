@@ -121,7 +121,7 @@ export default function BaseTable<Type>({title, columnHeaders, rows}: Props<Type
           <Table sx={{ minWidth: 350 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                {columnHeaders.map(header => <TableCell align="left">{header}</TableCell>)}
+                {columnHeaders.map((header, index) => <TableCell key={index} align="left">{header}</TableCell>)}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -132,7 +132,7 @@ export default function BaseTable<Type>({title, columnHeaders, rows}: Props<Type
                     key={index}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    {(Object.keys(rows[0]) as Array<keyof Type>).map(key => <TableCell align="left">{row[key]}</TableCell>)}
+                    {(Object.keys(rows[0]) as Array<keyof Type>).map((objectKey, index) => <TableCell key={index} align="left">{row[objectKey]}</TableCell>)}
                   </TableRow>
               ))}
               {emptyRows > 0 && (
