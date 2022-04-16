@@ -30,7 +30,7 @@ export default function Account({userId}: Props) {
                 aria-controls="panel1a-content"
                 id="panel1a-header"
                 >
-                <Typography>Balance</Typography>
+                <Typography variant="h4" component="h2" gutterBottom>Balance</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                 <Balance userId={userId} />
@@ -42,7 +42,7 @@ export default function Account({userId}: Props) {
                 aria-controls="panel2a-content"
                 id="panel2a-header"
                 >
-                <Typography>Pending Orders</Typography>
+                <Typography variant="h4" component="h2" gutterBottom>Pending Orders</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <PendingOrders userId={userId} />
@@ -54,7 +54,7 @@ export default function Account({userId}: Props) {
                 aria-controls="panel2a-content"
                 id="panel2a-header"
                 >
-                <Typography>Order History</Typography>
+                <Typography variant="h4" component="h2" gutterBottom>Order History</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <PastOrders userId={userId} />
@@ -66,7 +66,7 @@ export default function Account({userId}: Props) {
                 aria-controls="panel2a-content"
                 id="panel2a-header"
                 >
-                <Typography>Payments</Typography>
+                <Typography variant="h4" component="h2" gutterBottom>Payments</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Payments userId={userId} />
@@ -78,7 +78,7 @@ export default function Account({userId}: Props) {
                 aria-controls="panel2a-content"
                 id="panel2a-header"
                 >
-                <Typography>Refunds</Typography>
+                <Typography variant="h4" component="h2" gutterBottom>Refunds</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Refunds userId={userId} />
