@@ -159,7 +159,7 @@ class OrderViewSet(CreateListRetrieveViewSet):
             id = payment_intent.payment_intent_id
             stripe.api_key = STRIPE_SECRET
             try:
-                stripe_refund = stripe.Refund.create(payment_intent=id, transfer_reversal=True, reason='requested_by_customer')
+                stripe_refund = stripe.Refund.create(payment_intent=id, reason='requested_by_customer')
 
                 refund = Refund.objects.create(
                         user=payment_intent.user,
