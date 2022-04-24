@@ -20,6 +20,7 @@ router.register(r'ledger', bread_views.LedgerViewSet)
 router.register(r'subscribers', bread_views.SubscribersViewSet)
 router.register(r'maillist', bread_views.MailListViewSet)
 router.register(r'campaign', bread_views.CampaignViewSet)
+router.register(r'shoppingcart', bread_views.ShoppingCartViewSet)
 
 urlpatterns = [
     path('', bread_views.index, name='index'),
@@ -150,6 +151,7 @@ urlpatterns = [
     path('validate_address', bread_views.validate_address, name='validate_address'),
     path('payment_intent', bread_views.payment_intent, name='payment_intent'),
     path('payment_webhook', bread_views.payment_webhook, name='payment_webhook'),
+    path('cancel_orders', bread_views.cancel_orders, name='cancel_orders'),
     path('change_password/', bread_views.ChangePasswordView.as_view(), name='change_password'),
     path('reset_password/', include('django_rest_passwordreset.urls', namespace='reset_password')),
 ]

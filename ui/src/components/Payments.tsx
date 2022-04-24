@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { userPayments } from '../utils/api';
 import { Payment } from '../../types';
 import BaseTable from './BaseTable'
+import formatDateString from '../utils/formatDateString'
 
 
 type Props = {
@@ -18,7 +19,7 @@ export default function Payments({userId}: Props) {
         userPayments(userId).then(data => {
           const rowData: Array<Payment> = data.map( (el: { [x: string]: any; }) => (
               {
-                'date': new Date(el.date).toDateString(), 
+                'date': formatDateString(el.date), 
                 'value': el.value, 
                 'payment_method': el.payment_method, 
                 'id': el.index_key,

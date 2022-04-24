@@ -45,7 +45,7 @@ from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSW
     STRIPE_PUBLISHABLE, HISTORY, USPS_USER_ID
 from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
-    OrderSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
+    OrderSerializer, ShoppingCartSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
     LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
     UserSerializer, ChangePasswordSerializer, RefundSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
@@ -138,95 +138,27 @@ class OrderViewSet(CreateListRetrieveViewSet):
         serializer = self.get_serializer(past_orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"])
-    @transaction.atomic
-    def cancel(self, request, pk):
-        order = Order.objects.get(index_key=pk)
-        # If order isn't delivered, then cancelling is allowed
-        if order.delivered == True:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data="Cannot cancel order that has been delivered")
 
-        if order.confirmed == False:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"Order {order.index_key} has already been canceled")
+class ShoppingCartViewSet(viewsets.ModelViewSet):
+    queryset = ShoppingCart.objects.all()
+    serializer_class = ShoppingCartSerializer
+    permission_classes = [IsOwnerOrAdmin,]
 
-        # Get the associated shopping cart and payment
-        cart = order.cart
-        payment = Payment.objects.get(cart=cart)
+    def create(self, request):
+        response = {'message': 'Create function is not offered in this path.'}
+        return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        if payment and payment.payment_method == "CRD":
-            # Issue a refund if payment via Stripe
-            payment_intent = get_object_or_404(PaymentIntent, payment_reference=payment)
-            id = payment_intent.payment_intent_id
-            stripe.api_key = STRIPE_SECRET
-            try:
-                stripe_refund = stripe.Refund.create(payment_intent=id, reason='requested_by_customer')
+    def update(self, request, pk=None):
+        response = {'message': 'Update function is not offered in this path.'}
+        return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-                refund = Refund.objects.create(
-                        user=payment_intent.user,
-                        value=order.number * order.product.price,
-                        date=timezone.datetime.now(tz=timezone.utc),
-                        refund_method = 'CRD',
-                        refund_id = stripe_refund.id,
-                        confirmed = True,
-                        reason = stripe_refund.reason,
-                )
-                # Cancel the order
-                order.confirmed = False
-                order.save()
+    def partial_update(self, request, pk=None):
+        response = {'message': 'Update function is not offered in this path.'}
+        return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-                # Cancel entry in ledger
-                entry = get_object_or_404(Ledger, order_reference=order)
-                entry.cancelled = True
-                entry.save()
-
-                payment_intent.refund_reference = refund
-                payment_intent.save()
-                
-                Ledger.objects.create(
-                    user=refund.user,
-                    quantity=refund.value,
-                    credit=False,
-                    non_cash=False,
-                    cancelled=False,
-                    refund_reference=refund,
-                    date=timezone.datetime.now(tz=timezone.utc),
-                )
-
-                # Send email notification that order was cancelled and card payment refunded
-                message = f"Your order number: {order.index_key} has been cancelled and your card has been credited"
-
-            except stripe.error.InvalidRequestError as e:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=f"A refund has already been issued for payment on order {order.index_key}")
-
-        elif payment:
-            # Cancel the order
-            order.confirmed = False
-            order.save()
-
-            # Cancel entry in ledger
-            entry = get_object_or_404(Ledger, order_reference=order)
-            entry.cancelled = True
-            entry.save()
-
-            # Send email notification that order was cancelled and we'll return payment
-            message = f"Your order number: {order.index_key} has been cancelled. If you've already paid we will refund it"
-
-        else:
-            # Cancel the order
-            order.confirmed = False
-            order.save()
-
-            # Cancel entry in ledger
-            entry = get_object_or_404(Ledger, order_reference=order)
-            entry.cancelled = True
-            entry.save()
-
-            # Send email notification that order was cancelled
-            message = f"Your order number: {order.index_key} has been cancelled"
-
-        user_email = order.user.email
-        mailer("Order cancelled", message, breadmeister_address, [user_email, assistant_meister], log_file)
-        return Response(status=status.HTTP_200_OK)
+    def destroy(self, request, pk=None):
+        response = {'message': 'Delete function is not offered in this path.'}
+        return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
@@ -613,6 +545,119 @@ def payment_webhook(request):
         print('Unhandled event type {}'.format(event.type))
 
     return Response(status=status.HTTP_200_OK)
+
+
+@api_view(["post"])
+@transaction.atomic
+def cancel_orders(request):
+    """
+    Handle cancellation of orders in a shopping cart. Only one cancellation event is allowed per cart
+    by Stripe
+    @input: card_id is id for the cart
+    @input: order_ids are the orders to be cancelled
+
+    """
+    try:
+        cart_id = request.data['cart']
+        order_ids = request.data['orders']
+    except KeyError as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="No cart or orders found in request")
+
+    cart =  get_object_or_404(ShoppingCart, index_key=cart_id)
+
+    # Get the PaymentIntent, reject if there has already been a refund
+    payment_intent = get_object_or_404(PaymentIntent, cart=cart)
+    
+    if payment_intent.refund_reference:
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=f"A refund has already been issued for shopping cart {cart_id}")
+
+
+    # Get the Order objects and determine if there has already been a delivery
+    orders = Order.objects.filter(cart=cart)
+    refund_total = 0
+    cancelled_orders = []
+
+    # Verify request_orders and calculate value of requested cancellation
+    for order_id in order_ids:
+        try:
+            order = get_object_or_404(Order, index_key=order_id)
+            if order.cart.index_key != cart_id:
+               return Response(status=status.HTTP_400_BAD_REQUEST, data=f"Order: {order_id} not found in Cart: {cart_id}") 
+            if order.delivered or not order.confirmed:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data=f"Order: {order_id} has been delivered or cancelled")
+            if payment_intent.payment_method == "CRD":
+                refund_total += order.product.price * order.number
+            cancelled_orders.append(order)
+        except Order.DoesNotExist as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"Order: {order_id} not found in shopping cart {cart_id}") 
+
+    # If refund_total try Stripe refund. Update PaymentIntent, Order and Ledger objects
+    if payment_intent.payment_method == "CRD":
+        if not refund_total:
+            return Response(status=status.HTTP_200_OK)
+
+        # Issue a refund if payment via Stripe
+        id = payment_intent.payment_intent_id
+        stripe.api_key = STRIPE_SECRET
+        try:
+            stripe_refund = stripe.Refund.create(payment_intent=id, reason='requested_by_customer')
+
+            refund = Refund.objects.create(
+                    user=payment_intent.user,
+                    value=refund_total,
+                    date=timezone.datetime.now(tz=timezone.utc),
+                    refund_method = 'CRD',
+                    refund_id = stripe_refund.id,
+                    confirmed = True,
+                    reason = stripe_refund.reason,
+            )
+
+            # Cancel the orders and update ledger
+            for order in cancelled_orders:
+                order.confirmed = False
+                order.save()
+
+                entry = get_object_or_404(Ledger, order_reference=order)
+                entry.cancelled = True
+                entry.save()
+
+            payment_intent.refund_reference = refund
+            payment_intent.save()
+            
+            Ledger.objects.create(
+                user=refund.user,
+                quantity=refund.value,
+                credit=False,
+                non_cash=False,
+                cancelled=False,
+                refund_reference=refund,
+                date=timezone.datetime.now(tz=timezone.utc),
+            )
+
+            # Send email notification that order was cancelled and card payment refunded
+            message = f"Your order number: {order.index_key} has been cancelled and your card has been credited"
+
+        except stripe.error.InvalidRequestError as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=f"A refund has already been issued for payment on order {order.index_key}")
+
+    else:
+        # Cancel the order
+        for order in cancelled_orders:
+            order.confirmed = False
+            order.save()
+
+            # Cancel entry in ledger
+            entry = get_object_or_404(Ledger, order_reference=order)
+            entry.cancelled = True
+            entry.save()
+
+            # Send email notification that order was cancelled
+            message = f"Your order number: {order.index_key} has been cancelled. If you've already paid we will refund it"
+
+    user_email = order.user.email
+    mailer("Orders cancelled", message, breadmeister_address, [user_email, assistant_meister], log_file)
+    return Response(status=status.HTTP_200_OK)
+
 
 
 class ChangePasswordView(generics.UpdateAPIView):
