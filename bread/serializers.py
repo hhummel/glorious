@@ -135,9 +135,12 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Serializer for ShoppingCart"""
+    order_set = OrderSerializer(read_only=True, many=True)
+    payment_set = PaymentSerializer(read_only=True, many=True)
+    refund_set = RefundSerializer(read_only=True, many=True)
     class Meta:
         model = ShoppingCart
-        fields = '__all__'
+        fields = ['index_key', 'user', 'date', 'order_set', 'payment_set', 'refund_set', ] 
         read_only_fields = ('index_key', 'user', 'date',)
 
 
