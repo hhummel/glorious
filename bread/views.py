@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.http import JsonResponse
 from django.core import serializers
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -160,6 +160,23 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
         response = {'message': 'Delete function is not offered in this path.'}
         return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    @action(detail=True, methods=["get"])
+
+    def pending(self, request, pk):
+        """
+        Return shopping carts without refunds, deliveries or cancelled items
+        """
+        user_carts = self.queryset. \
+            filter(user=request.user). \
+            filter(paymentintent__refund_reference__isnull=True)
+
+        pending_carts = [
+            cart for cart in user_carts if not Order.objects.filter(cart=cart).
+                filter(Q(confirmed=False) | Q(delivered=True))
+        ]
+
+        serializer = self.get_serializer(pending_carts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SubscriptionViewSet(viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
