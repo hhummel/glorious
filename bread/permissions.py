@@ -8,6 +8,8 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Write permissions are only allowed to the owner of obj or Admins.
+        # TODO: Remove me!
+        print("Inside has_object_permissions")
         return request.user.is_staff or obj.user == request.user
 
 

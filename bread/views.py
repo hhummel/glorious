@@ -27,7 +27,7 @@ from rest_framework import viewsets, permissions, status, mixins, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated 
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 import django_filters.rest_framework
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -95,6 +95,12 @@ class ContactsViewSet(viewsets.ModelViewSet):
     serializer_class = ContactsSerializer
     permission_classes = [IsOwnerOrAdmin,]
 
+    def list(self, request):
+        queryset = Contacts.objects.all() if request.user.is_staff \
+            else Contacts.objects.filter(user=request.user).order_by('last_name')
+        serializer = ContactsSerializer(queryset, many=True)
+        return Response(serializer.data)    
+
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
@@ -114,6 +120,12 @@ class OrderViewSet(CreateListRetrieveViewSet):
     permission_classes = [IsOwnerOrAdmin,]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ['user']
+
+    def list(self, request):
+        queryset = Order.objects.all() if request.user.is_staff \
+            else Order.objects.filter(user=request.user).order_by('-order_date')
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["get"])
     def pending(self, request, pk):
@@ -160,8 +172,13 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
         response = {'message': 'Delete function is not offered in this path.'}
         return Response(response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(detail=True, methods=["get"])
+    def list(self, request):
+        queryset = ShoppingCart.objects.all() if request.user.is_staff \
+            else ShoppingCart.objects.filter(user=request.user).order_by('-date')
+        serializer = ShoppingCartSerializer(queryset, many=True)
+        return Response(serializer.data)
 
+    @action(detail=True, methods=["get"])
     def pending(self, request, pk):
         """
         Return shopping carts without refunds, deliveries or cancelled items
@@ -178,16 +195,29 @@ class ShoppingCartViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(pending_carts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class SubscriptionViewSet(viewsets.ModelViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
     permission_classes = [IsOwnerOrAdmin,]
+
+    def list(self, request):
+        queryset = Subscription.objects.all() if request.user.is_staff \
+            else Subscription.objects.filter(user=request.user)
+        serializer = SubscriptionSerializer(queryset, many=True)
+        return Response(serializer.data)    
 
 
 class GiftViewSet(viewsets.ModelViewSet):
     queryset = Gift.objects.all()
     serializer_class = GiftSerializer
     permission_classes = [IsOwnerOrAdmin,]
+
+    def list(self, request):
+        queryset = Gift.objects.all() if request.user.is_staff \
+            else Gift.objects.filter(order__user=request.user)
+        serializer = GiftSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class PaymentViewSet(CreateListRetrieveViewSet):
@@ -196,11 +226,11 @@ class PaymentViewSet(CreateListRetrieveViewSet):
     permission_classes = [IsOwnerOrAdmin,]
     filterset_fields = ['user']
 
-    @action(detail=True, methods=["get"]) 
-    def user(self, request, pk): 
-        user_payments = self.queryset.filter(user=request.user).order_by('-date')
-        serializer = self.get_serializer(user_payments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def list(self, request):
+        queryset = Payment.objects.all() if request.user.is_staff \
+            else Payment.objects.filter(user=request.user).order_by('-date')
+        serializer = PaymentSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class RefundViewSet(CreateListRetrieveViewSet):
@@ -209,11 +239,11 @@ class RefundViewSet(CreateListRetrieveViewSet):
     permission_classes = [IsOwnerOrAdmin,]
     filterset_fields = ['user']
 
-    @action(detail=True, methods=["get"])
-    def user(self, request, pk): 
-        user_refunds = self.queryset.filter(user=request.user).order_by('-date')
-        serializer = self.get_serializer(user_refunds, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def list(self, request):
+        queryset = Refund.objects.all() if request.user.is_staff \
+            else Refund.objects.filter(user=request.user).order_by('-date')
+        serializer = RefundSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
@@ -222,6 +252,12 @@ class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsOwnerOrAdmin,]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ['user']
+
+    def list(self, request):
+        queryset = Ledger.objects.all() if request.user.is_staff \
+            else Ledger.objects.filter(user=request.user).order_by('-date')
+        serializer = LedgerSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["get"])
     def debits(self, request, pk):
@@ -241,19 +277,19 @@ class LedgerViewSet(viewsets.ReadOnlyModelViewSet):
 class SubscribersViewSet(viewsets.ModelViewSet):
     queryset = Subscribers.objects.all()
     serializer_class = SubscribersSerializer
-    permission_classes = [IsOwnerOrAdmin,]
+    permission_classes = [IsAdminUser,]
 
 
 class MailListViewSet(viewsets.ModelViewSet):
     queryset = MailList.objects.all()
     serializer_class = MailListSerializer
-    permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [IsAdminUser,]
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
     queryset = Campaign.objects.all()
     serializer_class = CampaignSerializer
-    permission_classes = [permissions.IsAdminUser,]
+    permission_classes = [IsAdminUser,]
 
 
 # Views for session authentication with DRF
