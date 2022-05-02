@@ -44,11 +44,16 @@ class OrderViewSetTest(APITestCase):
             )
         ]
 
-    def test_can_browse_orders_without_login(self):
+    def test_can_browse_products_without_login(self):
         """ Unauthenticated user should see products """
-        response = self.client.get(f'{BASE_URL}/bread/order/')
+        response = self.client.get(f'{BASE_URL}/bread/products/')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(len(self.orders), len(response.data))
+        self.assertEqual(len(response.data), 1)
+
+    def test_cannot_browse_orders_without_login(self):
+        """ Unauthenticated user should see products """
+        with self.assertRaises(TypeError):
+            self.client.get(f'{BASE_URL}/bread/order/')
 
     def test_can_browse_order_detail_with_login(self):
         """ Authenticated should see order detail """
