@@ -42,14 +42,26 @@ export async function logout() {
 }
 
 /**
- * API helper to return orders from a specified user
+ * Return all Transaction sets for Admin, or the user's TransactionSets
+ * for a non-user
  * 
- * @param userId 
+ * @returns Array<TransactionSets
+ */
+
+export async function getTransactionSets() {
+  const {data} = await client.get(`${baseURL}/bread/shoppingcart/`);
+  return data; 
+}
+
+/**
+ * API helper to return orders for a specified user or all orders
+ * for admin
+ * 
  * @returns Array<Order>
  */
 
 export async function userOrders(userId: number) {
-  const {data} = await client.get(`${baseURL}/bread/order/?user=${userId}`);
+  const {data} = await client.get(`${baseURL}/bread/order/`);
   return data;
 }
 
@@ -85,7 +97,7 @@ export async function userOrders(userId: number) {
  */
 
  export async function userPayments(userId: number) {
-  const {data} = await client.get(`${baseURL}/bread/payment/${userId}/user`);
+  const {data} = await client.get(`${baseURL}/bread/payment/`);
   return data;
 }
 
@@ -97,7 +109,7 @@ export async function userOrders(userId: number) {
  */
 
  export async function userRefunds(userId: number) {
-  const {data} = await client.get(`${baseURL}/bread/refund/${userId}/user`);
+  const {data} = await client.get(`${baseURL}/bread/refund/`);
   return data;
 }
 

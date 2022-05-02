@@ -126,3 +126,12 @@ export type Ledger = {
   expense_reference: number | undefined,
   date: Date,
 }
+
+export type TransactionSet = {
+  index_key: number,
+  user_id: number, 
+  date: Date,
+  order_set: Array<Order>,
+  payment_set: Array<Payment>,
+  refund_set: Array<Refund>,
+}

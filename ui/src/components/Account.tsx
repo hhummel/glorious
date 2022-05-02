@@ -12,7 +12,7 @@ import PastOrders from './PastOrders';
 import Payments from './Payments';
 import Refunds from './Refunds';
 import Balance from './Balance';
-
+import TransactionSets from './TransactionSets';
 
 type Props = {
     userId: number | undefined;
@@ -84,6 +84,18 @@ export default function Account({userId}: Props) {
                   <Refunds userId={userId} />
                 </AccordionDetails>
             </Accordion>
+            <Accordion>
+                <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2a-content"
+                id="panel2a-header"
+                >
+                <Typography variant="h4" component="h2" gutterBottom>Transactions</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <TransactionSets />
+                </AccordionDetails>
+            </Accordion>            
       </Container>
     );
 }
