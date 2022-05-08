@@ -663,6 +663,7 @@ def cancel_orders(request):
                     refund_id = stripe_refund.id,
                     confirmed = True,
                     reason = stripe_refund.reason,
+                    cart = payment_intent.cart,
             )
 
             # Cancel the orders and update ledger

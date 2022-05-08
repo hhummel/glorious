@@ -86,13 +86,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 // Generics from https://www.carlrippon.com/React-generic-props/
-type Props<Type> = {
+type Props<DataType> = {
     title: string;
     columnHeaders: Array<string>;
-    rows: Array<Type>;
+    rows: Array<DataType>;
 }
 
-export default function BaseTable<Type>({title, columnHeaders, rows}: Props<Type>) {
+export default function BaseTable<DataType>({title, columnHeaders, rows}: Props<DataType>) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -132,7 +132,7 @@ export default function BaseTable<Type>({title, columnHeaders, rows}: Props<Type
                     key={index}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    {(Object.keys(rows[0]) as Array<keyof Type>).map((objectKey, index) => <TableCell key={index} align="left">{row[objectKey]}</TableCell>)}
+                    {(Object.keys(rows[0]) as Array<keyof DataType>).map((objectKey, index) => <TableCell key={index} align="left">{String(row[objectKey])}</TableCell>)}
                   </TableRow>
               ))}
               {emptyRows > 0 && (

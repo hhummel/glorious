@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "jest-watch-typeahead": "^0.6.5",
     "react-router-dom": "^6.2.1"
   }
 }

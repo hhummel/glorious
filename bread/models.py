@@ -432,6 +432,7 @@ class Refund(models.Model):
     refund_id = models.CharField(max_length=234)
     confirmed = models.BooleanField(default=False)
     reason = models.CharField(max_length=100, null=True)
+    cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, null=True)
 
 
 # Stripe charge
