@@ -6,19 +6,20 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Container from '@mui/material/Container';
 
-
 import PendingOrders from './PendingOrders';
 import PastOrders from './PastOrders';
 import Payments from './Payments';
 import Refunds from './Refunds';
 import Balance from './Balance';
 import TransactionSets from './TransactionSets';
+import { Product } from '../../types';
 
 type Props = {
     userId: number | undefined;
+    productData: Array<Product>;
 }
 
-export default function Account({userId}: Props) {
+export default function Account({userId, productData}: Props) {
     return (
         <Container>
             <Typography variant="h3" component="h1" gutterBottom>
@@ -93,7 +94,7 @@ export default function Account({userId}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Transactions</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <TransactionSets />
+                  <TransactionSets productData={productData}/>
                 </AccordionDetails>
             </Accordion>            
       </Container>

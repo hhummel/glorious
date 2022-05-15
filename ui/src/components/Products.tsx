@@ -13,13 +13,10 @@ type Props = {
     cart: Array<Order>;
     setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
+    productData: Array<Product>;
 }
 
-export default function Products({userId, cart, setCart, setVisible}: Props) {
-  const [productData, setProductData] = useState<Array<Product>>([]);
-  useEffect(() => {
-    products().then(data => setProductData(data)).catch(e => console.log(e));
-  }, []);
+export default function Products({userId, cart, setCart, setVisible, productData}: Props) {
 
   return (    
     <Container maxWidth="sm">

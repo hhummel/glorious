@@ -6,22 +6,35 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { TransactionSet, Order, Payment, Refund} from '../../types';
+import { TransactionSet, Order, Payment, Product, Refund} from '../../types';
 
 type Props = {
     transactionSet: TransactionSet;
+    productData: Array<Product>;
 }
 
-export default function TransactionSetCard({transactionSet}: Props) {
+export default function TransactionSetCard({transactionSet, productData}: Props) {
     return (
     <Card>
         <CardMedia/>
         <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{`ID: ${transactionSet.index_key}`}</Typography>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{`Date: ${transactionSet.date.toString()}`}</Typography>
+            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{`Date: ${new Date(transactionSet.date).toDateString()}`}</Typography>
+
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>Orders</Typography>
             <div>
-                {transactionSet.order_set?.map((order, index) => <div key={index}>{`${order.index_key}`}</div>)}
+                {transactionSet.order_set?.map((order, index) => {
+                    const product = productData.find(prod => prod.id === order.product.id)
+                    return (
+                   <div key={index}>
+                        <div>{`Reference number: ${order.index_key}`}</div>
+                        <div>{`Product: ${product?.label}`}</div>
+                        <div>{`Price: ${product?.price}`}</div>
+                        <div>{`Number: ${order.number}`}</div>
+                        <div>{`Delivery date: ${order.delivery_date}`}</div>
+                    </div>
+                )})}
+
             </div>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>Payments</Typography>
             <div>
