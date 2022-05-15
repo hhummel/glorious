@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -7,13 +7,14 @@ import Products from './Products';
 import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
 import Profile from './Profile';
-import { User, Order } from '../../types';
+import { User, Order, Product } from '../../types';
 import About from './About';
 import FAQ from './FAQ';
 import NewUser from './NewUser';
 import ResetPassword from './ResetPassword';
 import ForgotPassword from './ForgotPassword';
 import ConfirmPassword from './ConfirmPassword';
+import { products } from '../utils/api';
 
 type Props = {
     title: string;
@@ -23,6 +24,10 @@ export default function MainContainer({ title }: Props) {
   const [user, setUser] = useState<User>();
   const [visible, setVisible] = useState(1);
   const [cart, setCart] = useState<Array<Order>>([])
+  const [productData, setProductData] = useState<Array<Product>>([]);
+  useEffect(() => {
+    products().then(data => setProductData(data)).catch(e => console.log(e));
+  }, []);
   return (
     <React.Fragment>
       <CssBaseline />
@@ -31,8 +36,8 @@ export default function MainContainer({ title }: Props) {
           {title}
         </Typography>
         <NavBar user={user} setUser={setUser} setVisible={setVisible} cart={cart} />
-        {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/> }
-        {(visible === 2) && <Account userId={user?.id}/>}
+        {(visible === 1) && <Products userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible} productData={productData}/> }
+        {(visible === 2) && <Account userId={user?.id} productData={productData}/>}
         {(visible === 3) && <ShoppingCart userId={user?.id} cart={cart} setCart={setCart} setVisible={setVisible}/>}
         {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}
         {(visible === 5) && <About/>}
