@@ -231,6 +231,24 @@ export async function stripeSecret(paymentMethod: string, cart: Array<Order>): P
   }
 }
 
+ type CancelResponse = {
+   status: number;
+   data: string | undefined;
+ }
+
+export async function cancelOrders(cart: number, orders: Array<number>): Promise<CancelResponse> {
+  try {
+    const res = await client.post(
+      `${baseURL}/bread/cancel_orders`,
+      { cart: cart, orders: orders}
+    );
+    return ({"status": res.status, "data": res.data});
+  } catch (e) {
+    console.log(`Error: ${e}`);
+    return ({"status": 400, "data": `${e}`});
+  }
+}
+
 type ResetResponse = {
   status: number,
 }

@@ -30,7 +30,7 @@ export type Order = {
   special_instructions: string | undefined,
   standing: boolean,
   this_is_a_gift: boolean,
-  user: number
+  user: number,
 }
 
 export type Payment = {
