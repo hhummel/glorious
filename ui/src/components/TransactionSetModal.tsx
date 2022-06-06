@@ -48,8 +48,8 @@ function ModalRow({order, productData, cancelled}: ModalRowProps){
       />
       {`
         ${dateString}: ${order.number} 
-        ${productData.find(product => product.id === order.product.id)?.label} 
-        $${productData.find(product => product.id === order.product.id)?.price} 
+        ${productData.find(product => product.index_key === order.product.index_key)?.label} 
+        $${productData.find(product => product.index_key === order.product.index_key)?.price} 
        
       `}
     </div>

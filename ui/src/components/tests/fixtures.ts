@@ -1,7 +1,7 @@
 import { Order, Product, User } from '../../../types';
 
 export const product: Product = {
-    id: 1,
+    index_key: 1,
     category: 1,
     product: "A product",
     label: "Label",
