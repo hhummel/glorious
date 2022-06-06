@@ -17,7 +17,12 @@ type Props = {
 export default function TransactionSetCard({transactionSet, productData}: Props) {
     return (
     <Card>
-        <CardMedia/>
+     <CardMedia
+        component="img"
+        height="140"
+        image={transactionSet.order_set[0].product.picture || "https://gloriousgrain.s3.amazonaws.com/PXL_20210519_125730680.jpg"}
+        alt={transactionSet.order_set[0].product.label || "Order basket"}
+      />
         <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{`ID: ${transactionSet.index_key}`}</Typography>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>{`Date: ${new Date(transactionSet.date).toDateString()}`}</Typography>
@@ -25,13 +30,13 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>Orders</Typography>
             <div>
                 {transactionSet.order_set?.map((order, index) => {
-                    const product = productData.find(prod => prod.id === order.product.id)
+                    const product = productData.find(prod => prod.index_key === order.product as unknown as number)
                     return (
                    <div key={index}>
                         <div>{`Reference number: ${order.index_key}`}</div>
                         <div>{`Product: ${product?.label}`}</div>
-                        <div>{`Price: ${product?.price}`}</div>
                         <div>{`Number: ${order.number}`}</div>
+                        <div>{`Price: $${product?.price ? product?.price * order.number : undefined}`}</div>
                         <div>{`Delivery date: ${order.delivery_date}`}</div>
                     </div>
                 )})}

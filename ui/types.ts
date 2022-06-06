@@ -53,7 +53,7 @@ export type Refund = {
 }
 
 export type Product = {
-  id: number,
+  index_key: number,
   category: number,
   product: string,
   label: string,
