@@ -5,6 +5,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -36,12 +37,12 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                 {`Order Date: ${new Date(transactionSet.date).toDateString()} ID: ${transactionSet.index_key}`}
             </Typography>
 
-            <Divider textAlign="center">Orders</Divider>
+            <Divider><Chip label="Orders" /></Divider>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 350 }} aria-label="simple table">
+                <Table sx={{ minWidth: 250 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align="left">Delivery</TableCell>
+                        <TableCell align="left">Delivery Date</TableCell>
                         <TableCell align="left">{`\u2116`}</TableCell>
                         <TableCell align="left">Product</TableCell>
                         <TableCell align="left">Cost</TableCell>
@@ -55,7 +56,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell align="left">{order.delivery_date}</TableCell>
+                                <TableCell align="left">{new Date(order.delivery_date).toDateString()}</TableCell>
                                 <TableCell align="left">{order.number}</TableCell>
                                 <TableCell align="left">{product?.label}</TableCell>
                                 <TableCell align="left">{`$${product?.price ? product?.price * order.number : undefined} `}</TableCell>
@@ -64,15 +65,56 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Divider textAlign="center">Payments</Divider>
-            <div>
-                {transactionSet.payment_set?.map((payment, index) => <div key={index}>{`${payment.index_key}`}</div>)}
-            </div>
-            <Divider textAlign="center">Refunds</Divider>
-            <div>
-                {transactionSet.refund_set?.map((refund, index) => <div key={index}>{`${refund.index_key}`}</div>)}
-            </div>            
-
+            {transactionSet.payment_set.length > 0 && <Divider><Chip label="Payments" /></Divider>}
+            {transactionSet.payment_set.length > 0 && <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 250 }} size="small" aria-label="simple table">
+                    <TableHead>
+                    <TableRow>
+                        <TableCell align="left">Payment Date</TableCell>
+                        <TableCell align="left">Amount</TableCell>
+                        <TableCell align="left">Method</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {transactionSet.payment_set.map((payment, index) => {
+                            return (
+                            <TableRow
+                                key={index}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell align="left">{new Date(payment.date).toDateString()}</TableCell>
+                                <TableCell align="left">{payment.value}</TableCell>
+                                <TableCell align="left">{payment.payment_method}</TableCell>
+                            </TableRow>
+                        )})}
+                    </TableBody>
+                </Table>
+            </TableContainer>}
+            {transactionSet.refund_set.length > 0 && <Divider><Chip label="Refunds" /></Divider>}
+            {transactionSet.refund_set.length > 0 && <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 250 }} size="small" aria-label="simple table">
+                    <TableHead>
+                    <TableRow>
+                        <TableCell align="left">Refund Date</TableCell>
+                        <TableCell align="left">Amount</TableCell>
+                        <TableCell align="left">Method</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {transactionSet.refund_set.map((refund, index) => {
+                            return (
+                            <TableRow
+                                key={index}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell align="left">{new Date(refund.date).toDateString()}</TableCell>
+                                <TableCell align="left">{refund.value}</TableCell>
+                                <TableCell align="left">{refund.payment_method || '--'}</TableCell>
+                            </TableRow>
+                        )})}
+                    </TableBody>
+                </Table>
+            </TableContainer>}
         </CardContent>
         <CardActions>
             <TransactionSetModal transactionSet={transactionSet} productData={productData} />
