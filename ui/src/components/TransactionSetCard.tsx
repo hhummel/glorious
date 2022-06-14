@@ -25,24 +25,23 @@ type Props = {
 
 export default function TransactionSetCard({transactionSet, productData}: Props) {
     return (
-    <Card>
+    <Card >
         <CardMedia
             component="img"
             height="140"
             image={transactionSet.order_set[0].product.picture || "https://gloriousgrain.s3.amazonaws.com/PXL_20210519_125730680.jpg"}
             alt={transactionSet.order_set[0].product.label || "Order basket"}
         />
-        <CardContent>
+        <CardContent sx={{ px: 0 }} >
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                 {`Order Date: ${new Date(transactionSet.date).toDateString()} ID: ${transactionSet.index_key}`}
             </Typography>
 
             <Divider><Chip label="Orders" /></Divider>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 250 }} size="small" aria-label="order table">
+                <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align="left">Delivery Date</TableCell>
+                        <TableCell align="left">Del. Date</TableCell>
                         <TableCell align="left">{`\u2116`}</TableCell>
                         <TableCell align="left">Product</TableCell>
                         <TableCell align="left">Cost</TableCell>
@@ -64,13 +63,11 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                         )})}
                     </TableBody>
                 </Table>
-            </TableContainer>
             {transactionSet.payment_set.length > 0 && <Divider><Chip label="Payments" /></Divider>}
-            {transactionSet.payment_set.length > 0 && <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 250 }} size="small" aria-label="payment table">
+            {transactionSet.payment_set.length > 0 && <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align="left">Payment Date</TableCell>
+                        <TableCell align="left">Pay Date</TableCell>
                         <TableCell align="left">Amount</TableCell>
                         <TableCell align="left">Method</TableCell>
                     </TableRow>
@@ -88,14 +85,12 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                             </TableRow>
                         )})}
                     </TableBody>
-                </Table>
-            </TableContainer>}
+                </Table>}
             {transactionSet.refund_set.length > 0 && <Divider><Chip label="Refunds" /></Divider>}
-            {transactionSet.refund_set.length > 0 && <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 250 }} size="small" aria-label="refund table">
+            {transactionSet.refund_set.length > 0 && <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align="left">Refund Date</TableCell>
+                        <TableCell align="left">Ref. Date</TableCell>
                         <TableCell align="left">Amount</TableCell>
                         <TableCell align="left">Method</TableCell>
                     </TableRow>
@@ -113,8 +108,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                             </TableRow>
                         )})}
                     </TableBody>
-                </Table>
-            </TableContainer>}
+                </Table>}
         </CardContent>
         <CardActions>
             <TransactionSetModal transactionSet={transactionSet} productData={productData} />
