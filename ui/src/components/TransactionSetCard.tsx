@@ -39,7 +39,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
 
             <Divider><Chip label="Orders" /></Divider>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 350 }} aria-label="simple table">
+                <Table sx={{ minWidth: 250 }} size="small" aria-label="order table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Delivery Date</TableCell>
@@ -67,7 +67,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
             </TableContainer>
             {transactionSet.payment_set.length > 0 && <Divider><Chip label="Payments" /></Divider>}
             {transactionSet.payment_set.length > 0 && <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 350 }} aria-label="simple table">
+            <Table sx={{ minWidth: 250 }} size="small" aria-label="payment table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Payment Date</TableCell>
@@ -92,7 +92,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
             </TableContainer>}
             {transactionSet.refund_set.length > 0 && <Divider><Chip label="Refunds" /></Divider>}
             {transactionSet.refund_set.length > 0 && <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 350 }} aria-label="simple table">
+            <Table sx={{ minWidth: 250 }} size="small" aria-label="refund table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Refund Date</TableCell>
