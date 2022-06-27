@@ -31,28 +31,35 @@ type ModalRowProps = {
   productData: Array<Product>;
   cancelled: {[id: number]: boolean};
 }
-
+/*
+* Cast to number because Order type expects a Product type as product but only gets the id
+*/
+function getProduct(order:Order, productData: Array<Product>): Product | undefined {
+  if (!order.product) undefined;
+  return productData.find(product => product.index_key === order.product as unknown as number) || undefined;
+}
 function ModalRow({order, productData, cancelled}: ModalRowProps){
   const [checked, setChecked] = useState(false);
   const handleChange = () => {
     order.index_key && (cancelled[order.index_key] = !checked);
     setChecked(!checked);
   }
-  const dateString = new Date(order.delivery_date).toDateString()
+  const dateString = new Date(order.delivery_date).toDateString().slice(0, -5)
+  const product = getProduct(order, productData);
+
   return (
-    <div>
+    <span >
       <Checkbox
-        checked={checked}
         onChange={handleChange}
         inputProps={{ 'aria-label': 'controlled' }}
+        sx={{p:0}}
       />
       {`
         ${dateString}: ${order.number} 
-        ${productData.find(product => product.index_key === order.product.index_key)?.label} 
-        $${productData.find(product => product.index_key === order.product.index_key)?.price} 
-       
+        ${product?.label || '-'}
+        $${product ? product.price * order.number  : '-'}
       `}
-    </div>
+    </span>
   )
 }
 
@@ -69,7 +76,6 @@ export default function TransactionSetModal({transactionSet, productData}: Modal
     const cancelList = Object.keys(cancelled).map(key => parseInt(key)).filter(key => cancelled[key]);
     cancelOrders(transactionSet.index_key, cancelList).then(result => {
       const {status, data} = result;
-      console.log(`Cancel order ${JSON.stringify(result)}`)
       if (status === 200) {
         setError(undefined);
         handleClose();
@@ -103,19 +109,17 @@ export default function TransactionSetModal({transactionSet, productData}: Modal
                     {"Orders to cancel:"}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                    <Box sx={{ typography: 'body1' }}>
                       {transactionSet.order_set.map((order, index) => <ModalRow 
                         key={index} 
                         order={order} 
                         productData={productData} 
                         cancelled={cancelled}
                       />)}
-                    </Box>    
                     </Typography>
                     <Typography variant="body2" color="error.main">{error}</Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small" onClick={handleClose}>Never mind</Button>
+                  <Button size="small" onClick={handleClose}>Keep them</Button>
                   <Button size="small" onClick={handleClick}>Cancel them</Button>
                 </CardActions>
             </Card>
