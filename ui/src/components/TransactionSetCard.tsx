@@ -43,7 +43,6 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Del. Date</TableCell>
-                        <TableCell align="left">{`\u2116`}</TableCell>
                         <TableCell align="left">Product</TableCell>
                         <TableCell align="left">Cost</TableCell>
                         <TableCell align="left">Status</TableCell>
@@ -58,8 +57,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell align="left">{new Date(order.delivery_date).toDateString().slice(0, -5)}</TableCell>
-                                <TableCell align="left">{order.number}</TableCell>
-                                <TableCell align="left">{product?.label}</TableCell>
+                                <TableCell align="left">{`(${order.number}) ${product?.label}`}</TableCell>
                                 <TableCell align="left">{`$${product?.price ? product?.price * order.number : undefined} `}</TableCell>
                                 <TableCell align="left">{order.delivered ? <CheckCircleOutlineIcon/> : order.confirmed ? <RotateRightIcon/>  : <HighlightOffIcon/>}</TableCell>
                             </TableRow>
