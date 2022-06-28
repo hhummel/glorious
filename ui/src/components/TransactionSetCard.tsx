@@ -13,6 +13,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 import TransactionSetModal from './TransactionSetModal';
 import { TransactionSet, Order, Payment, Product, Refund} from '../../types';
@@ -45,6 +48,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                         <TableCell align="left">{`\u2116`}</TableCell>
                         <TableCell align="left">Product</TableCell>
                         <TableCell align="left">Cost</TableCell>
+                        <TableCell align="left">Status</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
@@ -55,10 +59,11 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell align="left">{new Date(order.delivery_date).toDateString()}</TableCell>
+                                <TableCell align="left">{new Date(order.delivery_date).toDateString().slice(0, -5)}</TableCell>
                                 <TableCell align="left">{order.number}</TableCell>
                                 <TableCell align="left">{product?.label}</TableCell>
                                 <TableCell align="left">{`$${product?.price ? product?.price * order.number : undefined} `}</TableCell>
+                                <TableCell align="left">{order.delivered ? <CheckCircleOutlineIcon/> : order.confirmed ? <RotateRightIcon/>  : <HighlightOffIcon/>}</TableCell>
                             </TableRow>
                         )})}
                     </TableBody>
@@ -79,7 +84,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell align="left">{new Date(payment.date).toDateString()}</TableCell>
+                                <TableCell align="left">{new Date(payment.date).toDateString().slice(0, -5)}</TableCell>
                                 <TableCell align="left">{payment.value}</TableCell>
                                 <TableCell align="left">{payment.payment_method}</TableCell>
                             </TableRow>
@@ -102,7 +107,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell align="left">{new Date(refund.date).toDateString()}</TableCell>
+                                <TableCell align="left">{new Date(refund.date).toDateString().slice(0, -5)}</TableCell>
                                 <TableCell align="left">{refund.value}</TableCell>
                                 <TableCell align="left">{refund.payment_method || '--'}</TableCell>
                             </TableRow>
