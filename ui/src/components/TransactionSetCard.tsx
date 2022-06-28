@@ -29,7 +29,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
     <Card >
         <CardMedia
             component="img"
-            height="140"
+            height="130"
             image={transactionSet.order_set[0].product.picture || "https://gloriousgrain.s3.amazonaws.com/PXL_20210519_125730680.jpg"}
             alt={transactionSet.order_set[0].product.label || "Order basket"}
         />
@@ -39,7 +39,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
             </Typography>
 
             <Divider><Chip label="Orders" /></Divider>
-                <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
+                <Table sx={{ minWidth: 150 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Del. Date</TableCell>
@@ -67,7 +67,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                     </TableBody>
                 </Table>
             {transactionSet.payment_set.length > 0 && <Divider><Chip label="Payments" /></Divider>}
-            {transactionSet.payment_set.length > 0 && <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
+            {transactionSet.payment_set.length > 0 && <Table sx={{ minWidth: 150 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Pay Date</TableCell>
@@ -90,7 +90,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                     </TableBody>
                 </Table>}
             {transactionSet.refund_set.length > 0 && <Divider><Chip label="Refunds" /></Divider>}
-            {transactionSet.refund_set.length > 0 && <Table sx={{ minWidth: 200 }} size="small" aria-label="simple table">
+            {transactionSet.refund_set.length > 0 && <Table sx={{ minWidth: 150 }} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
                         <TableCell align="left">Ref. Date</TableCell>
