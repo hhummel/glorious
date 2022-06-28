@@ -26,7 +26,7 @@ type Props = {
 
 export default function TransactionSetCard({transactionSet, productData}: Props) {
     return (
-    <Card >
+    <Card sx={{ px: 0 }} >
         <CardMedia
             component="img"
             height="130"
