@@ -19,7 +19,6 @@ export default function TransactionSets({productData}: Props) {
     }, [])
 
     return (
-        <Container>
             <Stack>
                 {
                   transactionSets && 
@@ -30,7 +29,6 @@ export default function TransactionSets({productData}: Props) {
                     />)
                 }
             </Stack>
-        </Container>
     )
 }
 
