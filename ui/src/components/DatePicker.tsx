@@ -22,8 +22,8 @@ export default function DatePicker({date, handleDateChange, shouldDisableDate}: 
             label="Delivery date"
             inputFormat="MM/dd/yyyy"
             value={date}
-            onChange={date => handleDateChange(date || defaultDate)}
-            renderInput={(params) => <TextField {...params} />}
+            onChange={handleDateChange(date || defaultDate)}
+            renderInput={(params: any) => <TextField {...params} />}
             shouldDisableDate={shouldDisableDate}
         />
     </LocalizationProvider>
