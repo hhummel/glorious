@@ -48,18 +48,18 @@ function ModalRow({order, productData, cancelled}: ModalRowProps){
   const product = getProduct(order, productData);
 
   return (
-    <span >
+    <div >
       <Checkbox
         onChange={handleChange}
         inputProps={{ 'aria-label': 'controlled' }}
         sx={{p:0}}
       />
       {`
-        ${dateString}: ${order.number} 
+        ${dateString}: (${order.number}) 
         ${product?.label || '-'}
         $${product ? product.price * order.number  : '-'}
       `}
-    </span>
+    </div>
   )
 }
 
@@ -108,7 +108,7 @@ export default function TransactionSetModal({transactionSet, productData}: Modal
                     <Typography gutterBottom variant="h5" component="div">
                     {"Orders to cancel:"}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography component={'span'} variant="body2" color="text.secondary">
                       {transactionSet.order_set.map((order, index) => <ModalRow 
                         key={index} 
                         order={order} 
