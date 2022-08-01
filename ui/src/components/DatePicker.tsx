@@ -1,18 +1,17 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import DateAdapter from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { MobileDatePicker } from '@mui/x-date-pickers'
 import { FormikErrors } from 'formik';
 
 type Props = {
-    handleDateChange: (date: Date) => Promise<void> | Promise<FormikErrors<any>>;
+    handleDateChange: (date: Date | null, keyboardInputValue: string | undefined) => void;
     date: Date;
     shouldDisableDate?: (date: Date) => boolean;
 }
 
-const defaultDate = new Date()
+
 
 export default function DatePicker({date, handleDateChange, shouldDisableDate}: Props) {
 
@@ -22,7 +21,8 @@ export default function DatePicker({date, handleDateChange, shouldDisableDate}: 
             label="Delivery date"
             inputFormat="MM/dd/yyyy"
             value={date}
-            onChange={handleDateChange(date || defaultDate)}
+            // onChange={handleDateChange(date || defaultDate, keyboardInputValue || undefined)}
+            onChange={handleDateChange}
             renderInput={(params: any) => <TextField {...params} />}
             shouldDisableDate={shouldDisableDate}
         />

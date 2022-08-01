@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -15,14 +16,13 @@ import { isDisabledDate } from '../utils/dateConstraints';
 import { dateConstraints } from '../config';
 import { modalStyle, cartStyle } from '../styles';
 import { getValidatedAddress } from '../utils/api';
+import { cartState} from '../store';
 
 type Props = {
     index: number | undefined;
     userId: number;
     product: Product;
     order: Order | undefined;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     handleClose: () => void;
 }
 const validationSchema = yup.object({
@@ -38,8 +38,8 @@ const validationSchema = yup.object({
   special_instructions: yup.string().max(150),
 });
 
-export default function OrderForm({index, userId, product, order, cart, setCart, handleClose}: Props) {
-
+export default function OrderForm({index, userId, product, order, handleClose}: Props) {
+  const [cart, setCart] = useRecoilState(cartState);
   const isDisabled = isDisabledDate(dateConstraints);
   const buttonWidth = '120px'
   
@@ -119,7 +119,10 @@ export default function OrderForm({index, userId, product, order, cart, setCart,
     }
   });
 
-  const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
+  const handleDateChange = (date: Date | null, keyboardInputValue: string | undefined): void => {
+    formik.setFieldValue("delivery_date", date || new Date());
+    return;
+  }
   const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
   const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
   const handleShipCheck = (status: boolean) => formik.setFieldValue("ship_this", status);

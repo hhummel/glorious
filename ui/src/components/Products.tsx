@@ -10,13 +10,11 @@ import ProductCard from './ProductCard'
 
 type Props = {
     userId: number | undefined;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
     productData: Array<Product>;
 }
 
-export default function Products({userId, cart, setCart, setVisible, productData}: Props) {
+export default function Products({userId, setVisible, productData}: Props) {
 
   return (    
     <Container maxWidth="sm">
@@ -26,8 +24,6 @@ export default function Products({userId, cart, setCart, setVisible, productData
           key={product.label} 
           userId={userId} 
           product={product} 
-          cart={cart} 
-          setCart={setCart} 
           setVisible={setVisible}
         />)}
       </Stack>
