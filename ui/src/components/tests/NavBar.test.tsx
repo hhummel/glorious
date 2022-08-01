@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { RecoilRoot } from "recoil";
 import ReactDOM from 'react-dom';
 import { User } from '../../../types';
 import NavBar from '../NavBar';
@@ -15,9 +16,12 @@ it('NavBar render correctly', () => {
     
         const [visible, setVisible] = useState(screenVisible);
         const [user, setUser] = useState(initialUser || undefined);
-        const cart = new Array(order);
 
-        return <NavBar user={user} setUser={setUser} setVisible={setVisible} cart={cart}/>;
+        return (
+          <RecoilRoot>
+            <NavBar user={user} setUser={setUser} setVisible={setVisible} />
+          </RecoilRoot>
+        )
     }
 
     const div0 = document.createElement('div');

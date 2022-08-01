@@ -13,12 +13,10 @@ import ProductDetailModal from './ProductDetailModal'
 type Props = {
     userId: number | undefined;
     product: Product;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function ProductCard({userId, product, cart, setCart, setVisible}: Props) {
+export default function ProductCard({userId, product, setVisible}: Props) {
   return (
       <>
     <Card sx={{ maxWidth: 345 }}>
@@ -38,7 +36,7 @@ export default function ProductCard({userId, product, cart, setCart, setVisible}
       </CardContent>
       <CardActions>
         <ProductDetailModal product={product} />
-        { userId && <OrderModal userId={userId} product={product} setVisible={setVisible} cart={cart} setCart={setCart} />}
+        { userId && <OrderModal userId={userId} product={product} setVisible={setVisible} />}
       </CardActions>
     </Card>
     </>

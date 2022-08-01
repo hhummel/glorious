@@ -8,11 +8,9 @@ type Props = {
     userId: number;
     product: Product;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
 }
 
-export default function OrderModal({userId, product, setVisible, cart, setCart}: Props) {
+export default function OrderModal({userId, product, setVisible}: Props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -34,8 +32,6 @@ export default function OrderModal({userId, product, setVisible, cart, setCart}:
             userId={userId} 
             product={product}
             order={undefined} 
-            cart={cart} 
-            setCart={setCart} 
             handleClose={handleClose} 
           />
         </div>

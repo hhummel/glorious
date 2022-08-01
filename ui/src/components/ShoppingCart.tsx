@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -8,18 +9,18 @@ import CardModal from './CardModal';
 import BaseModal from './BaseModal';
 import OrderForm from './OrderForm';
 import { Order } from '../../types'
+import { cartState} from '../store';
 
 const buttonWidth = '120px';
 
 
 type Props = {
     userId: number | undefined;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function ShoppingCart({userId, cart, setCart, setVisible}: Props) {
+export default function ShoppingCart({userId, setVisible}: Props) {
+  const [cart, setCart] = useRecoilState(cartState);
   const handleClear = () => setCart([]);
   const handleSubmit = () => handleClear();
 
@@ -54,8 +55,6 @@ export default function ShoppingCart({userId, cart, setCart, setVisible}: Props)
           product={order.product} 
           userId={userId} 
           order={order} 
-          cart={cart} 
-          setCart={setCart} 
           handleClose={()=>{}}
         />)}
       </Stack>

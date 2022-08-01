@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useRecoilState } from 'recoil';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,19 +20,20 @@ import { grey } from '@mui/material/colors';
 import Login from './Login'
 import { logout } from '../utils/api';
 import { User, Order } from '../../types';
+import { cartState} from '../store';
 
 
 type Props = {
     user: User | undefined;
     setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
-    cart: Array<Order>;
   };
 
-export default function NavBar({user, setUser, setVisible, cart}: Props) {
+export default function NavBar({user, setUser, setVisible }: Props) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [open, setOpen] = React.useState(false);
+  const [cart, setCart] = useRecoilState(cartState);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
