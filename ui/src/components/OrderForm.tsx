@@ -119,7 +119,10 @@ export default function OrderForm({index, userId, product, order, handleClose}: 
     }
   });
 
-  const handleDateChange = (date: Date)  => formik.setFieldValue("delivery_date", date);
+  const handleDateChange = (date: Date | null, keyboardInputValue: string | undefined): void => {
+    formik.setFieldValue("delivery_date", date || new Date());
+    return;
+  }
   const handleNumberChange = (number: number) => formik.setFieldValue("number", number);
   const handleCheck = (status: boolean) => formik.setFieldValue("this_is_a_gift", status);
   const handleShipCheck = (status: boolean) => formik.setFieldValue("ship_this", status);
