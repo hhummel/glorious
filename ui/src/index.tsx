@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RecoilRoot } from 'recoil';
 import ReactDOM from 'react-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -11,7 +12,9 @@ import { brand } from './config'
 ReactDOM.render(
   <ThemeProvider theme={getTheme(brand.theme)}>
     <CssBaseline />
-    <MainContainer title={brand.name} />
+    <RecoilRoot>
+      <MainContainer title={brand.name} />
+    </RecoilRoot>
     <App />
   </ThemeProvider>,
   document.querySelector('#root'),
