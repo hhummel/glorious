@@ -15,11 +15,10 @@ import TransactionSets from './TransactionSets';
 import { Product } from '../../types';
 
 type Props = {
-    userId: number | undefined;
     productData: Array<Product>;
 }
 
-export default function Account({userId, productData}: Props) {
+export default function Account({productData}: Props) {
     return (
         <Container>
             <Typography variant="h3" component="h1" gutterBottom>
@@ -34,7 +33,7 @@ export default function Account({userId, productData}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Balance</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                <Balance userId={userId} />
+                <Balance />
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -46,7 +45,7 @@ export default function Account({userId, productData}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Pending Orders</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <PendingOrders userId={userId} />
+                  <PendingOrders />
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -58,7 +57,7 @@ export default function Account({userId, productData}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Order History</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <PastOrders userId={userId} />
+                  <PastOrders />
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -70,7 +69,7 @@ export default function Account({userId, productData}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Payments</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Payments userId={userId} />
+                  <Payments />
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -82,7 +81,7 @@ export default function Account({userId, productData}: Props) {
                 <Typography variant="h4" component="h2" gutterBottom>Refunds</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Refunds userId={userId} />
+                  <Refunds />
                 </AccordionDetails>
             </Accordion>
             <Accordion>

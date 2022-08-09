@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -7,6 +8,7 @@ import BaseTable from './BaseTable'
 
 import { userOrdersPending, userOrdersHistory } from '../utils/api';
 import { Order } from '../../types';
+import { userState } from '../store';
 
 const columnHeaders = [
   'Order Date',
@@ -16,16 +18,13 @@ const columnHeaders = [
   'ID',
 ]  
 
-type Props = {
-    userId: number | undefined;
-}
-
-export default function Orders({userId}: Props) {
+export default function Orders() {
+  const [user, setUser] = useRecoilState(userState);
   const [rowsPending, setRowsPending] = useState<Array<Order>> ([]);
   const [rowsHistory, setRowsHistory] = useState<Array<Order>> ([]);
   useEffect(() => {
-      if (userId) {
-        userOrdersPending(userId).then(data => {
+      if (user) {
+        userOrdersPending(user.id).then(data => {
           const rowData: Array<Order> = data.map( (e: { [x: string]: any; }) => (
               {
                 'date': new Date(e.order_date).toDateString(), 
@@ -37,7 +36,7 @@ export default function Orders({userId}: Props) {
           ));
           setRowsPending(rowData)
         }).catch(e => console.log(e));
-        userOrdersHistory(userId).then(data => {
+        userOrdersHistory(user.id).then(data => {
           const rowData: Array<Order> = data.map( (e: { [x: string]: any; }, i: number) => (
             {
               'date': new Date(e.order_date).toDateString(), 
