@@ -7,7 +7,7 @@ import Products from './Products';
 import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
 import Profile from './Profile';
-import { User, Order, Product } from '../../types';
+import { Product } from '../../types';
 import About from './About';
 import FAQ from './FAQ';
 import NewUser from './NewUser';
@@ -21,7 +21,6 @@ type Props = {
   };
 
 export default function MainContainer({ title }: Props) {
-  const [user, setUser] = useState<User>();
   const [visible, setVisible] = useState(1);
   const [productData, setProductData] = useState<Array<Product>>([]);
   useEffect(() => {
@@ -34,11 +33,11 @@ export default function MainContainer({ title }: Props) {
         <Typography variant="h3" component="h1" gutterBottom>
           {title}
         </Typography>
-        <NavBar user={user} setUser={setUser} setVisible={setVisible} />
-        {(visible === 1) && <Products userId={user?.id} setVisible={setVisible} productData={productData}/> }
-        {(visible === 2) && <Account userId={user?.id} productData={productData}/>}
-        {(visible === 3) && <ShoppingCart userId={user?.id} setVisible={setVisible}/>}
-        {(visible === 4) && <Profile userId={user?.id} setVisible={setVisible}/>}
+        <NavBar setVisible={setVisible} />
+        {(visible === 1) && <Products productData={productData}/> }
+        {(visible === 2) && <Account productData={productData}/>}
+        {(visible === 3) && <ShoppingCart setVisible={setVisible}/>}
+        {(visible === 4) && <Profile setVisible={setVisible}/>}
         {(visible === 5) && <About/>}
         {(visible === 6) && <FAQ/>}
         {(visible === 7) && <NewUser setVisible={setVisible}/>}

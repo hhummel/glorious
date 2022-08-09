@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRecoilState} from 'recoil';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Button from '@mui/material/Button';
@@ -8,6 +9,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField';
 import { authenticate } from '../utils/api';
 import { User } from '../../types';
+import { userState} from '../store';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -34,12 +36,12 @@ const validationSchema = yup.object({
 });
 
 type Props = {
-  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Login({setUser, open, setOpen}: Props) {
+export default function Login({open, setOpen}: Props) {
+  const [user, setUser] = useRecoilState(userState);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const formik = useFormik({

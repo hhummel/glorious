@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import BaseTable from './BaseTable'
 
 import { userOrdersPending } from '../utils/api';
 import { Order } from '../../types';
-import { RowingSharp } from '@mui/icons-material';
+import { userState } from '../store';
 
 const columnHeaders = [
   'Order Date',
@@ -13,15 +14,12 @@ const columnHeaders = [
   'ID',
 ]  
 
-type Props = {
-    userId: number | undefined;
-}
-
-export default function PendingOrders({userId}: Props) {
+export default function PendingOrders() {
+  const [user, setUser] = useRecoilState(userState);
   const [rows, setRows] = useState<Array<Order>> ([]);
   useEffect(() => {
-      if (userId) {
-        userOrdersPending(userId).then(data => {
+      if (user) {
+        userOrdersPending(user.id).then(data => {
           const rows: Array<Order> = data.map( (e: { [x: string]: any; }) => (
               {
                 'date': new Date(e.order_date).toDateString(), 

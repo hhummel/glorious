@@ -1,22 +1,22 @@
-import * as React from 'react';
+import React from 'react';
+import { useRecoilState } from 'recoil';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import { Order, Product } from '../../types'
 import OrderModal from './OrderModal'
 import ProductDetailModal from './ProductDetailModal'
+import { userState } from '../store';
 
 type Props = {
-    userId: number | undefined;
     product: Product;
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function ProductCard({userId, product, setVisible}: Props) {
+export default function ProductCard({product}: Props) {
+  const [user, setUser] = useRecoilState(userState);
   return (
       <>
     <Card sx={{ maxWidth: 345 }}>
@@ -36,7 +36,7 @@ export default function ProductCard({userId, product, setVisible}: Props) {
       </CardContent>
       <CardActions>
         <ProductDetailModal product={product} />
-        { userId && <OrderModal userId={userId} product={product} setVisible={setVisible} />}
+        { user && <OrderModal product={product} />}
       </CardActions>
     </Card>
     </>

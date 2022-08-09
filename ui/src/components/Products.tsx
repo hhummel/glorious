@@ -3,18 +3,14 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
-
-import { products } from '../utils/api';
-import { Product, Order } from '../../types';
+import { Product } from '../../types';
 import ProductCard from './ProductCard'
 
 type Props = {
-    userId: number | undefined;
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
     productData: Array<Product>;
 }
 
-export default function Products({userId, setVisible, productData}: Props) {
+export default function Products({productData}: Props) {
 
   return (    
     <Container maxWidth="sm">
@@ -22,9 +18,7 @@ export default function Products({userId, setVisible, productData}: Props) {
         <Typography variant="h4" component="h1" gutterBottom>Products</Typography>
         {productData.map(product => <ProductCard 
           key={product.label} 
-          userId={userId} 
           product={product} 
-          setVisible={setVisible}
         />)}
       </Stack>
     </Container>

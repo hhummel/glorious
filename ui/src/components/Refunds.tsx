@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-
+import { useRecoilState } from 'recoil';
 import BaseTable from './BaseTable'
 import { userRefunds } from '../utils/api';
 import { Refund } from '../../types';
+import { userState } from '../store';
 
   const columnHeaders = [
     'Date',
@@ -11,17 +12,13 @@ import { Refund } from '../../types';
     'ID'
   ]
 
-type Props = {
-    userId: number | undefined;
-}
-
-export default function Refunds({userId}: Props) {
-
+export default function Refunds() {
+  const [user, setUser] = useRecoilState(userState);
   const [rows, setRows] = useState<Array<Refund>>([]);
 
   useEffect(() => {
-      if (userId) {
-        userRefunds(userId).then(data => {
+      if (user) {
+        userRefunds(user.id).then(data => {
           const rowData: Array<Refund> = data.map( (el: { [x: string]: any; }) => (
               {
                 'date': new Date(el.date).toDateString(), 

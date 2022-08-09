@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
-
+import { useRecoilState } from 'recoil';
 import { userPayments } from '../utils/api';
 import { Payment } from '../../types';
 import BaseTable from './BaseTable'
 import formatDateString from '../utils/formatDateString'
+import { userState } from '../store';
 
-
-type Props = {
-    userId: number | undefined;
-}
-
-export default function Payments({userId}: Props) {
-
+export default function Payments() {
+  const [user, setUser] = useRecoilState(userState);
   const [rows, setRows] = useState<Array<Payment>>([]);
 
   useEffect(() => {
-      if (userId) {
-        userPayments(userId).then(data => {
+      if (user) {
+        userPayments(user.id).then(data => {
           const rowData: Array<Payment> = data.map( (el: { [x: string]: any; }) => (
               {
                 'date': formatDateString(el.date), 

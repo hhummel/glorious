@@ -16,11 +16,10 @@ import { isDisabledDate } from '../utils/dateConstraints';
 import { dateConstraints } from '../config';
 import { modalStyle, cartStyle } from '../styles';
 import { getValidatedAddress } from '../utils/api';
-import { cartState} from '../store';
+import { cartState, userState } from '../store';
 
 type Props = {
     index: number | undefined;
-    userId: number;
     product: Product;
     order: Order | undefined;
     handleClose: () => void;
@@ -38,8 +37,9 @@ const validationSchema = yup.object({
   special_instructions: yup.string().max(150),
 });
 
-export default function OrderForm({index, userId, product, order, handleClose}: Props) {
+export default function OrderForm({index, product, order, handleClose}: Props) {
   const [cart, setCart] = useRecoilState(cartState);
+  const [user, setUser] = useRecoilState(userState);
   const isDisabled = isDisabledDate(dateConstraints);
   const buttonWidth = '120px'
   
@@ -77,7 +77,7 @@ export default function OrderForm({index, userId, product, order, handleClose}: 
     standing: false,
     ship_this: false,
     this_is_a_gift: false,
-    user: userId
+    user: user?.id || 0,
   }  
   /**
    * The index is defined in the ShoppingCart, in that case the behavior is to 

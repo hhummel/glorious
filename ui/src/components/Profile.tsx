@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -8,7 +9,8 @@ import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
-import { getContact, updateContact } from '../utils/api'
+import { getContact, updateContact } from '../utils/api';
+import { userState } from '../store';
 
 const validationSchema = yup.object({
   first_name: yup.string().required().max(35),
@@ -22,14 +24,14 @@ const validationSchema = yup.object({
 });
 
 type Props = {
-    userId: number | undefined;
     setVisible: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function Profile({userId, setVisible}: Props) {
+export default function Profile({setVisible}: Props) {
+    const [user, setUser] = useRecoilState(userState);
     const formik = useFormik({
       initialValues: {
-        'user_id': userId || 0,
+        'user_id': user?.id || 0,
         'creation': '',
         'first_name': '',
         'middle_name': undefined,
@@ -46,15 +48,15 @@ export default function Profile({userId, setVisible}: Props) {
       },
       validationSchema: validationSchema,
       onSubmit: values => {
-        userId && updateContact(userId, values).then(result => {
+        user && updateContact(user.id, values).then(result => {
           const {status, data} = result;
           status == 200 && setVisible(1);
         })
       },
     });
     useEffect(() => {
-        if (userId) {
-          getContact(userId).then(data => {
+        if (user) {
+          getContact(user.id).then(data => {
             formik.setFieldValue('first_name', data.first_name);
             formik.setFieldValue('last_name', data.last_name);
             formik.setFieldValue('email', data.email);
@@ -64,7 +66,7 @@ export default function Profile({userId, setVisible}: Props) {
             formik.setFieldValue('zip', data.zip);
             formik.setFieldValue('mobile', data.mobile);
           })}
-    }, [userId]);
+    }, [user]);
 
   
     return (    
