@@ -11,8 +11,6 @@ type Props = {
     shouldDisableDate?: (date: Date) => boolean;
 }
 
-
-
 export default function DatePicker({date, handleDateChange, shouldDisableDate}: Props) {
 
   return (

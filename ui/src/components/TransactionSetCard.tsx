@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRecoilState } from 'recoil';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -17,14 +18,15 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 import TransactionSetModal from './TransactionSetModal';
 import { TransactionSet, Order, Payment, Product, Refund} from '../../types';
+import { productState } from '../store';
 
 type Props = {
     transactionSet: TransactionSet;
-    productData: Array<Product>;
 }
 
 
-export default function TransactionSetCard({transactionSet, productData}: Props) {
+export default function TransactionSetCard({transactionSet}: Props) {
+    const [productData, setProductData] = useRecoilState(productState);
     return (
     <Card sx={{ px: 0 }} >
         <CardMedia
@@ -112,7 +114,7 @@ export default function TransactionSetCard({transactionSet, productData}: Props)
                 </Table>}
         </CardContent>
         <CardActions>
-            <TransactionSetModal transactionSet={transactionSet} productData={productData} />
+            <TransactionSetModal transactionSet={transactionSet} />
         </CardActions>
     </Card>
     )

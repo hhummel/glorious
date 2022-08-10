@@ -3,8 +3,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
-
-
 export default function FAQ() {
 
   return (    

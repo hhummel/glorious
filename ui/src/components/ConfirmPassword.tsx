@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -8,6 +9,7 @@ import Button from '@mui/material/Button';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { confirmPassword } from '../utils/api';
+import { visibleState } from '../store';
 
 
 const validationSchema = yup.object({
@@ -31,12 +33,9 @@ const initialValues = {
     'passwordConfirmation': null,
   };
 
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export default function ConfirmPassword({setVisible}: Props) {
-    const formik = useFormik({
+export default function ConfirmPassword() {
+      const [visible, setVisible] = useRecoilState(visibleState);
+      const formik = useFormik({
       initialValues: initialValues,
       validationSchema: validationSchema,
       onSubmit: values => {

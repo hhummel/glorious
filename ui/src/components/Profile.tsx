@@ -10,7 +10,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 import { getContact, updateContact } from '../utils/api';
-import { userState } from '../store';
+import { userState, visibleState } from '../store';
 
 const validationSchema = yup.object({
   first_name: yup.string().required().max(35),
@@ -23,12 +23,9 @@ const validationSchema = yup.object({
   mobile: yup.string().required().max(10),
 });
 
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export default function Profile({setVisible}: Props) {
+export default function Profile() {
     const [user, setUser] = useRecoilState(userState);
+    const [visible, setVisible] = useRecoilState(visibleState);
     const formik = useFormik({
       initialValues: {
         'user_id': user?.id || 0,

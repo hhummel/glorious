@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRecoilState } from 'recoil';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Container from '@mui/material/Container';
@@ -8,16 +9,16 @@ import { modalStyle } from '../styles';
 import { Order } from '../../types';
 import { stripeSecret } from '../utils/api';
 import { Stack } from '@mui/material';
+import { cartState, visibleState } from '../store';
 
 type Props = {
     paymentMethod: string;
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-    cart: Array<Order>;
-    setCart: React.Dispatch<React.SetStateAction<Order[]>>;
     buttonWidth: string;
 }
 
-export default function BaseModal({paymentMethod, setVisible, cart, setCart, buttonWidth}: Props) {
+export default function BaseModal({paymentMethod, buttonWidth}: Props) {
+  const [cart, setCart] = useRecoilState(cartState);
+  const [visible, setVisible] = useRecoilState(visibleState);
   const initialTotal = cart.reduce((previous, current) => previous + current.number * current.product.price, 0 ); 
   const [open, setOpen] = React.useState(false);
   const [productTotal, setProductTotal] = React.useState<number | undefined>(initialTotal);

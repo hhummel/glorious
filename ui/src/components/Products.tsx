@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
 import { Product } from '../../types';
 import ProductCard from './ProductCard'
+import { productState } from '../store';
 
-type Props = {
-    productData: Array<Product>;
-}
-
-export default function Products({productData}: Props) {
-
+export default function Products() {
+  const [productData, setProductData] = useRecoilState(productState);
   return (    
     <Container maxWidth="sm">
       <Stack spacing={2}>

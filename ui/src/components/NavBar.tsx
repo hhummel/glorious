@@ -19,20 +19,15 @@ import { grey } from '@mui/material/colors';
 
 import Login from './Login'
 import { logout } from '../utils/api';
-import { User, Order } from '../../types';
-import { cartState, userState } from '../store';
+import { cartState, userState, visibleState } from '../store';
 
-
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-  };
-
-export default function NavBar({setVisible }: Props) {
+export default function NavBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [open, setOpen] = React.useState(false);
   const [cart, setCart] = useRecoilState(cartState);
   const [user, setUser] = useRecoilState(userState);
+  const [visible, setVisible] = useRecoilState(visibleState);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -9,6 +10,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 import { getContact, createContact } from '../utils/api'
+import { visibleState } from '../store';
 
 const validationSchema = yup.object({
   password: yup
@@ -42,13 +44,10 @@ const initialValues = {
     'mobile': '',
     'carrier': 'VER',
     'active': false
-  };
+};
 
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export default function NewUser({setVisible}: Props) {
+export default function NewUser() {
+  const [visible, setVisible] = useRecoilState(visibleState);
     const formik = useFormik({
       initialValues: initialValues,
       validationSchema: validationSchema,
