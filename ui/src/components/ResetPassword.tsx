@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -9,6 +10,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 import { resetPassword } from '../utils/api';
+import { visibleState } from '../store';
 
 const validationSchema = yup.object({
     old_password: yup
@@ -26,11 +28,8 @@ const initialValues = {
     'new_password': ''
   };
 
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export default function ResetPassword({setVisible}: Props) {
+export default function ResetPassword() {
+    const [visible, setVisible] = useRecoilState(visibleState);
     const formik = useFormik({
       initialValues: initialValues,
       validationSchema: validationSchema,

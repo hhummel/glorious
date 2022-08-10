@@ -15,7 +15,7 @@ it('NavBar render correctly', () => {
 
         return (
           <RecoilRoot>
-            <NavBar setVisible={setVisible} />
+            <NavBar />
           </RecoilRoot>
         )
     }

@@ -4,10 +4,11 @@ import { userPayments } from '../utils/api';
 import { Payment } from '../../types';
 import BaseTable from './BaseTable'
 import formatDateString from '../utils/formatDateString'
-import { userState } from '../store';
+import { userState, visibleState } from '../store';
 
 export default function Payments() {
   const [user, setUser] = useRecoilState(userState);
+  const [visible, setVisible] = useRecoilState(visibleState);
   const [rows, setRows] = useState<Array<Payment>>([]);
 
   useEffect(() => {

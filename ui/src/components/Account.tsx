@@ -12,90 +12,85 @@ import Payments from './Payments';
 import Refunds from './Refunds';
 import Balance from './Balance';
 import TransactionSets from './TransactionSets';
-import { Product } from '../../types';
 
-type Props = {
-    productData: Array<Product>;
-}
-
-export default function Account({productData}: Props) {
-    return (
-        <Container>
-            <Typography variant="h3" component="h1" gutterBottom>
-                Account
-            </Typography>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Balance</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                <Balance />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Pending Orders</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <PendingOrders />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Order History</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <PastOrders />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Payments</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Payments />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Refunds</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Refunds />
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-                >
-                <Typography variant="h4" component="h2" gutterBottom>Transactions</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TransactionSets productData={productData}/>
-                </AccordionDetails>
-            </Accordion>            
-      </Container>
-    );
+export default function Account() {
+  return (
+    <Container>
+      <Typography variant="h3" component="h1" gutterBottom>
+          Account
+      </Typography>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Balance</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+          <Balance />
+          </AccordionDetails>
+      </Accordion>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Pending Orders</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <PendingOrders />
+          </AccordionDetails>
+      </Accordion>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Order History</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <PastOrders />
+          </AccordionDetails>
+      </Accordion>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Payments</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Payments />
+          </AccordionDetails>
+      </Accordion>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Refunds</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Refunds />
+          </AccordionDetails>
+      </Accordion>
+      <Accordion>
+          <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2a-content"
+          id="panel2a-header"
+          >
+          <Typography variant="h4" component="h2" gutterBottom>Transactions</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <TransactionSets />
+          </AccordionDetails>
+      </Accordion>            
+    </Container>
+  );
 }

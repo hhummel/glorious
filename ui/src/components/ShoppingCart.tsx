@@ -7,18 +7,15 @@ import Stack from '@mui/material/Stack'
 import CardModal from './CardModal';
 import BaseModal from './BaseModal';
 import OrderForm from './OrderForm';
-import { cartState, userState} from '../store';
+import { cartState, userState, visibleState } from '../store';
 
 const buttonWidth = '120px';
 
-
-type Props = {
-    setVisible: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export default function ShoppingCart({setVisible}: Props) {
+export default function ShoppingCart() {
   const [cart, setCart] = useRecoilState(cartState);
   const [user, setUser] = useRecoilState(userState);
+  const [visible, setVisible] = useRecoilState(visibleState);
+
   const handleClear = () => setCart([]);
   const handleSubmit = () => handleClear();
 
@@ -38,14 +35,8 @@ export default function ShoppingCart({setVisible}: Props) {
         </Typography>
         <Stack direction="row" spacing={2}>
             <CardModal cart={cart} buttonWidth={buttonWidth} /> 
-            <BaseModal 
-              paymentMethod="VEN" 
-              cart={cart} 
-              setCart={setCart} 
-              setVisible={setVisible} 
-              buttonWidth={buttonWidth} 
-            />
-            <BaseModal paymentMethod="CSH" cart={cart} setCart={setCart} setVisible={setVisible} buttonWidth={buttonWidth} />
+            <BaseModal paymentMethod="VEN" buttonWidth={buttonWidth} />
+            <BaseModal paymentMethod="CSH" buttonWidth={buttonWidth} />
         </Stack>
         {cart.map((order, index) => <OrderForm 
           key={index}

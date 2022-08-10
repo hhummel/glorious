@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRecoilState } from 'recoil';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -12,11 +13,10 @@ import Typography from '@mui/material/Typography';
 import { TransactionSet, Product, Order } from '../../types';
 import { modalStyle, cartStyle } from '../styles';
 import { cancelOrders } from '../utils/api';
-import { boolean } from 'yup';
+import { productState } from '../store';
 
 type ModalProps = {
     transactionSet: TransactionSet;
-    productData: Array<Product>;
 }
 
 const isDisabled = (transactionSet: TransactionSet): boolean => {
@@ -63,7 +63,8 @@ function ModalRow({order, productData, cancelled}: ModalRowProps){
   )
 }
 
-export default function TransactionSetModal({transactionSet, productData}: ModalProps) {
+export default function TransactionSetModal({transactionSet}: ModalProps) {
+  const [productData, setProductData] = useRecoilState(productState);
   const cancelled: {[id: number]: boolean} = {}
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | undefined>();
