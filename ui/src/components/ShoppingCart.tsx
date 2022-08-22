@@ -34,7 +34,7 @@ export default function ShoppingCart() {
           Shopping Cart
         </Typography>
         <Stack direction="row" spacing={2}>
-            <CardModal cart={cart} buttonWidth={buttonWidth} /> 
+            <CardModal buttonWidth={buttonWidth} /> 
             <BaseModal paymentMethod="VEN" buttonWidth={buttonWidth} />
             <BaseModal paymentMethod="CSH" buttonWidth={buttonWidth} />
         </Stack>
