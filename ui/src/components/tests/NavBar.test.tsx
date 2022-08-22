@@ -10,7 +10,7 @@ it('NavBar render correctly', () => {
       };
     
     function Wrapper ({screenVisible}: Props) {
-    
+        // TODO: Set Recoil state in wrapper
         const [visible, setVisible] = useState(screenVisible);
 
         return (

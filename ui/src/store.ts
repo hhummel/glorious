@@ -1,4 +1,3 @@
-import { UseInputRootSlotProps } from '@mui/base';
 import { atom } from 'recoil';
 
 import { Order, User, Product  } from '../types';
