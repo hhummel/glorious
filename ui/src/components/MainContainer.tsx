@@ -9,13 +9,13 @@ import Products from './Products';
 import NavBar from './NavBar';
 import ShoppingCart from './ShoppingCart';
 import Profile from './Profile';
-import { Product } from '../../types';
 import About from './About';
 import FAQ from './FAQ';
 import NewUser from './NewUser';
 import ResetPassword from './ResetPassword';
 import ForgotPassword from './ForgotPassword';
 import ConfirmPassword from './ConfirmPassword';
+import Subscription from './Subscription';
 import { products } from '../utils/api';
 import { visibleState, productState } from '../store';
 
@@ -47,6 +47,7 @@ export default function MainContainer({ title }: Props) {
         {(visible === 8) && <ResetPassword />}
         {(visible === 9) && <ForgotPassword />}
         {(visible === 10) && <ConfirmPassword />}
+        {(visible === 11) && <Subscription />}
       </Container>
     </React.Fragment>
   );

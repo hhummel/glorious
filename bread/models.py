@@ -166,8 +166,7 @@ PAYMENT_CHOICES = (
 SUBSCRIPTION_CHOICES = (
     ('WEEK', 'Weekly'),
     ('2_WKS', 'Every other week'),
-    ('OTHER', 'Other'),
-    ('NONE', 'Not now, thanks')
+    ('4_WKS', 'Every four weeks'),
 )
 
 MEASURE_CHOICES = (
@@ -392,6 +391,25 @@ class Subscription(models.Model):
     recipient_address = models.CharField(max_length=100, null=True, blank=True)
     recipient_city = models.CharField(max_length=100, null=True, blank=True)
     recipient_state = models.CharField(max_length=2, choices=STATE_CHOICES, default='PA', null=True)
+
+
+class ProductSubscription(models.Model):
+    """Product subscription information"""
+    index_key = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    number = models.IntegerField(null=False, default=1)
+    frequency = models.CharField(max_length=6, choices=SUBSCRIPTION_CHOICES, default='WKLY')
+    total_deliveries = models.IntegerField(null=False, default=52)
+    completed_deliveries = models.IntegerField(null=False, default=52)
+    confirmed = models.BooleanField(default=False)
+    auto_renew = models.BooleanField(default=False)
+    special_instructions = models.TextField(max_length=500, null=True, blank=True) 
+    this_is_a_gift = models.BooleanField(default=False)
+    recipient_name = models.CharField(max_length=100, null=True, blank=True)
+    recipient_address = models.CharField(max_length=100, null=True, blank=True)
+    recipient_city = models.CharField(max_length=100, null=True, blank=True)
+    recipient_state = models.CharField(max_length=2, choices=STATE_CHOICES, default='PA', null=True)    
 
 
 class Gift(models.Model):

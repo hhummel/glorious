@@ -38,7 +38,7 @@ import xmltodict
 from .forms import ContactForm, OrderForm, OrderMeisterForm, PaymentForm, UnsubscribeForm
 from .forms import CampaignForm, MailListForm, SubscriptionForm, MaterialsForm
 from .models import Contacts, Subscribers, Order, Ledger, Payment, MailList, PaymentIntent, Category
-from .models import Products, Subscription, Gift, Campaign, ShoppingCart, Refund
+from .models import Products, Subscription, ProductSubscription, Gift, Campaign, ShoppingCart, Refund
 from .models import EXCLUDED_DAYS, MEISTER_EXCLUDED_DAYS, UNITS
 from glorious.passwords import EMAIL_SERVER, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, \
     EMAIL_SENDER, EMAIL_ASSISTANT, SIGNATURE, EMAIL_FOOTER, HTML_FOOTER, STRIPE_SECRET, STRIPE_WEBHOOK_SECRET,\
@@ -47,7 +47,7 @@ from .bread import make_msg, write_log_message, mailer
 from .serializers import ContactsSerializer, CategorySerializer, ProductsSerializer, \
     OrderSerializer, ShoppingCartSerializer, SubscriptionSerializer, GiftSerializer, PaymentSerializer, \
     LedgerSerializer, SubscribersSerializer, MailListSerializer, CampaignSerializer, \
-    UserSerializer, ChangePasswordSerializer, RefundSerializer
+    UserSerializer, ChangePasswordSerializer, RefundSerializer, ProductSubscriptionSerializer
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly
 from .shipping import create_shipping_objects, get_shipping_cost, get_shipping_list
 
@@ -206,6 +206,18 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             else Subscription.objects.filter(user=request.user)
         serializer = SubscriptionSerializer(queryset, many=True)
         return Response(serializer.data)    
+
+class ProductSubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = ProductSubscription.objects.all()
+    serializer_class = ProductSubscriptionSerializer
+    permission_classes = [IsOwnerOrAdmin,]
+
+    def list(self, request):
+        queryset = ProductSubscription.objects.all() if request.user.is_staff \
+            else ProductSubscription.objects.filter(user=request.user)
+        serializer = ProductSubscriptionSerializer(queryset, many=True)
+        return Response(serializer.data)  
+
 
 
 class GiftViewSet(viewsets.ModelViewSet):

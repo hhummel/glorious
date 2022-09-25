@@ -102,6 +102,11 @@ export default function NavBar() {
     setAnchorElUser(null);
   };
 
+  const handleSubscriptionClick = () => {
+    setVisible(11);
+    setAnchorElUser(null);
+  }
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -248,7 +253,7 @@ export default function NavBar() {
                 }
 
                 { user ? 
-                  <MenuItem key={'Subscription'} onClick={handleCloseNavMenu}>
+                  <MenuItem key={'Subscription'} onClick={handleSubscriptionClick}>
                     <Typography textAlign="center">Subscription</Typography>
                   </MenuItem> :
 

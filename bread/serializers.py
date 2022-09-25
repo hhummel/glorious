@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
-from .models import Contacts, Category, Products, Order, Subscription, Refund
+from .models import Contacts, Category, Products, Order, Subscription, ProductSubscription, Refund
 from .models import Subscribers, MailList, Campaign, ShoppingCart, Gift, Payment, Ledger
 
 
@@ -75,6 +75,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = '__all__'
         read_only_fields = ('index_key', 'user',)
+
+
+class ProductSubscriptionSerializer(serializers.ModelSerializer):
+    """Serializer for Bread Product Subscription"""
+    class Meta:
+        model = ProductSubscription
+        fields = '__all__'
+        read_only_fields = ('index_key', 'user', 'completed_deliveries', 'confirmed')
 
 
 class PaymentSerializer(serializers.ModelSerializer):
